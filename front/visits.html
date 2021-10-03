@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://unpkg.com/vue@3.0.2"></script>
+</head>
+
+<body>
+  <div id="app">
+    <h1>{{ availability }}</h1>
+    <li v-for="day in availability.days"> {{day.date}} {{day.timeslots}}</li>
+  </div>
+  <script src="app.js"></script>
+</body>
+
+</html>
