@@ -6,74 +6,60 @@ from pydantic import BaseModel as BM
 import datetime
 from enum import Enum
 
+from schemas.visit import InVisit, OutVisit
+from schemas.worker import InWorker, OutWorker
+
 app = FastAPI()
 
-class SEnum(str, Enum):
+class StrEnum(str, Enum):
     ...
 
 
-# FXxx - from client
-
-class FServiceToVisit(BM):
-    name: str
-    price: float
-    q: int
-    worker: str
-    timeslot: str
-
-class FVisit(BM):
-    version: Literal[1]
-    phone: str
-    email: str
-    client_id: str
-    services: List[FServiceToVisit]
-    remind_me: bool
+@app.get('/ping')
+async def ping():
+    return {'message': 'pong'}
 
 
-class VisitStatus(SEnum):
-    SUMBITTED = 'SUBMITTED'  # -> R/A
-    REJECTED = 'REJECTED'
-    APPROVED = 'APPROVED'  # -> C
-    CANCELLED = 'CANCELLED'
-    # MISSED = 'MISSED'
-    # FINISHED = 'FINISHED'
-
-
-class Visit(BM):
-    status: str
-    # cp
-    version: Literal[1]
-    phone: str
-    client_id: str
-    services: List[FServiceToVisit]
-
+# VISITS
+@app.get('/visit/{visit_id}')
+async def get_visit(visit_id: str) -> OutVisit:
+    return OutVisit.Example()
 
 
 @app.post('/visit')
-async def create_visit(visit: Visit):
+async def create_visit(visit: InVisit) -> OutVisit:
     # how to prevent DDoS?
     return visit
 
 @app.get('/visits')
 async def get_visits():
-    return [Visit(version=1, phone='375', client_id='123', services=[])]
+    return [OutVisit.Example()]
 
 @app.put('/visit/{visit_id}')
-async def update_visit(visit_id: str, visit: Visit):
+async def update_visit(visit_id: str, visit: InVisit):
     return None
 
-class Client(BM):
-    name: str
-    balance: float
-    logo: str
+@app.delete('/visit/{visit_id}')
+async def delete_visit(visit_id: str):
+    return True
 
+# WORKERS
+@app.post('/worker')
+async def create_worker(worker: InWorker) -> OutWorker:
+    return worker
 
-async def root():
-    return {'message': 'pong'}
+@app.get('/worker/{worker_id}')
+async def get_worker(worker_id: str) -> OutWorker:
+    return OutWorker
 
-# @app.post('/tests')
-# async def create_test(t: T):
-#     return t
+@app.put('/worker/{worker_id}')
+async def update_worker(worker: InWorker) -> OutWorker:
+    return OutWorker(id='11', name='Alfa Romeo', job_title='Инженер')
+
+@app.delete('/worker/{worker_id}')
+async def delete_worker(worker_id: str):
+    return True
+
 
 class TimeSlot(BM):
     time_from: datetime.time
@@ -96,15 +82,12 @@ async def get_client_availability(
                 date=datetime.date(year=2021, month=8, day=18),
                 timeslots=[TimeSlot(
                     time_from=datetime.time(hour=15, minute=15),
-                    time_to=datetime.time(hour=15, minute=15),
+                    time_to=datetime.time(hour=15, minute=30),
                 )]
             )]
     )
     ...
 
-class Worker(BM):
-    id: str
-    name: str
 
 # @app.post('/worker_avaliability/{worker_id}')
 # async def create_worker_availability()
