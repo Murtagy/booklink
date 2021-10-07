@@ -9,7 +9,10 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "sass": "^1.42.1",
+    "sass-loader": "^10",
+    "vue": "^2.6.11",
+    "vue-functional-calendar": "^2.9.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
