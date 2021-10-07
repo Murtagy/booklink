@@ -1,5 +1,7 @@
 <template>
 	<FunctionalCalendar
+      v-model="calendarData"
+      :configs="calendarConfigs"
 	></FunctionalCalendar>
 </template>
       
@@ -10,11 +12,19 @@ export default {
     components: {
         FunctionalCalendar
     },
-    data() {
+  data() {
         return {
-            calendarData: {}
+            calendarData: {},
+            calendarConfigs: {
+                sundayStart: true,
+                dateFormat: 'dd/mm/yyyy',
+                isDatePicker: false,
+                isDateRange: false,
+                disabledDayNames: "['Su', 'We']",
+                disabledDates: ['beforeToday', '12/10/2021'],
+            }
         }
-    }
+    },
 }
 
 </script>

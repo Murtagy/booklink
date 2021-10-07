@@ -1,10 +1,7 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <FunctionalCalendar
-       v-model="calendarData"
-       :is-date-picker="true"      
-></FunctionalCalendar>
+    <FunctionalCalendar/>
     <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
@@ -19,7 +16,7 @@ export default {
     HelloWorld,
     FunctionalCalendar
   },
-  data(){ return {calendarData: {}}}
+
 }
 </script>
 
