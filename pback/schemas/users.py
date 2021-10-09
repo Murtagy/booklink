@@ -1,9 +1,11 @@
 from pydantic import BaseModel as BM
 
+
 class UserCreate:
     user_name: str
     email: str
     password: str
+
 
 class UserOut:
     user_id: int
@@ -11,4 +13,3 @@ class UserOut:
 
     class Config:
         orm_mode = True
-

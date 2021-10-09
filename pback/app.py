@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session  # type: ignore
 import crud
 import db
 import models
-from schemas.visit import InVisit, OutVisit, Visit
+from schemas.visit import InVisit, OutVisit
 from schemas.worker import InWorker, OutWorker
 
 app = FastAPI()

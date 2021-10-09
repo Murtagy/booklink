@@ -45,6 +45,7 @@ class Customer(BaseModel):
     display_id = Column(String, index=True)
     created_at = TableCreatedAt()
 
+
 class User(BaseModel):
     __tablename__ = "users"
 
@@ -56,6 +57,3 @@ class User(BaseModel):
     user_name = Column(String)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
-
-
-
