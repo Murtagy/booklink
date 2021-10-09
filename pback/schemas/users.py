@@ -1,13 +1,13 @@
 from pydantic import BaseModel as BM
 
 
-class UserCreate:
+class UserCreate(BM):
     user_name: str
     email: str
     password: str
 
 
-class UserOut:
+class UserOut(BM):
     user_id: int
     user_name: str
 
