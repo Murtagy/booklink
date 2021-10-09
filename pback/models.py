@@ -43,4 +43,19 @@ class Customer(BaseModel):
 
     customer_id = TableId()
     display_id = Column(String, index=True)
-    created_at = TableCreatedAt
+    created_at = TableCreatedAt()
+
+class User(BaseModel):
+    __tablename__ = "users"
+
+    user_id = TableId()
+    display_id = Column(String, index=True)
+    created_at = TableCreatedAt()
+
+    email = Column(String, index=True, unique=True)
+    user_name = Column(String)
+    hashed_password = Column(String)
+    is_active = Column(Boolean, default=True)
+
+
+
