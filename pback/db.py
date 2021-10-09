@@ -23,7 +23,7 @@ BaseModel = declarative_base()
 
 
 def TableId():
-    return Column(Integer, primary_key=True, index=True)
+    return Column(Integer, primary_key=True, index=True, unique=True)
 
 
 def TableCreatedAt():
