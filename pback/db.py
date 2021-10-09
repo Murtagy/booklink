@@ -10,6 +10,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import func
 
 LITE_DB = "sqlite:///./sql_app.db"
 # PROD_DB = "postgresql://user:password@postgresserver/db"
@@ -26,4 +27,4 @@ def TableId():
 
 
 def TableCreatedAt():
-    return Column(DateTime)
+    return Column(DateTime(timezone=True), default=func.now())

@@ -3,9 +3,9 @@ import datetime
 from enum import Enum
 from typing import List, Literal
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel as BM
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session  # type: ignore
 
 import crud
 import db
@@ -35,16 +35,19 @@ async def ping():
 
 
 # VISITS
-@app.get("/visit/{visit_id}")
-def get_visit(visit_id: str, s: Session = Depends(get_db_session)) -> OutVisit:
+@app.get("/visit/{visit_id}", response_model=OutVisit)
+def get_visit(visit_id: int, s: Session = Depends(get_db_session)) -> models.Visit:
     # return OutVisit.Example()
-    return crud.get_visit(s, visit_id)
-
-
-@app.post("/visit")
-async def create_visit(visit: InVisit) -> OutVisit:
-    # how to prevent DDoS?
+    visit = crud.get_visit(s, visit_id)
+    if not visit:
+        raise HTTPException(status_code=404, detail="Visit not found")
     return visit
+
+
+@app.post("/visit", response_model=OutVisit)
+def create_visit(visit: InVisit, s: Session = Depends(get_db_session)) -> models.Visit:
+    db_visit = crud.create_visit(s, visit)
+    return db_visit
 
 
 @app.get("/visits")
@@ -64,13 +67,13 @@ async def delete_visit(visit_id: str):
 
 # WORKERS
 @app.post("/worker")
-async def create_worker(worker: InWorker) -> OutWorker:
+async def create_worker(worker: InWorker) -> InWorker:
     return worker
 
 
-@app.get("/worker/{worker_id}")
-async def get_worker(worker_id: str) -> OutWorker:
-    return OutWorker
+# @app.get("/worker/{worker_id}")
+# async def get_worker(worker_id: str) -> OutWorker:
+#     return OutWorker
 
 
 @app.put("/worker/{worker_id}")

@@ -31,21 +31,19 @@ class InServiceToVisit(BM):
 
 
 class OutVisit(BM):
+    version: Literal[1] = 1
     status: str
-    # cp
-    version: Literal[1]
     phone: str
-    client_id: str
-    services: List[InServiceToVisit]
+    client_id: int
+    # services: List[InServiceToVisit]
 
     @classmethod
     def Example(cls):
         return cls(
             status="status",
-            version=1,
             phone="375291231123",
-            client_id="client_id",
-            services=[],
+            client_id=123,
+            # services=[],
         )
 
 
@@ -53,7 +51,7 @@ class InVisit(BM):
     version: Literal[1]
     phone: str
     email: str
-    client_id: str
+    client_id: int
     services: List[InServiceToVisit]
     remind_me: bool
 

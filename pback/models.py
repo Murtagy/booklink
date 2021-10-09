@@ -11,12 +11,12 @@ class Visit(BaseModel):
     created_at = TableCreatedAt()
 
     customer_id = Column(Integer, ForeignKey("customers.customer_id"))
-    phone = Column(String, index=True)
-    email = Column(String, index=True)
-    from_datetime = Column(DateTime, index=True)
-    to_datetime = Column(DateTime)
     client_id = Column(Integer, ForeignKey("clients.client_id"))
     worker_id = Column(Integer, ForeignKey("workers.worker_id"))
+    phone = Column(String, index=True)
+    email = Column(String, index=True)
+    from_datetime = Column(DateTime(timezone=True), index=True)
+    to_datetime = Column(DateTime(timezone=True))
     status = Column(String)
     has_notification = Column(Boolean)
     services = Column(JSON)  # [ServiceId + Q + Price, ...]
@@ -38,7 +38,7 @@ class Worker(BaseModel):
     created_at = TableCreatedAt()
 
 
-class Client(BaseModel):
+class Customer(BaseModel):
     __tablename__ = "customers"
 
     customer_id = TableId()
