@@ -1,7 +1,25 @@
+import datetime
+from typing import List, Literal, Tuple
+
 from pydantic import BaseModel as BM
 
-from typing import Literal, List
 
+class Visit(BM):
+    __tablename__ = "visits"
+
+    id: int
+    display_id: str
+    created_at: datetime.datetime
+    customer_id: int
+    phone: str
+    email: str
+    from_datetime: datetime.datetime
+    to_datetime: datetime.datetime
+    client_id: int
+    worker_id: int
+    status: str
+    has_notification: bool  # change to relationship?
+    services: List[Tuple[int, float, int]]  # [id, price, q] change to relationship?
 
 
 class InServiceToVisit(BM):
@@ -10,6 +28,7 @@ class InServiceToVisit(BM):
     q: int
     worker: str
     timeslot: str
+
 
 class OutVisit(BM):
     status: str
@@ -22,13 +41,12 @@ class OutVisit(BM):
     @classmethod
     def Example(cls):
         return cls(
-            status='status',
+            status="status",
             version=1,
-            phone='375291231123',
-            client_id='client_id',
+            phone="375291231123",
+            client_id="client_id",
             services=[],
         )
-
 
 
 class InVisit(BM):
