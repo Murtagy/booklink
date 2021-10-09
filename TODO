@@ -1,9 +1,20 @@
+Back:
 - Users
 - Authentication
 - Clients
+- ClientSettings
+- Logs
+- TransactionLogs
+- BalanceActions
 - Registration
+- Workers
 - Slots
 - WeeklySlots
 - Notifications
 - NotificationsSending - SMS
 - NotificationsSending - Email
+- ClientLogos
+
+
+Front:
+- ...
