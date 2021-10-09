@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session  # type: ignore
 import crud
 import db
 import models
-from schemas.visit import InVisit, OutVisit
+from schemas import InVisit, OutVisit, UserCreate, UserOut
 from schemas.worker import InWorker, OutWorker
 
 app = FastAPI()
@@ -32,6 +32,13 @@ class StrEnum(str, Enum):
 @app.get("/ping")
 async def ping():
     return {"message": "pong"}
+
+
+# USERS
+@app.post("/signup", response_model=UserOut)
+def create_user(user: UserCreate, s: Session = Depends(get_db_session)) -> models.User:
+    db_user = crud.create_user(s, user)
+    return db_user
 
 
 # VISITS
