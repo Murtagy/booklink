@@ -32,10 +32,14 @@ class InServiceToVisit(BM):
 
 class OutVisit(BM):
     version: Literal[1] = 1
-    status: str
+    # status: str
     phone: str
-    client_id: int
+    # client_id: int
     # services: List[InServiceToVisit]
+
+    class Config:
+        orm_mode = True
+        # make this inherited?
 
     @classmethod
     def Example(cls):
