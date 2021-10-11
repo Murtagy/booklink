@@ -3,6 +3,10 @@ import random
 import string
 from typing import Optional
 
+from fastapi.security import OAuth2PasswordBearer
+
+oauth = OAuth2PasswordBearer(tokenUrl="token")
+
 
 def make_salt():
     return "".join(random.choice(string.ascii_letters) for _ in range(12))

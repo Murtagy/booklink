@@ -1,4 +1,7 @@
+import datetime
+
 from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
 
 from db import BaseModel, TableCreatedAt, TableId
 
@@ -53,7 +56,16 @@ class User(BaseModel):
     display_id = Column(String, index=True)
     created_at = TableCreatedAt()
 
-    email = Column(String, index=True, unique=True)
-    user_name = Column(String)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
+    email = Column(String, index=True, unique=True, nullable=False)
+    user_name = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    # is_active = Column(Boolean, default=True)
+
+
+class Token(BaseModel):
+    __tablename__ = "tokens"
+
+    id = TableId()
+    token = Column(UUID(as_uuid=False), unique=True, index=True, nullable=False)
+    expires = Column(DateTime(timezone=True))
+    user_id = Column(Integer, ForeignKey("users.user_id"))

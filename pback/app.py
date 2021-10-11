@@ -3,16 +3,29 @@ import datetime
 from enum import Enum
 from typing import List, Literal
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt  # type: ignore
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
 import crud
 import db
 import models
-from schemas import InVisit, OutVisit, UserCreate, UserOut
+from schemas import InVisit, OutVisit, TokenOut, UserCreate, UserOut
 from schemas.worker import InWorker, OutWorker
+from utils.users import oauth, validate_password
 
+SECRET_KEY = "12325e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
+
+# docs_kwargs = {}
+# if settings.ENVIRONMENT == 'production':
+# if False:
+# docs_kwargs = dict(docs_url=None, redoc_url=None)
+
+# app = FastAPI(**docs_kwargs)
 app = FastAPI()
 models.BaseModel.metadata.create_all(bind=db.engine)
 
@@ -36,9 +49,59 @@ async def ping():
 
 # USERS
 @app.post("/signup", response_model=UserOut)
-def create_user(user: UserCreate, s: Session = Depends(get_db_session)) -> models.User:
+def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
     db_user = crud.create_user(s, user)
-    return db_user
+    # generate token?
+    access_token = crud.create_user_token(s, db_user.user_id)
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+async def get_current_user(
+    token: str = Depends(oauth), s: Session = Depends(get_db_session)
+) -> models.User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    user = crud.get_user_by_username(s, username=username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+# async def get_current_active_user(current_us  er: User = Depends(get_current_user)):
+#     if not current_user.is_active:
+#         raise HTTPException(status_code=400, detail="Inactive user")
+#     return current_user
+
+
+@app.get("/users/me/", response_model=TokenOut)
+async def read_users_me(current_user: models.User = Depends(get_current_user)):
+    return current_user
+
+
+@app.post("/token")
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    s: Session = Depends(get_db_session),
+):
+    db_user = crud.get_user_by_username(s, form_data.username)
+    if not db_user:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    hashed_password = db_user.hashed_password
+    if validate_password(form_data.password, hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+    access_token = crud.create_user_token(s, db_user.user_id)
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 # VISITS
