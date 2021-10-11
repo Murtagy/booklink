@@ -66,6 +66,6 @@ class Token(BaseModel):
     __tablename__ = "tokens"
 
     id = TableId()
-    token = Column(UUID(as_uuid=False), unique=True, index=True, nullable=False)
+    token = Column(String, unique=True, index=True, nullable=False)
     expires = Column(DateTime(timezone=True))
     user_id = Column(Integer, ForeignKey("users.user_id"))
