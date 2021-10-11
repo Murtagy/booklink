@@ -5,7 +5,6 @@ Back:
 - Logs
 - TransactionLogs
 - BalanceActions
-- Registration
 - Workers
 - Slots
 - WeeklySlots
@@ -13,6 +12,7 @@ Back:
 - NotificationsSending - SMS
 - NotificationsSending - Email
 - ClientLogos
+- Password reset
 
 
 Front:
