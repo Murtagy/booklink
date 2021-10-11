@@ -5,7 +5,7 @@ from typing import List, Literal, Optional
 
 import structlog
 from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # type: ignore
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
