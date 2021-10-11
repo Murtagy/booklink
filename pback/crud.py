@@ -47,9 +47,11 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
     return db.query(User).filter(User.email == email).first()
 
 
-def get_user_by_token(db: Session, access_token: str) -> Optional[User]:
-    # TODO check expiry
-    t = db.query(Token).filter(Token.access_token == access_token).first()
+def get_user_by_token_id(db: Session, token_id: str) -> Optional[User]:
+    t = db.query(Token).filter(Token.token_id == int(token_id)).first()
+    if t is None or t.expires < datetime.datetime.now():
+        return None
+
     assert t is not None
     user_id = t.user_id
     assert user_id is not None

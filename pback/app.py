@@ -52,11 +52,10 @@ async def ping():
 
 # USERS
 def jwtfy(token: models.Token):
-    return jwt.encode({"sub": str(token.user_id)}, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode({"sub": str(token.token_id)}, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def unjwttfy_user_id(token: str) -> Optional[str]:
-    print(token)
+def unjwttfy_token_id(token: str) -> Optional[str]:
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     return payload.get("sub")
 
@@ -79,6 +78,7 @@ async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
 async def get_current_user(
     token: str = Depends(oauth), s: Session = Depends(get_db_session)
 ) -> models.User:
+    # this might benefit from active user boolean to avoid multiple sql queries
     print("CURRENT USER")
 
     credentials_exception = HTTPException(
@@ -87,14 +87,12 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        user_id = unjwttfy_user_id(token)
-        print("USER ID", user_id)
-        if user_id is None:
+        token_id = unjwttfy_token_id(token)
+        if token_id is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    print("HERE?")
-    user = crud.get_user_by_user_id(s, user_id=user_id)
+    user = crud.get_user_by_token_id(s, token_id=token_id)
     if user is None:
         raise credentials_exception
     return user

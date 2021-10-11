@@ -65,7 +65,7 @@ class User(BaseModel):
 class Token(BaseModel):
     __tablename__ = "tokens"
 
-    id = TableId()
+    token_id = TableId()
     access_token = Column(String, unique=True, index=True, nullable=False)
-    expires = Column(DateTime(timezone=True))
+    expires = Column(DateTime(timezone=True), nullable=False)
     user_id = Column(Integer, ForeignKey("users.user_id"))
