@@ -4,10 +4,11 @@ import requests
 
 localhost = "http://127.0.0.1:8000/"
 
+username = str(random.randint(0, 1000)) + "test2"
 r = requests.post(
     localhost + "signup",
     json={
-        "username": str(random.randint(0, 1000)) + "test2",
+        "username": username,
         "password": "123",
         "email": str(random.randint(0, 1000)) + "example@example12.com",
     },
@@ -16,6 +17,16 @@ token = r.json()["access_token"]
 r = requests.get(localhost + "users/me", headers={"Authorization": "Bearer " + token})
 assert r.status_code == 200
 
+
+r = requests.post(
+    localhost + "token",
+    data={
+        "username": username,
+        "password": "123",
+    },
+)
+print(r.text)
+assert r.status_code == 200
 
 # r = requests.get(localhost + "visit/1")
 # print(r.text)
