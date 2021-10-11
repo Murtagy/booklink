@@ -46,7 +46,6 @@ class StrEnum(str, Enum):
 
 @app.get("/ping")
 async def ping():
-    print("12")
     return {"message": "pong"}
 
 
@@ -69,7 +68,6 @@ async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
     if db_user:
         raise HTTPException(status_code=400, detail="Username already exists")
     db_user = crud.create_user(s, user)
-    # generate token?
     access_token = crud.create_user_token(s, db_user.user_id)
     jwt = jwtfy(access_token)
     return {"access_token": jwt, "token_type": "bearer"}
