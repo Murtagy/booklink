@@ -7,32 +7,37 @@ from pydantic import Field, validator
 
 
 class UserCreate(BM):
-    user_name: str
+    username: str
     email: str
     password: str
 
 
 class UserOut(BM):
     user_id: int
-    user_name: str
+    username: str
 
     class Config:
         orm_mode = True
 
 
 class Token(BM):
-    token: UUID4 = Field(..., alias="access_token")
+    access_token: UUID4 = Field(...)
     expires: datetime.datetime
+    user_id: int
     token_type: Optional[str] = "bearer"
 
     class Config:
         orm_mode = True
 
-    @validator("token")
+    @validator("access_token")
     def hexlify_token(cls, value):
         """Конвертирует UUID в hex строку"""
         return value.hex
 
 
-class TokenOut(UserOut):
-    token: Token
+class TokenOut(BM):
+    access_token: str
+    token_type: str
+
+    class Config:
+        orm_mode = True

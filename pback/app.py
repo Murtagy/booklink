@@ -1,8 +1,9 @@
 # TODO: SPA или не нужен вью для большинства
 import datetime
 from enum import Enum
-from typing import List, Literal
+from typing import List, Literal, Optional
 
+import structlog
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # type: ignore
@@ -28,6 +29,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 # app = FastAPI(**docs_kwargs)
 app = FastAPI()
 models.BaseModel.metadata.create_all(bind=db.engine)
+logger = structlog.get_logger()
 
 # Dependency
 def get_db_session():
@@ -44,34 +46,55 @@ class StrEnum(str, Enum):
 
 @app.get("/ping")
 async def ping():
+    print("12")
     return {"message": "pong"}
 
 
 # USERS
-@app.post("/signup", response_model=UserOut)
-def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
+def jwtfy(token: models.Token):
+    return jwt.encode({"sub": str(token.user_id)}, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def unjwttfy_user_id(token: str) -> Optional[str]:
+    print(token)
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return payload.get("sub")
+
+
+@app.post("/signup", response_model=TokenOut)
+async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
+    db_user = crud.get_user_by_email(s, user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="User email already exists")
+    db_user = crud.get_user_by_username(s, user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
     db_user = crud.create_user(s, user)
     # generate token?
     access_token = crud.create_user_token(s, db_user.user_id)
-    return {"access_token": access_token, "token_type": "bearer"}
+    jwt = jwtfy(access_token)
+    return {"access_token": jwt, "token_type": "bearer"}
 
 
 async def get_current_user(
     token: str = Depends(oauth), s: Session = Depends(get_db_session)
 ) -> models.User:
+    print("CURRENT USER")
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="Bad token!!!",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        user_id = unjwttfy_user_id(token)
+        print("USER ID", user_id)
+        if user_id is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = crud.get_user_by_username(s, username=username)
+    print("HERE?")
+    user = crud.get_user_by_user_id(s, user_id=user_id)
     if user is None:
         raise credentials_exception
     return user
@@ -83,7 +106,7 @@ async def get_current_user(
 #     return current_user
 
 
-@app.get("/users/me/", response_model=TokenOut)
+@app.get("/users/me/", response_model=UserOut)
 async def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
@@ -101,7 +124,8 @@ async def login_for_access_token(
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
     access_token = crud.create_user_token(s, db_user.user_id)
-    return {"access_token": access_token, "token_type": "bearer"}
+    jwt_token = jwtfy(access_token)
+    return {"access_token": jwt_token, "token_type": "bearer"}
 
 
 # VISITS

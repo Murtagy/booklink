@@ -57,7 +57,7 @@ class User(BaseModel):
     created_at = TableCreatedAt()
 
     email = Column(String, index=True, unique=True, nullable=False)
-    user_name = Column(String, nullable=False)
+    username = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     # is_active = Column(Boolean, default=True)
 
@@ -66,6 +66,6 @@ class Token(BaseModel):
     __tablename__ = "tokens"
 
     id = TableId()
-    token = Column(String, unique=True, index=True, nullable=False)
+    access_token = Column(String, unique=True, index=True, nullable=False)
     expires = Column(DateTime(timezone=True))
     user_id = Column(Integer, ForeignKey("users.user_id"))
