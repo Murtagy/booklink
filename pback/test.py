@@ -13,6 +13,7 @@ r = requests.post(
         "email": str(random.randint(0, 1000)) + "example@example12.com",
     },
 )
+print(r.text)
 token = r.json()["access_token"]
 r = requests.get(localhost + "users/me", headers={"Authorization": "Bearer " + token})
 assert r.status_code == 200

@@ -30,6 +30,7 @@ def create_user(db: Session, user: schemas.UserCreate) -> User:
     )
     db.add(db_user)
     db.commit()
+    db.refresh(db_user)  # why refresh?
     # ? refresh
     return db_user
 
