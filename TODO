@@ -1,4 +1,6 @@
 Back:
+- Services relations to workers
+- Services schema
 - on POSTs and PUTs assert target within same client
 - Users
 - Clients
@@ -18,4 +20,6 @@ Back:
 
 
 Front:
-- ...
+- Routing
+- Auth
+- AJAX to utils
