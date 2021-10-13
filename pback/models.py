@@ -104,7 +104,7 @@ class Service(BaseModel):
 
 class WorkersServices(BaseModel):
     # abilities of worker
-    __tablename__ = 'workers_services'
+    __tablename__ = "workers_services"
 
     rel_id = TableId()
     created_at = TableCreatedAt()
