@@ -43,6 +43,7 @@ class Worker(BaseModel):
     created_at = TableCreatedAt()
     display_id = Column(String, index=True)
 
+    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
     name = Column(String, nullable=False)
     job_title = Column(String, nullable=False)
     display_name = Column(String)
@@ -62,6 +63,7 @@ class File(BaseModel):
     content_type = Column(String, nullable=False)
     # owner
     client_id = Column(Integer, ForeignKey("clients.client_id"))
+    worker_id = Column(Integer, ForeignKey("workers.worker_id"))
 
 
 class Customer(BaseModel):
@@ -86,7 +88,6 @@ class User(BaseModel):
     blocked = Column(Boolean, nullable=False, default=False)
     blocked_datetime = Column(DateTime(timezone=True))
     # is_active = Column(Boolean, default=True)
-
 
 
 class Token(BaseModel):
