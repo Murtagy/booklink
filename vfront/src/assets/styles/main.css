@@ -1,3 +1,52 @@
-h1 {
-    color:aqua
+h1, ul, li {
+    font-family:"Arial";
+}
+
+div {
+    background-color:lightgrey;
+}
+
+header {
+    max-width:100%;
+    width:1600px;
+    background-color:blue;
+    position:fixed;
+    top:0;
+    left:0;
+}
+
+header h1 {
+    color:white;
+    text-align:center;
+    padding:40px auto;
+    font-size:40px;
+}
+
+ul {
+    display:inline-block;
+    padding-top:50px;
+    padding-bottom:100%;
+    padding-left:300px;
+    padding-right:300px;
+    margin:0 auto;
+    background-color:lightblue;
+    list-style-type: none;
+}
+
+li {
+    font-size:20px;
+    margin:30px auto;
+}
+input {
+    font-size:20px;
+    font-family:arial;
+    margin:auto 20px;
+}
+
+#submit {
+    border:5px double blue;
+    border-radius: 20px;
+    font-size:24px;
+    margin:50px auto;
+    background-color:white;
 }

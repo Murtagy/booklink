@@ -6,7 +6,8 @@
     <example msg="Hello Masha"/>
     <FooterTest counter=1></FooterTest> -->
 
-    <LoginPage/>
+    <!-- <LoginPage/> -->
+     <RegistrationPage/>
   </div>
 </template>
 
@@ -14,7 +15,8 @@
 
 import './assets/styles/main.css'
 
-import LoginPage from './components/Login.vue'
+// import LoginPage from './components/Login.vue'
+import RegistrationPage from './components/Registration.vue'
 
 
 // import HelloWorld from './components/HelloWorld.vue'
@@ -29,7 +31,8 @@ export default {
     // FunctionalCalendar,
     // TimeSlots,
     // FooterTest,
-    LoginPage
+    // LoginPage,
+    RegistrationPage,
   },
 
 }
