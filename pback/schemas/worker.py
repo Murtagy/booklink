@@ -1,5 +1,6 @@
-from pydantic import BaseModel as BM
 from typing import Optional
+
+from pydantic import BaseModel as BM
 
 
 class CreateWorker(BM):

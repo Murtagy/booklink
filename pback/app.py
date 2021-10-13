@@ -5,9 +5,9 @@ from io import BytesIO
 from typing import List, Literal, Optional
 
 import structlog
-from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # type: ignore
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
@@ -81,11 +81,12 @@ async def get_current_user_or_none(
     token: Optional[str] = Depends(oauth), s: Session = Depends(get_db_session)
 ) -> Optional[models.User]:
     if token:
-        print('TOKEN')
+        print("TOKEN")
         return await get_current_user(token, s)
     else:
-        print('NO TOKEN')
+        print("NO TOKEN")
         return None
+
 
 BadTokenException = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -113,8 +114,11 @@ async def get_current_user(
 async def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
+
 @app.get("/users/me2/", response_model=UserOut)
-async def read_users_me(current_user: Optional[models.User] = Depends(get_current_user_or_none)):
+async def read_users_me2(
+    current_user: Optional[models.User] = Depends(get_current_user_or_none),
+):
     return current_user
 
 
@@ -151,9 +155,9 @@ def get_visit(
 
 @app.post("/visit", response_model=OutVisit)
 def create_visit(
-    visit: InVisit, 
+    visit: InVisit,
     s: Session = Depends(get_db_session),
-    current_user: Optional[models.User] = Depends(get_current_user_or_none)
+    current_user: Optional[models.User] = Depends(get_current_user_or_none),
 ) -> models.Visit:
     db_visit = crud.create_visit(s, visit)
     return db_visit
@@ -186,37 +190,39 @@ async def delete_visit(visit_id: str):
 
 
 # WORKERS
-@app.post("/worker")
+@app.post("/worker", response_model=OutWorker)
 async def create_worker(
-    worker: CreateWorker, 
+    worker: CreateWorker,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
-) -> OutWorker:
+):
     client_id = current_user.client_id
     db_worker = crud.create_worker(s, worker, client_id)
     return db_worker
 
 
-@app.get("/worker/{worker_id}")
+@app.get("/worker/{worker_id}", response_model=OutWorker)
 async def get_worker(
     worker_id: int,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
-) -> OutWorker:
+):
     db_worker = crud.get_worker(s, worker_id)
+    assert db_worker is not None
 
     assert current_user.client_id == db_worker.client_id
 
     return db_worker
 
 
-@app.put("/worker/{worker_id}")
+@app.put("/worker/{worker_id}", response_model=OutWorker)
 async def update_worker(
     worker: UpdateWorker,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
-) -> OutWorker:
+):
     db_worker = crud.get_worker(s, worker.worker_id)
+    assert db_worker is not None
     assert current_user.client_id == db_worker.client_id
 
     db_worker = crud.update_worker(s, worker)
@@ -233,26 +239,28 @@ async def create_file(
     file: UploadFile = File(...),
     s: Session = Depends(get_db_session),
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
- ):
+):
     # TODO check user
     db_file_id = crud.load_file(s, file, 5)
     return {"file_id": db_file_id}
 
-@app.get("/files/{file_name}")
-async def create_file(
+
+@app.get("/file/{file_name}")
+async def get_file(
     file_name: str,
     s: Session = Depends(get_db_session),
     # current_user: Optional[models.User] = Depends(get_current_user_or_none),
- ) -> StreamingResponse:
+) -> StreamingResponse:
     f = crud.read_file(s, int(file_name))
-    print('File id:', f.file_id)
+    assert f is not None
+    print("File id:", f.file_id)
     b = f.file
     bytes_io = BytesIO()
     bytes_io.write(b)
     bytes_io.seek(0)
     r = StreamingResponse(bytes_io, media_type=f.content_type)
     return r
-    
+
 
 class TimeSlot(BM):
     time_from: datetime.time
