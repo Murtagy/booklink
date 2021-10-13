@@ -1,6 +1,16 @@
 import datetime
 
-from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Integer, String, LargeBinary
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    String,
+)
 from sqlalchemy.dialects.postgresql import UUID
 
 from db import BaseModel, TableCreatedAt, TableId
@@ -32,7 +42,6 @@ class Client(BaseModel):
     display_id = Column(String, index=True)
     created_at = TableCreatedAt
 
-    blocked = Column(Boolean, nullable=False, default=False)
     blocked_datetime = Column(DateTime(timezone=True))
 
 
@@ -43,13 +52,15 @@ class Worker(BaseModel):
     created_at = TableCreatedAt()
     display_id = Column(String, index=True)
 
+    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
     name = Column(String, nullable=False)
     job_title = Column(String, nullable=False)
     display_name = Column(String)
     display_job_title = Column(String)
     display_description = Column(String)
-    use_company_schedule = Column(Boolean, nullable=False)
     photo_id = Column(Integer, ForeignKey("files.file_id"))
+    use_company_schedule = Column(Boolean, nullable=False)
+    # use_company_services = Column(Boolean, nullable=False)
 
 
 class File(BaseModel):
@@ -62,6 +73,7 @@ class File(BaseModel):
     content_type = Column(String, nullable=False)
     # owner
     client_id = Column(Integer, ForeignKey("clients.client_id"))
+    worker_id = Column(Integer, ForeignKey("workers.worker_id"))
 
 
 class Customer(BaseModel):
@@ -70,6 +82,36 @@ class Customer(BaseModel):
     customer_id = TableId()
     display_id = Column(String, index=True)
     created_at = TableCreatedAt()
+
+
+# how Workers get their services
+class Service(BaseModel):
+    __tablename__ = "services"
+
+    service_id = TableId()
+    display_id = Column(String, index=True)
+    created_at = TableCreatedAt()
+    # created_by
+
+    name = Column(String, nullable=False)
+    price = Column(Float)
+    display_description = Column(String)
+    description = Column(String)
+    blocked_datetime = Column(DateTime(timezone=True))
+    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
+    # worker_inheritance = Column(String)  # give all
+
+
+class WorkersServices(BaseModel):
+    # abilities of worker
+    __tablename__ = "workers_services"
+
+    rel_id = TableId()
+    created_at = TableCreatedAt()
+
+    worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
+    service_id = Column(Integer, ForeignKey("services.service_id"), nullable=False)
+    # rel_type = Column(String)  # include
 
 
 class User(BaseModel):
@@ -83,10 +125,8 @@ class User(BaseModel):
     email = Column(String, index=True, unique=True, nullable=False)
     username = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
-    blocked = Column(Boolean, nullable=False, default=False)
     blocked_datetime = Column(DateTime(timezone=True))
     # is_active = Column(Boolean, default=True)
-
 
 
 class Token(BaseModel):

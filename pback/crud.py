@@ -3,16 +3,23 @@ import uuid
 from datetime import timedelta
 from typing import Optional, Union
 
+from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from models import Token, User, Visit, File
-from fastapi import UploadFile
+from models import File, Token, User, Visit, Worker
 from utils.users import hash_password, make_salt
 
 
 def get_visit(db: Session, visit_id: int) -> Optional[Visit]:
     return db.query(Visit).filter(Visit.visit_id == visit_id).first()
+
+
+def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
+    q = db.query(Visit).filter(Visit.client_id == client_id)
+    if worker_id:
+        q = q.filter(Visit.worker_id)
+    return q.all()
 
 
 def create_visit(db: Session, visit: schemas.InVisit) -> Visit:
@@ -71,17 +78,40 @@ def create_user_token(db: Session, user_id: int) -> Token:
     return token
 
 
-def load_file(db: Session, file: UploadFile, client_id: str) -> int:
-    file = File(
-        client_id=client_id,
-        file=file.file.read(),
-        content_type=file.content_type
+def load_file(db: Session, file: UploadFile, client_id: int) -> int:
+    db_file = File(
+        client_id=client_id, file=file.file.read(), content_type=file.content_type
     )
-    db.add(file)
+    db.add(db_file)
     db.commit()
-    db.refresh(file)
-    return file.file_id
+    db.refresh(db_file)
+    return db_file.file_id
+
 
 def read_file(db: Session, file_id: int) -> Optional[File]:
     return db.query(File).filter(File.file_id == file_id).first()
 
+
+def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
+    return db.query(Worker).filter(Worker.worker_id == worker_id).first()
+
+
+def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> Worker:
+    db_worker = Worker(name=worker.name, client_id=client_id)
+    db.add(db_worker)
+    db.commit()
+    db.refresh(db_worker)
+    return db_worker
+
+
+def update_worker(db: Session, worker: schemas.UpdateWorker) -> Worker:
+    worker_id = worker.worker_id
+    db_worker = get_worker(db, worker_id)
+    assert db_worker is not None
+    update = worker.dict()
+    for field, value in update.items():
+        if value is None:
+            continue
+        setattr(db_worker, field, value)
+    db.commit()  # enough??
+    return db_worker
