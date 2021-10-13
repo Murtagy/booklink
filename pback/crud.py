@@ -6,7 +6,8 @@ from typing import Optional, Union
 from sqlalchemy.orm import Session
 
 import schemas
-from models import Token, User, Visit
+from models import Token, User, Visit, File
+from fastapi import UploadFile
 from utils.users import hash_password, make_salt
 
 
@@ -30,8 +31,7 @@ def create_user(db: Session, user: schemas.UserCreate) -> User:
     )
     db.add(db_user)
     db.commit()
-    db.refresh(db_user)  # why refresh?
-    # ? refresh
+    db.refresh(db_user)
     return db_user
 
 
@@ -67,4 +67,21 @@ def create_user_token(db: Session, user_id: int) -> Token:
     )
     db.add(token)
     db.commit()
+    db.refresh(token)
     return token
+
+
+def load_file(db: Session, file: UploadFile, client_id: str) -> int:
+    file = File(
+        client_id=client_id,
+        file=file.file.read(),
+        content_type=file.content_type
+    )
+    db.add(file)
+    db.commit()
+    db.refresh(file)
+    return file.file_id
+
+def read_file(db: Session, file_id: int) -> Optional[File]:
+    return db.query(File).filter(File.file_id == file_id).first()
+

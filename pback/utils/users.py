@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from models import Token
 
-oauth = OAuth2PasswordBearer(tokenUrl="token")
+oauth = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 
 def make_salt():
