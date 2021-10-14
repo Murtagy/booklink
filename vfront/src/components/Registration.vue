@@ -1,7 +1,9 @@
 <template>
 <div>
 <header>
+    <img src="../assets/mylogo.png"/>
 	<h1>Регистрация</h1>
+<hr>
 </header>
 <br>
 
@@ -9,7 +11,7 @@
     <ul>
         <li>
             <label for="company">Компания</label>
-            <input type="text" name="company" id="company" placeholder="Введите наименование юр.лица" required>
+            <input type="text" name="company" id="company" placeholder="Введите наименование юр. лица" required>
         </li>
         <li>
             <label for="email">E-mail</label>
@@ -33,3 +35,4 @@
 </form>
 </div>
 </template>
+ 
