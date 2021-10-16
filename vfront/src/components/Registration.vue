@@ -3,7 +3,7 @@
 <header>
     <img src="../assets/mylogo.png"/>
 	<h1>Регистрация</h1>
-<hr>
+<hr class="line1"><hr class="line2"> <hr class="line3">
 </header>
 <br>
 
@@ -35,4 +35,3 @@
 </form>
 </div>
 </template>
- 

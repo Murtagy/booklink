@@ -4,10 +4,15 @@ li {
   font-family: "TimesNewRoman";
 }
 
+body {
+  margin:0;
+}
+
 div {
   background-color: rgba(251, 250, 254, 1);
-  height: 650px;
-  max-height: 100%;
+  height: 800px;
+  width:100%;
+  text-shadow:1px 1px rgb(235, 228, 255);
 }
 
 header {
@@ -17,14 +22,17 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 2;
 }
 
 header h1 {
   color: white;
   text-align: center;
   padding: 30px auto;
-  font-size: 50px;
+  margin-top:40px;
+  margin-bottom:15px;
+  font-size: 52px;
+  text-shadow:1px 2px rgb(122, 95, 216);
 }
 
 header img {
@@ -35,9 +43,32 @@ header img {
   height: 7em;
 }
 
+hr.line1 {
+  background-color:white;
+  height:7px;
+  margin:0;
+  border:none;
+  border-top:solid rgb(200, 193, 224);
+}
+
+hr.line2 {
+  background-color:rgb(119, 96, 205);
+  height:3px;
+  margin:0;
+  border:none;
+  border-bottom:rgb(128, 104, 216);
+}
+
+hr.line3 {
+  background-color:rgba(188, 177, 226, 1);
+  height:9px;
+  margin:0;
+  border:none;
+}
+
 ul {
   padding: 30px;
-  margin-top: 20px;
+  margin-top: 50px;
   list-style-type: none;
   max-width: 100%;
   position: relative;
@@ -49,18 +80,20 @@ li {
   color: #414141;
   font-weight: bolder;
   display: flex;
+  z-index: 1;
 }
 
 label {
   flex: 0.5;
   text-align: left;
+  width:20%
 }
 
 li input {
   font-size: 25px;
   font-family: "timesnewroman";
   margin: auto 20px;
-  border-radius: 10px;
+  border-radius: 20px;
   width: 35%;
   padding: 5px;
   flex: 1;
@@ -68,14 +101,17 @@ li input {
 
 li input:focus {
   border: 2px solid rgb(119, 96, 205);
+  border-left: 4px solid rgb(119, 96, 205);
+  border-right: 4px solid rgb(119, 96, 205);
   outline: none;
 }
 
 #submit {
-  border: 5px double rgb(119, 96, 205);
-  border-radius: 10px;
+  border: 5px double white;
+  border-radius: 20px;
   font-size: 25px;
   width: 40%;
+  height: 11%;
   margin: 40px auto;
   background-color: rgba(135, 116, 203, 1);
   color: white;
@@ -85,12 +121,23 @@ li input:focus {
   right: 20px;
 }
 
+#submit:hover {
+  border:5px double rgb(119, 96, 205);
+}
+
+div ::selection {
+  background-color:rgb(119, 96, 205);
+  color: white;
+}
+
 @media screen and (max-width: 900px) {
   header h1 {
     color: white;
     text-align: center;
     padding: 30px auto;
     font-size: 40px;
+    margin-top:30px;
+    margin-bottom:15px;
   }
 
   header img {
@@ -113,17 +160,18 @@ li input:focus {
     font-size: 20px;
     font-family: "timesnewroman";
     margin: auto 20px;
-    border-radius: 10px;
+    border-radius: 20px;
     width: 35%;
     padding: 5px;
     flex: 1;
   }
 
   #submit {
-    border: 5px double rgb(119, 96, 205);
-    border-radius: 10px;
+    border: 5px double white);
+    border-radius: 20px;
     font-size: 20px;
     width: 40%;
+    height: 11%;
     margin: 40px auto;
     background-color: rgba(135, 116, 203, 1);
     color: white;
@@ -140,6 +188,8 @@ li input:focus {
     text-align: center;
     padding: 20px auto;
     font-size: 30px;
+    margin-top:25px;
+    margin-bottom:10px;
   }
 
   header img {
@@ -175,17 +225,18 @@ li input:focus {
     font-size: 17px;
     font-family: "timesnewroman";
     margin: auto 10px;
-    border-radius: 10px;
+    border-radius: 20px;
     width: 40%;
     padding: 5px;
     flex: 0.8;
   }
 
   #submit {
-    border: 5px double rgb(119, 96, 205);
-    border-radius: 10px;
+    border: 5px double white;
+    border-radius: 20px;
     font-size: 17px;
     width: 45%;
+    height: 12%;
     margin: 40px auto;
     background-color: rgba(135, 116, 203, 1);
     color: white;
@@ -202,6 +253,8 @@ li input:focus {
     text-align: center;
     padding: 20px auto;
     font-size: 25px;
+    margin-top:25px;
+    margin-bottom:10px;
   }
 
   header img {
@@ -237,17 +290,18 @@ li input:focus {
     font-size: 14px;
     font-family: "timesnewroman";
     margin: auto 10px;
-    border-radius: 10px;
+    border-radius: 20px;
     width: 40%;
     padding: 5px;
     flex: 0.8;
   }
 
   #submit {
-    border: 5px double rgb(119, 96, 205);
-    border-radius: 10px;
+    border: 5px double white;
+    border-radius: 20px;
     font-size: 14px;
     width: 45%;
+    height: 12%;
     margin: 40px auto;
     background-color: rgba(135, 116, 203, 1);
     color: white;
