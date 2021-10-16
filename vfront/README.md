@@ -1,1 +1,1 @@
-В папке vront  "npm run serve"
+В папке vront  "npm run serve".
