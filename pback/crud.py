@@ -7,7 +7,7 @@ from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from models import File, Token, User, Visit, Worker, Client
+from models import Client, File, Token, User, Visit, Worker
 from utils.users import hash_password, make_salt
 
 
@@ -37,12 +37,15 @@ def create_client(db: Session, name: str) -> Client:
     db.refresh(db_client)
     return db_client
 
-    
+
 def create_user(db: Session, user: schemas.UserCreate, client_id: int) -> User:
     salt = make_salt()
     hashed_password = hash_password(user.password, salt)
     db_user = User(
-        username=user.username, email=user.email, hashed_password=hashed_password, client_id=client_id
+        username=user.username,
+        email=user.email,
+        hashed_password=hashed_password,
+        client_id=client_id,
     )
     db.add(db_user)
     db.commit()
