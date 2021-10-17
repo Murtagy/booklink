@@ -47,3 +47,5 @@ export default {
 }
 </script>
 
+<style scoped src="@/assets/styles/registration.css"></style>
+
