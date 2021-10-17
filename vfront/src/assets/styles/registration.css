@@ -1,0 +1,215 @@
+ul,
+li {
+  font-family: "TimesNewRoman";
+}
+
+div {
+  background-color: rgba(251, 250, 254, 1);
+  height: 800px;
+  width:100%;
+  text-shadow:1px 1px rgb(235, 228, 255);
+}
+
+ul {
+    padding: 30px;
+    margin-top: 120px;
+    list-style-type: none;
+    max-width: 100%;
+    position: relative;
+  }
+  
+  li {
+    font-size: 25px;
+    margin: 30px;
+    color: #414141;
+    font-weight: bolder;
+    display: flex;
+    z-index: 1;
+  }
+  
+  label {
+    flex: 0.5;
+    text-align: left;
+    width:20%
+  }
+  
+  li input {
+    font-size: 25px;
+    font-family: "timesnewroman";
+    margin: auto 20px;
+    border-radius: 20px;
+    width: 35%;
+    padding: 5px;
+    flex: 1;
+  }
+  
+  li input:focus {
+    border: 2px solid rgb(119, 96, 205);
+    border-left: 4px solid rgb(119, 96, 205);
+    border-right: 4px solid rgb(119, 96, 205);
+    outline: none;
+  }
+  
+  #submit {
+    border: 5px double white;
+    border-radius: 20px;
+    font-size: 25px;
+    width: 40%;
+    height: 11%;
+    margin: 40px auto;
+    background-color: rgba(135, 116, 203, 1);
+    color: white;
+    font-family: "TimesNewRoman";
+    font-weight: bold;
+    position: absolute;
+    right: 20px;
+  }
+  
+  #submit:hover {
+    border:5px double rgb(119, 96, 205);
+  }
+  
+  div ::selection {
+    background-color:rgb(119, 96, 205);
+    color: white;
+  }
+  
+  
+@media screen and (max-width: 900px) {
+    ul {
+        padding: 30px 0;
+        margin-top: 110px;
+        list-style-type: none;
+        width: 100%;
+        position: relative;
+      }
+
+    li {
+      font-size: 20px;
+      margin: 30px;
+      color: #414141;
+      font-weight: bolder;
+      display: flex;
+    }
+  
+    li input {
+      font-size: 20px;
+      font-family: "timesnewroman";
+      margin: auto 20px;
+      border-radius: 20px;
+      width: 35%;
+      padding: 5px;
+      flex: 1;
+    }
+  
+    #submit {
+      border: 5px double white;
+      border-radius: 20px;
+      font-size: 20px;
+      width: 40%;
+      height: 11%;
+      margin: 40px auto;
+      background-color: rgba(135, 116, 203, 1);
+      color: white;
+      font-family: "TimesNewRoman";
+      font-weight: bold;
+      position: absolute;
+      right: 20px;
+    }
+  }
+  
+  @media screen and (max-width: 620px) {
+    ul {
+      padding: 30px 0;
+      margin-top: 90px;
+      list-style-type: none;
+      width: 100%;
+      position: relative;
+    }
+  
+    li {
+      font-size: 17px;
+      margin: 20px;
+      color: #414141;
+      font-weight: bolder;
+      display: flex;
+    }
+  
+    label {
+      flex: 0.3;
+      text-align: left;
+    }
+  
+    li input {
+      font-size: 17px;
+      font-family: "timesnewroman";
+      margin: auto 10px;
+      border-radius: 20px;
+      width: 40%;
+      padding: 5px;
+      flex: 0.8;
+    }
+  
+    #submit {
+      border: 5px double white;
+      border-radius: 20px;
+      font-size: 17px;
+      width: 45%;
+      height: 12%;
+      margin: 40px auto;
+      background-color: rgba(135, 116, 203, 1);
+      color: white;
+      font-family: "TimesNewRoman";
+      font-weight: bold;
+      position: absolute;
+      right: 10px;
+    }
+  }
+  
+  @media screen and (max-width: 450px) {
+    ul {
+      padding: 30px 0;
+      margin-top: 80px;
+      list-style-type: none;
+      width: 100%;
+      position: relative;
+    }
+  
+    li {
+      font-size: 14px;
+      margin: 17px;
+      color: #414141;
+      font-weight: bolder;
+      display: flex;
+    }
+  
+    label {
+      flex: 0.3;
+      text-align: left;
+    }
+  
+    li input {
+      font-size: 14px;
+      font-family: "timesnewroman";
+      margin: auto 10px;
+      border-radius: 20px;
+      width: 40%;
+      padding: 5px;
+      flex: 0.8;
+    }
+  
+    #submit {
+      border: 5px double white;
+      border-radius: 20px;
+      font-size: 14px;
+      width: 45%;
+      height: 12%;
+      margin: 40px auto;
+      background-color: rgba(135, 116, 203, 1);
+      color: white;
+      font-family: "TimesNewRoman";
+      font-weight: bold;
+      position: absolute;
+      right: 10px;
+    }
+  }  
