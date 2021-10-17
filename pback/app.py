@@ -79,20 +79,20 @@ def unjwttfy_token_id(token: Optional[str]) -> Optional[str]:
 @app.post("/signup", response_model=TokenOut)
 async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
     print(user)
-    return {"access_token": 'asda', "token_type": "bearer"}
+    # return {"access_token": 'asda', "token_type": "bearer"}
 
-    # db_user = crud.get_user_by_email(s, user.email)
-    # if db_user:
-    #     raise HTTPException(status_code=400, detail="User email already exists")
-    # db_user = crud.get_user_by_username(s, user.username)
-    # if db_user:
-    #     raise HTTPException(status_code=400, detail="Username already exists")
-    # db_client = crud.create_client(s)
-    # db_user = crud.create_user(s, user, db_client.id)
-    # # TODO add to client created_by user
-    # access_token = crud.create_user_token(s, db_user.user_id)
-    # jwt = jwtfy(access_token)
-    # return {"access_token": jwt, "token_type": "bearer"}
+    db_user = crud.get_user_by_email(s, user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="User email already exists")
+    db_user = crud.get_user_by_username(s, user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    db_client = crud.create_client(s, user.company)
+    db_user = crud.create_user(s, user, db_client.client_id)
+    # TODO add to client created_by user
+    access_token = crud.create_user_token(s, db_user.user_id)
+    jwt = jwtfy(access_token)
+    return {"access_token": jwt, "token_type": "bearer"}
 
 
 async def get_current_user_or_none(
@@ -133,7 +133,7 @@ async def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
 
-@app.get("/users/me2/", response_model=UserOut)
+@app.get("/my_user", response_model=UserOut)
 async def read_users_me2(
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
 ):

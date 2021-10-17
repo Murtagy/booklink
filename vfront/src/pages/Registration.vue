@@ -49,7 +49,7 @@ export default {
             console.log('REGISTER')
             // let token = null
             this.$api.post(
-                'http://localhost:8000/signup',
+                '/signup',
                 {
                     "username":   this.username,
                     "email":      this.email,
@@ -61,7 +61,7 @@ export default {
                 let token = response.data.access_token
                 if (token) {
                     this.$store.commit("setJwt" , token)
-                    this.$router.push('/')
+                    this.$router.push('/my_user')
                 } else {
                     this.DisplayError('Произошла ошибка!')
                 }
