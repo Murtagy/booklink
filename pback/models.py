@@ -43,6 +43,7 @@ class Client(BaseModel):
     created_at = TableCreatedAt
 
     blocked_datetime = Column(DateTime(timezone=True))
+    name = Column(String, index=True)
 
 
 class Worker(BaseModel):
