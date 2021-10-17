@@ -35,3 +35,10 @@
 </form>
 </div>
 </template>
+
+<script>
+export default {
+    // data () { return {'password': '', 'password_conf': ''}}
+}
+</script>
+
