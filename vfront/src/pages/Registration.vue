@@ -23,7 +23,7 @@
             <label for="password-confirmation">Подтвердите пароль</label>
             <input type="password" v-model="password_confirmation" id="password-confirmation" placeholder="Введите пароль" required>
         </li>
-        <input type="submit" value="Создать пользователя" name="submit" id="submit">
+        <input type="button" value="Создать пользователя" @click="Register" id="submit">
     </ul>
     
 </form>
@@ -33,7 +33,7 @@
 <script>
 import WideHeader from '../components/WideHeader.vue'
 export default {
-  components: { WideHeader },
+    components: { WideHeader },
     data () { 
         return {
             'email': '',
@@ -42,6 +42,40 @@ export default {
             'password': '',
             'password_confirmation': '',
 
+        }
+    },
+    methods: {
+        Register () {
+            console.log('REGISTER')
+            // let token = null
+            this.$api.post(
+                'http://localhost:8000/signup',
+                {
+                    "username":   this.username,
+                    "email":      this.email,
+                    "company":    this.company,
+                    "password":   this.password,
+                }
+            )
+            .then(response => {  
+                let token = response.data.access_token
+                if (token) {
+                    this.$store.commit("setJwt" , token)
+                    this.$router.push('/')
+                } else {
+                    this.DisplayError('Произошла ошибка!')
+                }
+            })
+            .catch(
+                e => { 
+                    console.log(e)
+                    this.DisplayError('Произошла ошибка')
+                }
+            )
+            // TODO catch error
+        },
+        DisplayError (t) {
+            alert(t)
         }
     }
 }

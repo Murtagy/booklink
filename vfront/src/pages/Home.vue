@@ -16,6 +16,6 @@
 
 <script>
 export default {
-    data() {return {'message': ''};}
+    data() {return {'message': ''}},
 }
 </script>

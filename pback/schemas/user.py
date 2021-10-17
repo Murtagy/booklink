@@ -7,6 +7,7 @@ from pydantic import Field, validator
 
 
 class UserCreate(BM):
+    company: str
     username: str
     email: str
     password: str
