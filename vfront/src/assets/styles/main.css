@@ -56,8 +56,6 @@ body {
 
 @media screen and (max-width: 900px) {
   header h1 {
-    color: white;
-    text-align: center;
     padding: 30px auto;
     font-size: 40px;
     margin-top:30px;
@@ -65,9 +63,6 @@ body {
   }
 
   header img {
-    position: fixed;
-    left: 0;
-    top: 0;
     width: 8em;
     height: 5em;
   }
@@ -75,8 +70,6 @@ body {
 
 @media screen and (max-width: 620px) {
   header h1 {
-    color: white;
-    text-align: center;
     padding: 20px auto;
     font-size: 30px;
     margin-top:25px;
@@ -84,9 +77,6 @@ body {
   }
 
   header img {
-    position: fixed;
-    left: 0;
-    top: 0;
     width: 7em;
     height: 4em;
   }
@@ -94,8 +84,6 @@ body {
 
 @media screen and (max-width: 450px) {
   header h1 {
-    color: white;
-    text-align: center;
     padding: 20px auto;
     font-size: 25px;
     margin-top:25px;
@@ -103,9 +91,6 @@ body {
   }
 
   header img {
-    position: fixed;
-    left: 0;
-    top: 0;
     width: 5em;
     height: 3em;
   }

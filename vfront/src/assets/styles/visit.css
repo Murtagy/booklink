@@ -1,6 +1,6 @@
 div {
     background-color: rgba(251, 250, 254, 1);
-    height: 800px;
+    height:800px;
     width:100%;
     text-shadow:1px 1px rgb(235, 228, 255);
   }
@@ -74,3 +74,88 @@ li button:hover {
     border:5px double rgb(119, 96, 205);
 }
 */
+
+@media screen and (max-width:900px) {
+    ul {
+        position:relative;
+        top:110px;
+    }
+    
+    li button {
+        font-size: 22px;
+        width: 45%;
+        margin:60px auto;
+    }
+    
+    li button img {
+        width:1.1em;
+        height:1.2em;
+        position:absolute;
+        right:15px;
+        top:3px;
+    }
+
+    #create-visit {
+        top:75%;
+        font-size: 23px;
+        width: 40%;
+        height:7%;
+    }
+}
+
+@media screen and (max-width:620px) {
+    ul {
+        position:relative;
+        top:90px;
+    }
+    
+    li button {
+        font-size: 20px;
+        width: 50%;
+        margin:60px auto;
+    }
+    
+    li button img {
+        width:1.1em;
+        height:1.2em;
+        position:absolute;
+        right:15px;
+        top:3px;
+    }
+
+    #create-visit {
+        top:70%;
+        font-size: 22px;
+        width: 57%;
+        height:7%;
+    }
+}
+
+@media screen and (max-width:450px) {
+    ul {
+        position:relative;
+        top:80px;
+    }
+    
+    li button {
+        font-size: 16px;
+        width: 60%;
+        margin:45px auto;
+    }
+    
+    #create-visit {
+        top:60%;
+        font-size: 18px;
+        width: 57%;
+        height:7%;
+    }
+}
+
+@media screen and (max-width:350px) {
+    #create-visit {
+        top:60%;
+        font-size: 17px;
+        width: 63%;
+        height:7%;
+    }
+}
