@@ -7,9 +7,9 @@
         v-on:visit-select="changeCurrentScreen" 
         v-if="current_screen=='visit-type-form'"
     />
-    <p v-if="current_screen== 'visit-select-service'"> Selecting service  </p>
-    <p v-if="current_screen==  'visit-select-worker'"> Selecting worker   </p>
-    <p v-if="current_screen=='visit-select-datetime'"> Selecting datetime </p>
+    <visit-select-datetime v-if="current_screen=='visit-select-datetime'"/>
+    <visit-select-service  v-if="current_screen=='visit-select-service'"/>
+    <visit-select-worker   v-if="current_screen=='visit-select-worker'"/>
   </div>
 </template>
 
@@ -18,9 +18,12 @@
 <script>
 import WideHeader from "@/components/WideHeader.vue";
 import VisitTypeForm from "@/components/VisitTypeForm.vue"
+import VisitSelectDatetime from '@/components/VisitSelectDatetime.vue';
+import VisitSelectService from '@/components/VisitSelectService.vue';
+import VisitSelectWorker from '@/components/VisitSelectWorker.vue';
 
 export default {
-    components: { WideHeader, VisitTypeForm },
+    components: { WideHeader, VisitTypeForm, VisitSelectDatetime, VisitSelectService, VisitSelectWorker },
     data () { 
         return { 
             // visit-type-form, visit-select- service/worker/datetime
