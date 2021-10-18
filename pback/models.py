@@ -137,3 +137,28 @@ class Token(BaseModel):
     access_token = Column(String, unique=True, index=True, nullable=False)
     expires = Column(DateTime(timezone=True), nullable=False)
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+
+
+class WorkerWeeklySlots(BaseModel):
+    __tablename__ = "workers_weekly_slots"
+
+    # active_from = Column(DateTime(timezone=True), nullable=False)
+
+    slot_id = TableId()
+    created_at = TableCreatedAt()
+
+    worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
+    schedule_by_day = Column(JSON, nullable=False)
+
+
+class ClientWeeklySlots(BaseModel):
+    __tablename__ = "clients_weekly_slots"
+
+    # active_from = Column(DateTime(timezone=True), nullable=False)
+
+    slot_id = TableId()
+    created_at = TableCreatedAt()
+
+    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
+    schedule_by_day = Column(JSON, nullable=False)
+    
