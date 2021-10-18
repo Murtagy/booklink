@@ -1,29 +1,34 @@
 <template>
-  <div>
+  <div 
+    v-on:visit-select="changeCurrentScreen" 
+  >
     <wide-header title="Онлайн-запись" />
-
-    <form>
-      <ul>
-        <li>
-          <button><img src="../assets/list-icon.png">Услуга</button>
-        </li>
-        <li>
-          <button><img src="../assets/worker-icon.jpg">Сотрудник</button>
-        </li>
-        <li>
-          <button><img src="../assets/calendar-icon.png">Дата и время</button>
-        </li>
-      </ul>
-          <input type="button" value="Сформировать запись" name="create-visit" id="create-visit">
-    </form>
+    <visit-type-form 
+        v-on:visit-select="changeCurrentScreen" 
+        v-if="current_screen=='visit-type-form'"
+    />
+    <p v-if="current_screen== 'visit-select-service'"> Selecting service  </p>
+    <p v-if="current_screen==  'visit-select-worker'"> Selecting worker   </p>
+    <p v-if="current_screen=='visit-select-datetime'"> Selecting datetime </p>
   </div>
 </template>
 
 <style scoped src="@/assets/styles/visit.css"></style>
 
 <script>
-import WideHeader from "../components/WideHeader.vue";
+import WideHeader from "@/components/WideHeader.vue";
+import VisitTypeForm from "@/components/VisitTypeForm.vue"
+
 export default {
-  components: { WideHeader },
+    components: { WideHeader, VisitTypeForm },
+    data () { 
+        return { 
+            // visit-type-form, visit-select- service/worker/datetime
+            "current_screen": "visit-type-form" 
+        }
+    },
+    methods: {
+        changeCurrentScreen: function (x) { this.current_screen = x}
+    }
 };
 </script>
