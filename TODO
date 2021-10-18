@@ -1,26 +1,24 @@
 Back:
-- Visitor schema
+- CRUD schedule
+- CRUD slots
+- Calculate avaliability
 - Services relations to workers
 - Services schema
-- on POSTs and PUTs assert target within same client
-- Users
-- Clients
 - ClientSettings
+- on POSTs and PUTs assert target within same client
 - Logs
 - TransactionLogs
 - BalanceActions
-- Workers
-- Slots
-- WeeklySlots
 - Notifications
 - NotificationsSending - SMS
 - NotificationsSending - Email
 - ClientLogos
 - Permissions
 - Password reset
+- Visitor schema + Visitor auth
 
 
 Front:
-- Routing
-- Auth
 - AJAX to utils
+- Calendar
+- Visit page

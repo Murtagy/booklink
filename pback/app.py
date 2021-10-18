@@ -199,8 +199,10 @@ async def get_avaliability(
     # TODO Visitor
 ):
     # schedule =
+    # slots    = 
     visits = crud.get_visits(s, client_id, worker_id=worker_id)
 
+    # schedule - slots - visits = avalibility : List[Slots]
     return visits
 
 
