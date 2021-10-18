@@ -139,11 +139,10 @@ class Token(BaseModel):
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
 
-class WorkerWeeklySlots(BaseModel):
+class WorkerWeeklySlot(BaseModel):
     __tablename__ = "workers_weekly_slots"
 
     # active_from = Column(DateTime(timezone=True), nullable=False)
-
     slot_id = TableId()
     created_at = TableCreatedAt()
 
@@ -151,14 +150,38 @@ class WorkerWeeklySlots(BaseModel):
     schedule_by_day = Column(JSON, nullable=False)
 
 
-class ClientWeeklySlots(BaseModel):
+class ClientWeeklySlot(BaseModel):
     __tablename__ = "clients_weekly_slots"
 
     # active_from = Column(DateTime(timezone=True), nullable=False)
-
     slot_id = TableId()
     created_at = TableCreatedAt()
 
     client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
     schedule_by_day = Column(JSON, nullable=False)
-    
+
+
+class WorkerSlot(BaseModel):
+    __tablename__ = "workers_slots"
+
+    slot_id = TableId()
+    created_at = TableCreatedAt()
+    # active_from = Column(DateTime(timezone=True), nullable=False)
+    slot_type = Column(String, nullable=False)
+    from_date = Column(DateTime(timezone=True), nullable=False)
+    to_date = Column(DateTime(timezone=True), nullable=False)
+
+    worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
+
+
+class ClientSlot(BaseModel):
+    __tablename__ = "clients_slots"
+
+    slot_id = TableId()
+    created_at = TableCreatedAt()
+    # active_from = Column(DateTime(timezone=True), nullable=False)
+    slot_type = Column(String, nullable=False)
+    from_date = Column(DateTime(timezone=True), nullable=False)
+    to_date = Column(DateTime(timezone=True), nullable=False)
+
+    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
