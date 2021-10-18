@@ -7,9 +7,9 @@
         v-on:visit-select="changeCurrentScreen" 
         v-if="current_screen=='visit-type-form'"
     />
-    <visit-select-datetime v-if="current_screen=='visit-select-datetime'"/>
-    <visit-select-service  v-if="current_screen=='visit-select-service'"/>
-    <visit-select-worker   v-if="current_screen=='visit-select-worker'"/>
+    <visit-select-datetime v-if="current_screen=='visit-select-datetime'" />
+    <visit-select-service  v-if="current_screen=='visit-select-service'"  />
+    <visit-select-worker   v-if="current_screen=='visit-select-worker'"   />
   </div>
 </template>
 
