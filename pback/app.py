@@ -171,6 +171,15 @@ def get_visit(
     return visit
 
 
+@app.post("/public_visit", response_model=OutVisit)
+def create_visit(
+    visit: InVisit,
+    s: Session = Depends(get_db_session),
+    # TODO: visitor
+) -> models.Visit:
+    db_visit = crud.create_visit(s, visit)
+    return db_visit
+
 @app.post("/visit", response_model=OutVisit)
 def create_visit(
     visit: InVisit,
@@ -179,6 +188,18 @@ def create_visit(
 ) -> models.Visit:
     db_visit = crud.create_visit(s, visit)
     return db_visit
+
+@app.get("/public_avaliability")
+async def get_avaliability(
+    client_id: int,
+    worker_id: Optional[int] = None,
+    s: Session = Depends(get_db_session),
+    # TODO Visitor
+):
+    # schedule =
+    visits = crud.get_visits(s, client_id, worker_id=worker_id)
+
+    return visits
 
 
 @app.get("/visits")

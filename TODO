@@ -1,4 +1,5 @@
 Back:
+- Visitor schema
 - Services relations to workers
 - Services schema
 - on POSTs and PUTs assert target within same client
