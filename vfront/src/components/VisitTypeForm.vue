@@ -3,10 +3,10 @@
     <form>
       <ul>
         <li>
-          <button v-on:click="$emit('visit-select', 'visit-select-service')" ><img src="../assets/list-icon.png">Услуга</button>
+          <button v-on:click="$emit('visit-select', 'visit-select-service')" ><img src="../assets/list-icon.jpg">Услуга</button>
         </li>
         <li>
-          <button v-on:click="$emit('visit-select', 'visit-select-worker')" ><img src="../assets/worker-icon.jpg">Сотрудник</button>
+          <button v-on:click="$emit('visit-select', 'visit-select-worker')" ><img src="../assets/worker-icon.png">Сотрудник</button>
         </li>
         <li>
           <button v-on:click="$emit('visit-select', 'visit-select-datetime')" ><img src="../assets/calendar-icon.png">Дата и время</button>
