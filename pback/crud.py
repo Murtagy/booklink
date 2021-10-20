@@ -7,7 +7,7 @@ from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from models import Client, File, Token, User, Visit, Worker
+from models import Client, ClientSlot, File, Token, User, Visit, Worker, WorkerSlot
 from utils.users import hash_password, make_salt
 
 
@@ -115,8 +115,7 @@ def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> 
     return db_worker
 
 
-def update_worker(db: Session, worker: schemas.UpdateWorker) -> Worker:
-    worker_id = worker.worker_id
+def update_worker(db: Session, worker: schemas.UpdateWorker, worker_id: int) -> Worker:
     db_worker = get_worker(db, worker_id)
     assert db_worker is not None
     update = worker.dict()
@@ -126,3 +125,71 @@ def update_worker(db: Session, worker: schemas.UpdateWorker) -> Worker:
         setattr(db_worker, field, value)
     db.commit()  # enough??
     return db_worker
+
+
+def get_worker_slot(db: Session, slot_id: int) -> Optional[WorkerSlot]:
+    return db.query(WorkerSlot).filter(WorkerSlot.slot_id == slot_id).first()
+
+
+def create_worker_slot(
+    db: Session, slot: schemas.CreateSlot, worker_id: int
+) -> WorkerSlot:
+    d = slot.dict()
+    d["worker_id"] = worker_id
+    db_slot = WorkerSlot(**d)
+    db.add(db_slot)
+    db.commit()
+    db.refresh(db_slot)
+    return db_slot
+
+
+def update_worker_slot(
+    db: Session, slot: schemas.UpdateSlot, slot_id: int
+) -> WorkerSlot:
+    db_slot = get_worker_slot(db, slot_id)
+    assert db_slot is not None
+    update = slot.dict()
+    for field, value in update.items():
+        if value is None:
+            continue
+        setattr(db_slot, field, value)
+    db.commit()  # enough??
+    return db_slot
+
+
+def delete_worker_slot(db: Session, slot_id: int) -> None:
+    db.query(WorkerSlot).filter(WorkerSlot.slot_id == slot_id).delete()
+
+
+def get_client_slot(db: Session, slot_id: int) -> Optional[ClientSlot]:
+    return db.query(ClientSlot).filter(ClientSlot.slot_id == slot_id).first()
+
+
+def create_client_slot(
+    db: Session, slot: schemas.CreateSlot, client_id: int
+) -> ClientSlot:
+    d = slot.dict()
+    d["client_id"] = client_id
+    db_slot = ClientSlot(**d)
+    db.add(db_slot)
+    db.commit()
+    db.refresh(db_slot)
+    return db_slot
+
+
+def update_client_slot(
+    db: Session, slot: schemas.UpdateSlot, slot_id: int
+) -> ClientSlot:
+    db_slot = get_client_slot(db, slot_id)
+    assert db_slot is not None
+    update = slot.dict()
+    for field, value in update.items():
+        if value is None:
+            continue
+        setattr(db_slot, field, value)
+    db.commit()  # enough??
+    return db_slot
+
+
+def delete_client_slot(db: Session, slot_id: int) -> None:
+    db.query(ClientSlot).filter(ClientSlot.slot_id == slot_id).delete()
