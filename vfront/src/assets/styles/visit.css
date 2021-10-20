@@ -1,13 +1,13 @@
 div {
     background-color: rgba(251, 250, 254, 1);
-    height: 800px;
+    height:800px;
     width:100%;
     text-shadow:1px 1px rgb(235, 228, 255);
   }
 
 ul {
     position:relative;
-    top:120px;
+    top:50px;
     width:100%;
     padding:0;
     text-align:center;
@@ -15,62 +15,133 @@ ul {
 
 li button {
     display:block;
-    margin:80px auto;
-    padding:5px;
-    border: 5px double white;
-    border-radius: 20px;
-    font-size: 25px;
-    width: 40%;
-    background-color: rgba(135, 116, 203, 1);
-    color: white;
+    margin:110px auto;
+    padding:2px;
+    border:none;
+    border-bottom: 5px double rgb(119, 96, 205);
+    font-size: 27px;
+    width: 50%;
+    background-color: rgba(251, 250, 254, 1);
+    color: #414141;
     font-family: "TimesNewRoman";
     font-weight: bold;
     position:relative;
 }
 
 li button img {
-    width:1.1em;
-    height:1.2em;
+    width:1em;
+    height:1.1em;
     position:absolute;
     right:15px;
     top:3px;
 }
 
 li button:hover {
-    border:5px double rgb(119, 96, 205);
+    cursor:pointer;
+    background-image: linear-gradient(to top, rgb(150, 128, 226), rgba(251, 250, 254, 1), rgba(251, 250, 254, 1), rgba(251, 250, 254, 1), rgba(251, 250, 254, 1), rgba(251, 250, 254, 1));
   }
 
 #create-visit {
     position:absolute;
     right:20px;
-    top:80%;
+    top:82%;
     border: 5px double white;
     border-radius: 20px;
-    font-size: 25px;
+    font-size: 27px;
     width: 40%;
     height:8%;
-    background-color: rgb(205, 188, 255);
-    color: white;
-    font-family: "TimesNewRoman";
-    font-weight: bold;
-}
-
-/* #create-visit-valid {
-    position:absolute;
-    right:20px;
-    top:75%;
-    border: 5px double white;
-    border-radius: 20px;
-    font-size: 25px;
-    width: 40%;
-    height:7%;
     background-color: rgba(135, 116, 203, 1);
     color: white;
     font-family: "TimesNewRoman";
     font-weight: bold;
-} 
+}
 
-#create-visit-valid:hover {
+#create-visit:hover {
+    cursor:pointer;
     border:5px double rgb(119, 96, 205);
 }
-*/
+
+/* @media screen and (max-width:900px) {
+    ul {
+        position:relative;
+        top:110px;
+    }
+    
+    li button {
+        font-size: 22px;
+        width: 45%;
+        margin:60px auto;
+    }
+    
+    li button img {
+        width:1.1em;
+        height:1.2em;
+        position:absolute;
+        right:15px;
+        top:3px;
+    }
+
+    #create-visit {
+        top:75%;
+        font-size: 23px;
+        width: 40%;
+        height:7%;
+    }
+}
+
+@media screen and (max-width:620px) {
+    ul {
+        position:relative;
+        top:90px;
+    }
+    
+    li button {
+        font-size: 20px;
+        width: 50%;
+        margin:60px auto;
+    }
+    
+    li button img {
+        width:1.1em;
+        height:1.2em;
+        position:absolute;
+        right:15px;
+        top:3px;
+    }
+
+    #create-visit {
+        top:70%;
+        font-size: 22px;
+        width: 57%;
+        height:7%;
+    }
+}
+
+@media screen and (max-width:450px) {
+    ul {
+        position:relative;
+        top:80px;
+    }
+    
+    li button {
+        font-size: 16px;
+        width: 60%;
+        margin:45px auto;
+    }
+    
+    #create-visit {
+        top:60%;
+        font-size: 18px;
+        width: 57%;
+        height:7%;
+    }
+}
+
+@media screen and (max-width:350px) {
+    #create-visit {
+        top:60%;
+        font-size: 17px;
+        width: 63%;
+        height:7%;
+    }
+} */

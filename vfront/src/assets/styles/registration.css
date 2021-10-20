@@ -79,41 +79,26 @@ ul {
     ul {
         padding: 30px 0;
         margin-top: 110px;
-        list-style-type: none;
-        width: 100%;
-        position: relative;
       }
 
     li {
       font-size: 20px;
       margin: 30px;
-      color: #414141;
-      font-weight: bolder;
-      display: flex;
     }
   
     li input {
       font-size: 20px;
-      font-family: "timesnewroman";
       margin: auto 20px;
-      border-radius: 20px;
       width: 35%;
       padding: 5px;
       flex: 1;
     }
   
     #submit {
-      border: 5px double white;
-      border-radius: 20px;
       font-size: 20px;
       width: 40%;
       height: 11%;
       margin: 40px auto;
-      background-color: rgba(135, 116, 203, 1);
-      color: white;
-      font-family: "TimesNewRoman";
-      font-weight: bold;
-      position: absolute;
       right: 20px;
     }
   }
@@ -122,17 +107,11 @@ ul {
     ul {
       padding: 30px 0;
       margin-top: 90px;
-      list-style-type: none;
-      width: 100%;
-      position: relative;
     }
   
     li {
       font-size: 17px;
       margin: 20px;
-      color: #414141;
-      font-weight: bolder;
-      display: flex;
     }
   
     label {
@@ -142,25 +121,17 @@ ul {
   
     li input {
       font-size: 17px;
-      font-family: "timesnewroman";
       margin: auto 10px;
-      border-radius: 20px;
       width: 40%;
       padding: 5px;
       flex: 0.8;
     }
   
     #submit {
-      border: 5px double white;
-      border-radius: 20px;
       font-size: 17px;
       width: 45%;
       height: 12%;
       margin: 40px auto;
-      background-color: rgba(135, 116, 203, 1);
-      color: white;
-      font-family: "TimesNewRoman";
-      font-weight: bold;
       position: absolute;
       right: 10px;
     }
@@ -170,17 +141,11 @@ ul {
     ul {
       padding: 30px 0;
       margin-top: 80px;
-      list-style-type: none;
-      width: 100%;
-      position: relative;
     }
   
     li {
       font-size: 14px;
       margin: 17px;
-      color: #414141;
-      font-weight: bolder;
-      display: flex;
     }
   
     label {
@@ -190,25 +155,17 @@ ul {
   
     li input {
       font-size: 14px;
-      font-family: "timesnewroman";
       margin: auto 10px;
-      border-radius: 20px;
       width: 40%;
       padding: 5px;
       flex: 0.8;
     }
   
     #submit {
-      border: 5px double white;
-      border-radius: 20px;
       font-size: 14px;
       width: 45%;
       height: 12%;
       margin: 40px auto;
-      background-color: rgba(135, 116, 203, 1);
-      color: white;
-      font-family: "TimesNewRoman";
-      font-weight: bold;
       position: absolute;
       right: 10px;
     }
