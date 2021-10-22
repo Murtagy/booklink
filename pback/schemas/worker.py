@@ -8,7 +8,7 @@ class CreateWorker(BM):
 
 
 class UpdateWorker(BM):
-    worker_id: int
+    # worker_id: int
     name: Optional[str]
     job_title: Optional[str]
     use_company_schedule: Optional[bool]

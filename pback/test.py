@@ -8,6 +8,7 @@ username = str(random.randint(0, 1000)) + "test2"
 r = requests.post(
     localhost + "signup",
     json={
+        "company": "Comp",
         "username": username,
         "password": "123",
         "email": str(random.randint(0, 1000)) + "example@example12.com",
@@ -63,3 +64,6 @@ assert r.status_code == 200
 # print(r.text)
 
 # print('Finished')
+
+headers = {"Authorization": "Bearer " + token}
+r = requests.post(localhost + "client_slot/1", headers=headers, json={'name': 'nn', 'slot_type': 'busy', 'from_datetime': '2021-11-01 12:00:00', 'to_datetime': '2021-11-01 12:00:00'})

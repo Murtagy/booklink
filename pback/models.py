@@ -167,6 +167,7 @@ class WorkerSlot(BaseModel):
     slot_id = TableId()
     created_at = TableCreatedAt()
     # active_from = Column(DateTime(timezone=True), nullable=False)
+    name = Column(String)
     slot_type = Column(String, nullable=False)
     from_date = Column(DateTime(timezone=True), nullable=False)
     to_date = Column(DateTime(timezone=True), nullable=False)
@@ -179,9 +180,10 @@ class ClientSlot(BaseModel):
 
     slot_id = TableId()
     created_at = TableCreatedAt()
+    name = Column(String)
     # active_from = Column(DateTime(timezone=True), nullable=False)
     slot_type = Column(String, nullable=False)
-    from_date = Column(DateTime(timezone=True), nullable=False)
-    to_date = Column(DateTime(timezone=True), nullable=False)
+    from_datetime = Column(DateTime(timezone=True), nullable=False)
+    to_datetime = Column(DateTime(timezone=True), nullable=False)
 
     client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)

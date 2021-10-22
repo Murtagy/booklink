@@ -1,4 +1,3 @@
-# TODO: SPA или не нужен вью для большинства
 import datetime
 from enum import Enum
 from io import BytesIO
@@ -17,6 +16,7 @@ import crud
 import db
 import models
 from schemas import InVisit, OutVisit, TokenOut, UserCreate, UserOut
+from schemas.slot import CreateSlot, Slot
 from schemas.worker import CreateWorker, OutWorker, UpdateWorker
 from utils.users import oauth, validate_password
 
@@ -199,7 +199,7 @@ async def get_avaliability(
     # TODO Visitor
 ):
     # schedule =
-    # slots    = 
+    # slots    =
     visits = crud.get_visits(s, client_id, worker_id=worker_id)
 
     # schedule - slots - visits = avalibility : List[Slots]
@@ -260,15 +260,16 @@ async def get_worker(
 
 @app.put("/worker/{worker_id}", response_model=OutWorker)
 async def update_worker(
+    worker_id: int,
     worker: UpdateWorker,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ):
-    db_worker = crud.get_worker(s, worker.worker_id)
+    db_worker = crud.get_worker(s, worker_id)
     assert db_worker is not None
     assert current_user.client_id == db_worker.client_id
 
-    db_worker = crud.update_worker(s, worker)
+    db_worker = crud.update_worker(s, worker, worker_id)
     return db_worker
 
 
@@ -316,6 +317,7 @@ class Day(BM):
 
 
 class DayTimeAvailability(BM):
+    # by day to easily map to calendar
     days: List[Day]
 
 
@@ -340,5 +342,51 @@ async def get_client_availability(
     ...
 
 
-# @app.post('/worker_avaliability/{worker_id}')
-# async def create_worker_availability()
+@app.post("/worker_slot/{worker_id}")
+async def create_worker_slot(
+    worker_id: int,
+    slot: CreateSlot,
+    s: Session = Depends(get_db_session),
+    current_user: models.User = Depends(get_current_user),
+):
+    # check same client
+    # check time being free
+    db_slot = crud.create_worker_slot(s, slot, worker_id)
+    return db_slot
+
+
+@app.post("/client_slot/{client_id}", response_model=Slot)
+async def create_client_slot(
+    client_id: int,
+    slot: CreateSlot,
+    s: Session = Depends(get_db_session),
+    current_user: models.User = Depends(get_current_user),
+):
+    # check same client
+    # check time being free
+    db_slot = crud.create_client_slot(s, slot, client_id)
+    return db_slot
+
+@app.delete("/client_slot/{client_id}", response_model=Slot)
+async def delete_client_slot(
+    slot_id: int,
+    s: Session = Depends(get_db_session),
+    current_user: models.User = Depends(get_current_user),
+):
+    # check same client
+    # check time being free
+    db_slot = crud.get_client_slot(s, slot_id)
+    crud.delete_client_slot(s, slot_id)
+    return db_slot
+
+@app.delete("/worker_slot/{client_id}", response_model=Slot)
+async def delete_worker_slot(
+    slot_id: int,
+    s: Session = Depends(get_db_session),
+    current_user: models.User = Depends(get_current_user),
+):
+    # check same client
+    # check time being free
+    db_slot = crud.get_worrker_slot(s, slot_id)
+    crud.delete_worker_slot(s, slot_id)
+    return db_slot
