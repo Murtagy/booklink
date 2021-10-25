@@ -1,7 +1,7 @@
 <template>
     
 <header>
-    <img src="../assets/mylogo.png"/>
+    <img src="../assets/logo.png"/>
 	<h1>{{title}}</h1>
 <hr class="line1"><hr class="line2"> <hr class="line3">
 </header>

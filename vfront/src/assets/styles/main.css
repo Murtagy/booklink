@@ -52,6 +52,7 @@ hr.line3 {
 
 body {
   margin:0;
+  background-color:rgba(251, 250, 254, 1);
 }
 
 @media screen and (max-width: 900px) {

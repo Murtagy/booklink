@@ -1,0 +1,29 @@
+div {
+    background-color: rgba(251, 250, 254, 1);
+    height: 800px;
+    width:100%;
+    text-shadow:1px 1px rgb(235, 228, 255);
+  }
+
+ul {
+    margin-top:170px;
+    padding:2px;
+}
+
+li {
+    display: block;
+    margin: 0px;
+    margin-top:1px;
+    padding: 5px;
+    padding-top:20px;
+    padding-bottom:20px;
+    border: 2px solid rgb(119, 96, 205);
+}
+
+li label {
+    font-size:20px;
+    font-family:"TimesNewRoman";
+    color:#414141;
+    font-weight:bolder;
+    margin-left:15px;
+}
