@@ -1,13 +1,23 @@
 import datetime
+import json
 import uuid
 from datetime import timedelta
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from models import Client, ClientSlot, File, Token, User, Visit, Worker, WorkerSlot
+from models import (
+    Client,
+    File,
+    Token,
+    User,
+    Visit,
+    Worker,
+    Slot,
+    WeeklySlot,
+)
 from utils.users import hash_password, make_salt
 
 
@@ -108,7 +118,7 @@ def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
 
 
 def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> Worker:
-    db_worker = Worker(name=worker.name, client_id=client_id)
+    db_worker = Worker(name=worker.name, job_title=worker.job_title, client_id=client_id, use_company_schedule=True)
     db.add(db_worker)
     db.commit()
     db.refresh(db_worker)
@@ -127,60 +137,30 @@ def update_worker(db: Session, worker: schemas.UpdateWorker, worker_id: int) -> 
     return db_worker
 
 
-def get_worker_slot(db: Session, slot_id: int) -> Optional[WorkerSlot]:
-    return db.query(WorkerSlot).filter(WorkerSlot.slot_id == slot_id).first()
+def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
+    return db.query(Slot).filter(Slot.slot_id == slot_id).first()
 
 
-def create_worker_slot(
-    db: Session, slot: schemas.CreateSlot, worker_id: int
-) -> WorkerSlot:
+def create_slot(
+    db: Session, slot: schemas.CreateSlot, client_id: int, *, worker_id: int = None
+) -> Slot:
     d = slot.dict()
-    d["worker_id"] = worker_id
-    db_slot = WorkerSlot(**d)
-    db.add(db_slot)
-    db.commit()
-    db.refresh(db_slot)
-    return db_slot
 
-
-def update_worker_slot(
-    db: Session, slot: schemas.UpdateSlot, slot_id: int
-) -> WorkerSlot:
-    db_slot = get_worker_slot(db, slot_id)
-    assert db_slot is not None
-    update = slot.dict()
-    for field, value in update.items():
-        if value is None:
-            continue
-        setattr(db_slot, field, value)
-    db.commit()  # enough??
-    return db_slot
-
-
-def delete_worker_slot(db: Session, slot_id: int) -> None:
-    db.query(WorkerSlot).filter(WorkerSlot.slot_id == slot_id).delete()
-
-
-def get_client_slot(db: Session, slot_id: int) -> Optional[ClientSlot]:
-    return db.query(ClientSlot).filter(ClientSlot.slot_id == slot_id).first()
-
-
-def create_client_slot(
-    db: Session, slot: schemas.CreateSlot, client_id: int
-) -> ClientSlot:
-    d = slot.dict()
     d["client_id"] = client_id
-    db_slot = ClientSlot(**d)
+    if worker_id:
+        d["worker_id"] = worker_id
+
+    db_slot = Slot(**d)
     db.add(db_slot)
     db.commit()
     db.refresh(db_slot)
     return db_slot
 
 
-def update_client_slot(
+def update_slot(
     db: Session, slot: schemas.UpdateSlot, slot_id: int
-) -> ClientSlot:
-    db_slot = get_client_slot(db, slot_id)
+) -> Slot:
+    db_slot = get_slot(db, slot_id)
     assert db_slot is not None
     update = slot.dict()
     for field, value in update.items():
@@ -191,5 +171,39 @@ def update_client_slot(
     return db_slot
 
 
-def delete_client_slot(db: Session, slot_id: int) -> None:
-    db.query(ClientSlot).filter(ClientSlot.slot_id == slot_id).delete()
+def delete_slot(db: Session, slot_id: int) -> None:
+    db.query(Slot).filter(Slot.slot_id == slot_id).delete()
+
+
+def get_client_slots(db: Session, slot_id: int) -> List[Slot]:
+    # add filtering
+    return db.query(Slot).filter(Slot.slot_id == slot_id).all()
+
+
+def get_client_weeklyslot(db: Session, client_id: int) -> Optional[WeeklySlot]:
+    # add filtering
+    return (
+        db.query(WeeklySlot)
+        .filter(WeeklySlot.client_id == client_id, WeeklySlot.worker_id == None)
+        .first()
+    )
+
+
+def get_worker_weeklyslot(db: Session, worker_id: int) -> Optional[WeeklySlot]:
+    # add filtering
+    return (
+        db.query(WeeklySlot)
+        .filter(WeeklySlot.worker_id == worker_id)
+        .first()
+    )
+
+
+def create_weekly_slot(
+    db: Session, slot: schemas.CreateWeeklySlot, client_id: int, *, worker_id: int = None
+) -> WeeklySlot:
+    schedule = slot.dict()
+    db_slot = WeeklySlot(client_id=client_id, schedule_by_day=schedule, worker_id=worker_id)
+    db.add(db_slot)
+    db.commit()
+    db.refresh(db_slot)
+    return db_slot
