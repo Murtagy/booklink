@@ -5,6 +5,7 @@ from pydantic import BaseModel as BM
 
 class CreateWorker(BM):
     name: str
+    job_title: str
 
 
 class UpdateWorker(BM):
@@ -20,13 +21,14 @@ class UpdateWorker(BM):
 
 
 class OutWorker(BM):
-    id: str
+    worker_id: str
     name: str
-    display_name: str
-    display_job_title: str
-    display_description: str
+    job_title: str
+    display_name: Optional[str]
+    display_job_title: Optional[str]
+    display_description: Optional[str]
     use_company_schedule: bool
-    photo_id: int
+    photo_id: Optional[int]
 
     class Config:
         orm_mode = True

@@ -28,11 +28,11 @@ class Visit(BaseModel):
     worker_id = Column(Integer, ForeignKey("workers.worker_id"))
     phone = Column(String, index=True)
     email = Column(String, index=True)
-    from_datetime = Column(DateTime(timezone=True), index=True)
-    to_datetime = Column(DateTime(timezone=True))
     status = Column(String)
+    customer_description = Column(String)
     has_notification = Column(Boolean)
     services = Column(JSON)  # [ServiceId + Q + Price, ...]
+    slot_id = Column(Integer, ForeignKey("slots.slot_id"))
 
 
 class Client(BaseModel):
@@ -139,51 +139,29 @@ class Token(BaseModel):
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
 
-class WorkerWeeklySlot(BaseModel):
-    __tablename__ = "workers_weekly_slots"
+class WeeklySlot(BaseModel):
+    __tablename__ = "weekly_slots"
 
-    # active_from = Column(DateTime(timezone=True), nullable=False)
+    active_from = Column(DateTime(timezone=True))
     slot_id = TableId()
     created_at = TableCreatedAt()
 
-    worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
-    schedule_by_day = Column(JSON, nullable=False)
-
-
-class ClientWeeklySlot(BaseModel):
-    __tablename__ = "clients_weekly_slots"
-
-    # active_from = Column(DateTime(timezone=True), nullable=False)
-    slot_id = TableId()
-    created_at = TableCreatedAt()
-
+    worker_id = Column(Integer, ForeignKey("workers.worker_id"))  # when worker_id is null then it is client owned
     client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
     schedule_by_day = Column(JSON, nullable=False)
 
 
-class WorkerSlot(BaseModel):
-    __tablename__ = "workers_slots"
-
-    slot_id = TableId()
-    created_at = TableCreatedAt()
-    # active_from = Column(DateTime(timezone=True), nullable=False)
-    name = Column(String)
-    slot_type = Column(String, nullable=False)
-    from_date = Column(DateTime(timezone=True), nullable=False)
-    to_date = Column(DateTime(timezone=True), nullable=False)
-
-    worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
-
-
-class ClientSlot(BaseModel):
-    __tablename__ = "clients_slots"
+class Slot(BaseModel):
+    __tablename__ = "slots"
 
     slot_id = TableId()
     created_at = TableCreatedAt()
     name = Column(String)
-    # active_from = Column(DateTime(timezone=True), nullable=False)
-    slot_type = Column(String, nullable=False)
+    slot_type = Column(String, nullable=False)  # busy/visit/available
+    active = Column(Boolean, default=True, nullable=False)
+
     from_datetime = Column(DateTime(timezone=True), nullable=False)
     to_datetime = Column(DateTime(timezone=True), nullable=False)
 
+    worker_id = Column(Integer, ForeignKey("workers.worker_id"))
     client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)

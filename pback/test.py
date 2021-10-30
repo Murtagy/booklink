@@ -19,6 +19,7 @@ token = r.json()["access_token"]
 r = requests.get(localhost + "users/me", headers={"Authorization": "Bearer " + token})
 assert r.status_code == 200
 
+headers = {"Authorization": "Bearer " + token}
 
 r = requests.post(
     localhost + "token",
@@ -29,6 +30,9 @@ r = requests.post(
 )
 print(r.text)
 assert r.status_code == 200
+
+r = requests.post(localhost + "worker", headers=headers, json={"name": "Макс", "job_title": "Разработчик"})
+print(r.text)
 
 # r = requests.get(localhost + "visit/1")
 # print(r.text)
@@ -65,5 +69,49 @@ assert r.status_code == 200
 
 # print('Finished')
 
-headers = {"Authorization": "Bearer " + token}
-r = requests.post(localhost + "client_slot/1", headers=headers, json={'name': 'nn', 'slot_type': 'busy', 'from_datetime': '2021-11-01 12:00:00', 'to_datetime': '2021-11-01 12:00:00'})
+r = requests.post(
+    localhost + "client_slot/1",
+    headers=headers,
+    json={
+        "name": "nn",
+        "slot_type": "busy",
+        "from_datetime": "2021-11-01 12:00:00",
+        "to_datetime": "2021-11-01 12:00:00",
+    },
+)
+r = requests.post(
+    localhost + "client_weekly_slot/1",
+    headers=headers,
+    json={
+        "mo": [["2021-10-21 03:01:01", "2021-10-21 05:01:01"]],
+        "tu": None,
+        "we": None,
+        "th": None,
+        "fr": None,
+        "st": None,
+        "su": None,
+    },
+)
+
+r = requests.get(
+    localhost + "client_availability/1",
+    headers=headers,
+)
+print(r.text)
+
+
+
+r = requests.post(
+    localhost + "worker_weekly_slot/1",
+    headers=headers,
+    json={
+        "mo": [["2021-10-21 03:01:01", "2021-10-21 05:01:01"]],
+        "tu": None,
+        "we": None,
+        "th": None,
+        "fr": None,
+        "st": None,
+        "su": None,
+    },
+)
+print(r.text)
