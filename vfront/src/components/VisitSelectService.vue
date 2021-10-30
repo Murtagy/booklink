@@ -3,7 +3,7 @@
     <form>
         <ul>
         <li class="button">
-            <button>Далее</button>
+            <button>Далее <img src="../assets/arrow.png"></button>
         </li>
         <li>
             <input type="checkbox" class="checkbox" name="service" id="serv1">
