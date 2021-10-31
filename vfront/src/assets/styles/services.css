@@ -9,10 +9,6 @@ ul {
     margin-top:130px;
     padding:2px;
 }
-/* 
-li.button {
-    display: none;
-} */
 
 li {
     display: block;
@@ -96,11 +92,13 @@ li label::before {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
   }
 
-/* li img {
-    width:7em;
-    height:7em;
-    transform:rotate(35deg);
+  li span.price {
+    font-size:22px;
+    font-family:"TimesNewRoman";
+    color:#414141;
+    font-weight:bolder;
+    line-height: 38px;
     position:absolute;
-    right: 12px;
-    top:-17px; 
-}*/
+    right:25px;
+    font-style: italic;
+  }
