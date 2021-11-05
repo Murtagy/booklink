@@ -146,7 +146,9 @@ class WeeklySlot(BaseModel):
     slot_id = TableId()
     created_at = TableCreatedAt()
 
-    worker_id = Column(Integer, ForeignKey("workers.worker_id"))  # when worker_id is null then it is client owned
+    worker_id = Column(
+        Integer, ForeignKey("workers.worker_id")
+    )  # when worker_id is null then it is client owned
     client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
     schedule_by_day = Column(JSON, nullable=False)
 

@@ -2,7 +2,7 @@ import datetime
 import json
 from enum import Enum
 from io import BytesIO
-from typing import List, Literal, Optional, Dict, Any
+from typing import Any, Dict, List, Literal, Optional
 
 import structlog
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
@@ -307,9 +307,16 @@ async def get_file(
     return r
 
 
+class TimeSlotType(str, Enum):
+    BUSY = "busy"
+    AVAILABLE = "available"
+    VISIT = "visit"
+
+
 class TimeSlot(BM):
-    time_from: datetime.time
-    time_to: datetime.time
+    dt_from: datetime.datetime
+    dt_to: datetime.datetime
+    slot_type: TimeSlotType
 
 
 class Day(BM):
@@ -325,7 +332,10 @@ class DayTimeAvailability(BM):
     days: List[Day]
 
     @classmethod
-    def FromSchedule(cls, schedule: Dict[str, Any], n_days: int = 99):  # optional schedule
+    def CreateFromSchedule(
+        cls, schedule: Dict[str, Any], n_days: int = 99
+    ) -> "DayTimeAvailability":  # optional schedule
+        """creates TimeSlots from Schedule"""
         days = []
         today = datetime.date.today()
         for day_delta in range(n_days):
@@ -335,49 +345,92 @@ class DayTimeAvailability(BM):
             print(list_from_to)
             if not list_from_to:
                 continue
-            timeslots = [TimeSlot(time_from=datetime.datetime.fromisoformat(l[0]).time(), time_to=datetime.datetime.fromisoformat(l[1]).time()) for l in list_from_to]
+            timeslots = []
+            for l in list_from_to:
+                print(l)
+                time_from = datetime.datetime.strptime(l[0], "%H:%M")
+                time_to = datetime.datetime.strptime(l[1], "%H:%M")
+                dt_from = datetime.datetime.combine(target_day, time_from.time())
+                dt_to = datetime.datetime.combine(target_day, time_to.time())
+                timeslots.append(
+                    TimeSlot(
+                        dt_from=dt_from,
+                        dt_to=dt_to,
+                        slot_type=TimeSlotType.AVAILABLE,
+                    )
+                )
             day = Day(date=target_day, timeslots=timeslots)
             days.append(day)
         return cls(days=days)
 
-    # TODO make all slots same class
-    def ReduceBySlots(
-        self, slots: List[models.Slot]
-    ):  # TODO add other slots support
+    # def CreateFromSlots
+
+    # def IncreaseAvailabilityBySlots(
+    #     self, slots: List[models.Slot]):
+
+    def ReduceAvailabilityBySlots(self, slots: List[models.Slot]) -> None:
+        """Reduces timeslots by busy/visit slots"""
         # need assure sort
-        new_slots = []
+        # @speed - sorted version
+        print('Reducing')
+        days = self.days
+        print(slots)
         for slot in slots:
-            # TODO take in account slot type
-            # currently are avalibility
-            # incoming  are reducing
-            for day in self.days:
-                for __from, __to in day:
-                    _from = datetime.datetime.fromisoformat(__from)
-                    _to = datetime.datetime.fromisoformat(__to)
+            print('Slot', slot.from_datetime, slot.to_datetime)
+            assert slot.slot_type in [TimeSlotType.BUSY, TimeSlotType.VISIT]
+            for iday, day in enumerate(days):
+                print(day.date)
+                new_ts = []
+                date = day.date
+                if not slot.from_datetime.date() <= date <= slot.to_datetime.date():
+                    continue
+
+                print('Not skipped')
+                for its, ts in enumerate(day.timeslots):
+                    f = ts.dt_from
+                    t = ts.dt_to
+
+                    F = slot.from_datetime
+                    T = slot.to_datetime
+
                     # need to add quick filter
 
+                    # f, t - ts
+                    # F, T   - slot
+                    # _ - availability
+
                     # slot is bigger than schedule slot
-                    if slot.from_datetime < _from and slot.to_datetime > _to:
+                    #  f t
+                    # F    T
+                    if F < f and T > t:
                         continue
 
                     # left is less, right in
-                    if slot.from_datetime < _from and slot.to_datetime < _to:
-                        new_slots.append([slot.to_datetime, _to])
+                    #  f   __t
+                    # F   T
+                    if F < f and T < t:
+                        new_ts.append(TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE))
 
                     # right is bigger, left is in
-                    if slot.from_datetime > _from and slot.to_datetime > _to:
-                        new_slots.append([_from, slot.from_datetime])
+                    # f__   t
+                    #    F   T
+                    if F > f and T > t:
+                        new_ts.append(TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE))
 
                     # slot is in
-                    if slot.from_datetime > _from and slot.to_datetime < _to:
+                    # f_  _t
+                    #   FT
+                    if F > f and T < t:
+                        print('SLOT IN')
                         # we create 2 slots for that
-                        new_slots.append([_from, slot.from_datetime])
-                        new_slots.append([slot.to_datetime, _to])
-                        # need to start again?
+                        new_ts.append(TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE))
+                        new_ts.append(TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE))
+                        # above copies left-right checks, can make it simplier
 
-                new_slots.append([_from, _to])
+                day.timeslots = new_ts
+                days[iday] = day
 
-        return new_slots
+        self.days = days
 
 
 @app.get("/worker_availability/{worker_id}")
@@ -391,47 +444,27 @@ async def get_worker_availability(
     uses_company_schedule = worker.use_company_schedule
     if uses_company_schedule:
         company_schedule = crud.get_client_weeklyslot(s, worker.client_id)
-
-    return DayTimeAvailability(
-        days=[
-            Day(
-                date=datetime.date(year=2021, month=8, day=18),
-                timeslots=[
-                    TimeSlot(
-                        time_from=datetime.time(hour=15, minute=15),
-                        time_to=datetime.time(hour=15, minute=30),
-                    )
-                ],
-            )
-        ]
-    )
-    ...
+    # NOT DONE
+    assert company_schedule
+    assert isinstance(company_schedule.schedule_by_day, dict)
+    return DayTimeAvailability.CreateFromSchedule(company_schedule.schedule_by_day)
 
 
 @app.get("/client_availability/{client_id}")
 async def get_client_availability(
-    client_id=None,
+    client_id: int,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ) -> DayTimeAvailability:
     weekly_slots = crud.get_client_weeklyslot(s, client_id)
-    return DayTimeAvailability.FromSchedule(
+    assert weekly_slots
+    assert isinstance(weekly_slots.schedule_by_day, dict)
+    av = DayTimeAvailability.CreateFromSchedule(
         weekly_slots.schedule_by_day,
     )
-    # return DayTimeAvailability(
-    #     days=[
-    #         Day(
-    #             date=datetime.date(year=2021, month=8, day=18),
-    #             timeslots=[
-    #                 TimeSlot(
-    #                     time_from=datetime.time(hour=15, minute=15),
-    #                     time_to=datetime.time(hour=15, minute=30),
-    #                 )
-    #             ],
-    #         )
-    #     ]
-    # )
-    # ...
+    busy_slots = crud.get_client_slots(s, client_id, slot_types=["busy", "visit"])
+    av.ReduceAvailabilityBySlots(busy_slots)
+    return av
 
 
 @app.post("/worker_slot/{worker_id}")
@@ -443,7 +476,8 @@ async def create_worker_slot(
 ):
     # check same client
     # check time being free
-    db_worker = crud.get_worker(worker_id)
+    db_worker = crud.get_worker(s, worker_id)
+    assert db_worker
     client_id = db_worker.client_id
     db_slot = crud.create_slot(s, slot, client_id, worker_id=worker_id)
     return db_slot
@@ -471,7 +505,7 @@ async def delete_client_slot(
     # check same client
     # check time being free
     db_slot = crud.get_slot(s, slot_id)
-    crud.delete_client_slot(s, slot_id)
+    crud.delete_slot(s, slot_id)
     return db_slot
 
 
@@ -499,6 +533,7 @@ async def create_worker_weekly_slot(
     # check same client
     # check time being free
     db_worker = crud.get_worker(s, worker_id)
+    assert db_worker
     client_id = db_worker.client_id
     db_slot = crud.create_weekly_slot(s, slot, client_id, worker_id=worker_id)
     print(db_slot.schedule_by_day)
