@@ -61,87 +61,47 @@ li button:hover {
     border:5px double rgb(119, 96, 205);
 }
 
-/* @media screen and (max-width:900px) {
-    ul {
-        position:relative;
-        top:110px;
-    }
-    
+@media screen and (max-width: 900px) {
     li button {
-        font-size: 22px;
-        width: 45%;
-        margin:60px auto;
+        font-size: 24px;
+        width: 60%;
     }
-    
-    li button img {
-        width:1.1em;
-        height:1.2em;
-        position:absolute;
-        right:15px;
-        top:3px;
-    }
-
     #create-visit {
-        top:75%;
-        font-size: 23px;
+        top:65%;
+        font-size: 24px;
         width: 40%;
-        height:7%;
+        height:8%;
     }
 }
 
-@media screen and (max-width:620px) {
+@media screen and (max-width: 620px) {
     ul {
-        position:relative;
-        top:90px;
+        top:25px;
     }
-    
     li button {
         font-size: 20px;
+        width: 65%;
+    }
+    #create-visit {
+        top:77%;
+        font-size: 20px;
         width: 50%;
-        margin:60px auto;
-    }
-    
-    li button img {
-        width:1.1em;
-        height:1.2em;
-        position:absolute;
-        right:15px;
-        top:3px;
-    }
-
-    #create-visit {
-        top:70%;
-        font-size: 22px;
-        width: 57%;
-        height:7%;
+        height:8%;
     }
 }
 
-@media screen and (max-width:450px) {
+@media screen and (max-width: 450px) {
     ul {
-        position:relative;
-        top:80px;
+        top:5px;
     }
-    
     li button {
-        font-size: 16px;
-        width: 60%;
-        margin:45px auto;
+        font-size: 20px;
+        width: 75%;
     }
-    
     #create-visit {
-        top:60%;
-        font-size: 18px;
-        width: 57%;
-        height:7%;
+        top:75%;
+        font-size: 20px;
+        width: 70%;
+        height:8%;
     }
 }
-
-@media screen and (max-width:350px) {
-    #create-visit {
-        top:60%;
-        font-size: 17px;
-        width: 63%;
-        height:7%;
-    }
-} */

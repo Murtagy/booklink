@@ -102,3 +102,87 @@ li label::before {
     right:25px;
     font-style: italic;
   }
+
+  @media screen and (max-width: 900px) {
+    button {
+      font-size: 23px;
+      bottom:20px;
+  }
+  button img {
+    height:0.9em;
+    width:1.2em;
+    top:10px;
+}
+  li label {
+    font-size:20px;
+  }
+  li label::before {
+    width: 20px;
+    height: 20px;
+  }
+  li span.price {
+    font-size:20px;
+  }
+  }
+
+  @media screen and (max-width: 620px) {
+    button {
+      font-size: 20px;
+      width: 40%;
+  }
+  li.button {
+    top: 200px;
+}
+  button img {
+    height:0.7em;
+    width:1.2em;
+    top:10px;
+  }
+  ul {
+    margin-top:100px;
+  }
+  li label {
+    font-size:18px;
+    line-height: 25px;
+  }
+  li label::before {
+    width: 18px;
+    height: 18px;
+  }
+  li span.price {
+    font-size:18px;
+    line-height: 25px;
+  }
+  }
+
+  @media screen and (max-width: 620px) {
+    button {
+      font-size: 18px;
+      width: 45%;
+      height:45px;
+  }
+  li.button {
+    top: 200px;
+}
+  button img {
+    height:0.7em;
+    width:1.1em;
+    top:12px;
+  }
+  ul {
+    margin-top:80px;
+  }
+  li label {
+    font-size:16px;
+    line-height: 20px;
+  }
+  li label::before {
+    width: 16px;
+    height: 16px;
+  }
+  li span.price {
+    font-size:16px;
+    line-height: 20px;
+    right:15px;
+  }
+  }
