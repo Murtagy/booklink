@@ -31,7 +31,11 @@ r = requests.post(
 print(r.text)
 assert r.status_code == 200
 
-r = requests.post(localhost + "worker", headers=headers, json={"name": "Макс", "job_title": "Разработчик"})
+r = requests.post(
+    localhost + "worker",
+    headers=headers,
+    json={"name": "Макс", "job_title": "Разработчик"},
+)
 print(r.text)
 
 # r = requests.get(localhost + "visit/1")
@@ -75,15 +79,15 @@ r = requests.post(
     json={
         "name": "nn",
         "slot_type": "busy",
-        "from_datetime": "2021-11-01 12:00:00",
-        "to_datetime": "2021-11-01 12:00:00",
+        "from_datetime": "2021-11-15 12:00:00",
+        "to_datetime": "2021-11-15 14:00:00",
     },
 )
 r = requests.post(
     localhost + "client_weekly_slot/1",
     headers=headers,
     json={
-        "mo": [["2021-10-21 03:01:01", "2021-10-21 05:01:01"]],
+        "mo": [["03:01", "20:01"]],
         "tu": None,
         "we": None,
         "th": None,
@@ -100,18 +104,17 @@ r = requests.get(
 print(r.text)
 
 
-
-r = requests.post(
-    localhost + "worker_weekly_slot/1",
-    headers=headers,
-    json={
-        "mo": [["2021-10-21 03:01:01", "2021-10-21 05:01:01"]],
-        "tu": None,
-        "we": None,
-        "th": None,
-        "fr": None,
-        "st": None,
-        "su": None,
-    },
-)
-print(r.text)
+# r = requests.post(
+#     localhost + "worker_weekly_slot/1",
+#     headers=headers,
+#     json={
+#         "mo": [["03:01:01", "05:01:01"]],
+#         "tu": None,
+#         "we": None,
+#         "th": None,
+#         "fr": None,
+#         "st": None,
+#         "su": None,
+#     },
+# )
+# print(r.text)

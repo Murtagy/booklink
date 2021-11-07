@@ -8,16 +8,7 @@ from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from models import (
-    Client,
-    File,
-    Token,
-    User,
-    Visit,
-    Worker,
-    Slot,
-    WeeklySlot,
-)
+from models import Client, File, Slot, Token, User, Visit, WeeklySlot, Worker
 from utils.users import hash_password, make_salt
 
 
@@ -118,7 +109,12 @@ def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
 
 
 def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> Worker:
-    db_worker = Worker(name=worker.name, job_title=worker.job_title, client_id=client_id, use_company_schedule=True)
+    db_worker = Worker(
+        name=worker.name,
+        job_title=worker.job_title,
+        client_id=client_id,
+        use_company_schedule=True,
+    )
     db.add(db_worker)
     db.commit()
     db.refresh(db_worker)
@@ -157,9 +153,7 @@ def create_slot(
     return db_slot
 
 
-def update_slot(
-    db: Session, slot: schemas.UpdateSlot, slot_id: int
-) -> Slot:
+def update_slot(db: Session, slot: schemas.UpdateSlot, slot_id: int) -> Slot:
     db_slot = get_slot(db, slot_id)
     assert db_slot is not None
     update = slot.dict()
@@ -175,9 +169,14 @@ def delete_slot(db: Session, slot_id: int) -> None:
     db.query(Slot).filter(Slot.slot_id == slot_id).delete()
 
 
-def get_client_slots(db: Session, slot_id: int) -> List[Slot]:
+def get_client_slots(
+    db: Session, slot_id: int, *, slot_types: Optional[List[str]]
+) -> List[Slot]:
     # add filtering
-    return db.query(Slot).filter(Slot.slot_id == slot_id).all()
+    q = db.query(Slot).filter(Slot.slot_id == slot_id)
+    if slot_types:
+        q.filter(Slot.slot_type.in_(slot_types))
+    return q.all()
 
 
 def get_client_weeklyslot(db: Session, client_id: int) -> Optional[WeeklySlot]:
@@ -191,18 +190,20 @@ def get_client_weeklyslot(db: Session, client_id: int) -> Optional[WeeklySlot]:
 
 def get_worker_weeklyslot(db: Session, worker_id: int) -> Optional[WeeklySlot]:
     # add filtering
-    return (
-        db.query(WeeklySlot)
-        .filter(WeeklySlot.worker_id == worker_id)
-        .first()
-    )
+    return db.query(WeeklySlot).filter(WeeklySlot.worker_id == worker_id).first()
 
 
 def create_weekly_slot(
-    db: Session, slot: schemas.CreateWeeklySlot, client_id: int, *, worker_id: int = None
+    db: Session,
+    slot: schemas.CreateWeeklySlot,
+    client_id: int,
+    *,
+    worker_id: int = None
 ) -> WeeklySlot:
     schedule = slot.dict()
-    db_slot = WeeklySlot(client_id=client_id, schedule_by_day=schedule, worker_id=worker_id)
+    db_slot = WeeklySlot(
+        client_id=client_id, schedule_by_day=schedule, worker_id=worker_id
+    )
     db.add(db_slot)
     db.commit()
     db.refresh(db_slot)
