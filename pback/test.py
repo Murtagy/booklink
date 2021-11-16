@@ -1,3 +1,4 @@
+import datetime
 import random
 
 import requests
@@ -73,21 +74,23 @@ print(r.text)
 
 # print('Finished')
 
-r = requests.post(
-    localhost + "client_slot/1",
-    headers=headers,
-    json={
-        "name": "nn",
-        "slot_type": "busy",
-        "from_datetime": "2021-11-15 12:00:00",
-        "to_datetime": "2021-11-15 14:00:00",
-    },
-)
+# r = requests.post(
+#     localhost + "client_slot/1",
+#     headers=headers,
+#     json={
+#         "name": "nn",
+#         "slot_type": "busy",
+#         "from_datetime": "2021-11-15 12:00:00",
+#         "to_datetime": "2021-11-15 14:00:00",
+#     },
+# )
+
+# test client availability
 r = requests.post(
     localhost + "client_weekly_slot/1",
     headers=headers,
     json={
-        "mo": [["03:01", "20:01"]],
+        "mo": [["13:15", "14:00"], ["15:00", "23:00"]],
         "tu": None,
         "we": None,
         "th": None,
@@ -101,7 +104,20 @@ r = requests.get(
     localhost + "client_availability/1",
     headers=headers,
 )
-print(r.text)
+days = r.json()["days"]
+for day in days:
+    date = day["date"]
+    date = datetime.datetime.fromisoformat(date)
+    if date.weekday() == 0:
+        break
+
+assert date.weekday() == 0
+timeslots = day["timeslots"]
+assert timeslots[0]["dt_from"] == "2021-11-22T13:15:00"
+assert timeslots[0]["dt_to"] == "2021-11-22T14:00:00"
+assert timeslots[1]["dt_from"] == "2021-11-22T15:00:00"
+assert timeslots[1]["dt_to"] == "2021-11-22T15:45:00"
+print(timeslots)
 
 
 # r = requests.post(

@@ -165,5 +165,5 @@ class Slot(BaseModel):
     from_datetime = Column(DateTime(timezone=True), nullable=False)
     to_datetime = Column(DateTime(timezone=True), nullable=False)
 
-    worker_id = Column(Integer, ForeignKey("workers.worker_id"))
+    worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
     client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)

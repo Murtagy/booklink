@@ -1,22 +1,22 @@
-import datetime
 import json
 from enum import Enum
 from io import BytesIO
 from typing import Any, Dict, List, Literal, Optional
 
 import structlog
+import uvicorn  # type: ignore
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # type: ignore
-from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
 import crud
 import db
 import models
 from schemas import InVisit, OutVisit, TokenOut, UserCreate, UserOut
+from schemas.availability import Availability, TimeSlotType
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot, WeeklySlot
 from schemas.worker import CreateWorker, OutWorker, UpdateWorker
 from utils.users import oauth, validate_password
@@ -307,138 +307,12 @@ async def get_file(
     return r
 
 
-class TimeSlotType(str, Enum):
-    BUSY = "busy"
-    AVAILABLE = "available"
-    VISIT = "visit"
-
-
-class TimeSlot(BM):
-    dt_from: datetime.datetime
-    dt_to: datetime.datetime
-    slot_type: TimeSlotType
-
-
-class Day(BM):
-    date: datetime.date
-    timeslots: List[TimeSlot]
-
-
-DAYS = {0: "mo", 1: "tu", 2: "we", 3: "th", 4: "fr", 5: "st", 6: "su"}
-
-
-class DayTimeAvailability(BM):
-    # by day to easily map to calendar
-    days: List[Day]
-
-    @classmethod
-    def CreateFromSchedule(
-        cls, schedule: Dict[str, Any], n_days: int = 99
-    ) -> "DayTimeAvailability":  # optional schedule
-        """creates TimeSlots from Schedule"""
-        days = []
-        today = datetime.date.today()
-        for day_delta in range(n_days):
-            target_day = today + datetime.timedelta(days=day_delta)
-            weekday = DAYS[target_day.weekday()]
-            list_from_to = schedule[weekday] if schedule else []
-            print(list_from_to)
-            if not list_from_to:
-                continue
-            timeslots = []
-            for l in list_from_to:
-                print(l)
-                time_from = datetime.datetime.strptime(l[0], "%H:%M")
-                time_to = datetime.datetime.strptime(l[1], "%H:%M")
-                dt_from = datetime.datetime.combine(target_day, time_from.time())
-                dt_to = datetime.datetime.combine(target_day, time_to.time())
-                timeslots.append(
-                    TimeSlot(
-                        dt_from=dt_from,
-                        dt_to=dt_to,
-                        slot_type=TimeSlotType.AVAILABLE,
-                    )
-                )
-            day = Day(date=target_day, timeslots=timeslots)
-            days.append(day)
-        return cls(days=days)
-
-    # def CreateFromSlots
-
-    # def IncreaseAvailabilityBySlots(
-    #     self, slots: List[models.Slot]):
-
-    def ReduceAvailabilityBySlots(self, slots: List[models.Slot]) -> None:
-        """Reduces timeslots by busy/visit slots"""
-        # need assure sort
-        # @speed - sorted version
-        print('Reducing')
-        days = self.days
-        print(slots)
-        for slot in slots:
-            print('Slot', slot.from_datetime, slot.to_datetime)
-            assert slot.slot_type in [TimeSlotType.BUSY, TimeSlotType.VISIT]
-            for iday, day in enumerate(days):
-                print(day.date)
-                new_ts = []
-                date = day.date
-                if not slot.from_datetime.date() <= date <= slot.to_datetime.date():
-                    continue
-
-                print('Not skipped')
-                for its, ts in enumerate(day.timeslots):
-                    f = ts.dt_from
-                    t = ts.dt_to
-
-                    F = slot.from_datetime
-                    T = slot.to_datetime
-
-                    # need to add quick filter
-
-                    # f, t - ts
-                    # F, T   - slot
-                    # _ - availability
-
-                    # slot is bigger than schedule slot
-                    #  f t
-                    # F    T
-                    if F < f and T > t:
-                        continue
-
-                    # left is less, right in
-                    #  f   __t
-                    # F   T
-                    if F < f and T < t:
-                        new_ts.append(TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE))
-
-                    # right is bigger, left is in
-                    # f__   t
-                    #    F   T
-                    if F > f and T > t:
-                        new_ts.append(TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE))
-
-                    # slot is in
-                    # f_  _t
-                    #   FT
-                    if F > f and T < t:
-                        print('SLOT IN')
-                        # we create 2 slots for that
-                        new_ts.append(TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE))
-                        new_ts.append(TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE))
-                        # above copies left-right checks, can make it simplier
-
-                day.timeslots = new_ts
-                days[iday] = day
-
-        self.days = days
-
-
 @app.get("/worker_availability/{worker_id}")
 async def get_worker_availability(
     worker_id=None,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
-) -> DayTimeAvailability:
+) -> Availability:
     worker = crud.get_worker(s, worker_id)
     assert worker is not None
     uses_company_schedule = worker.use_company_schedule
@@ -447,7 +321,7 @@ async def get_worker_availability(
     # NOT DONE
     assert company_schedule
     assert isinstance(company_schedule.schedule_by_day, dict)
-    return DayTimeAvailability.CreateFromSchedule(company_schedule.schedule_by_day)
+    return Availability.CreateFromSchedule(company_schedule.schedule_by_day)
 
 
 @app.get("/client_availability/{client_id}")
@@ -455,15 +329,38 @@ async def get_client_availability(
     client_id: int,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
-) -> DayTimeAvailability:
-    weekly_slots = crud.get_client_weeklyslot(s, client_id)
-    assert weekly_slots
-    assert isinstance(weekly_slots.schedule_by_day, dict)
-    av = DayTimeAvailability.CreateFromSchedule(
-        weekly_slots.schedule_by_day,
-    )
-    busy_slots = crud.get_client_slots(s, client_id, slot_types=["busy", "visit"])
-    av.ReduceAvailabilityBySlots(busy_slots)
+) -> Availability:
+    # weekly_slots = crud.get_client_weeklyslot(s, client_id)
+    # assert weekly_slots
+    # assert isinstance(weekly_slots.schedule_by_day, dict)
+    workers = crud.get_workers(s, client_id)
+    worker_avs: List[Availability] = []
+    for worker in workers:
+        if worker.use_company_schedule:
+            wl = crud.get_client_weeklyslot(s, worker.client_id)
+            assert wl
+            assert isinstance(wl.schedule_by_day, dict)
+            av = Availability.CreateFromSchedule(wl.schedule_by_day)
+        else:
+            wl = crud.get_worker_weeklyslot(s, worker.worker_id)
+            if wl is not None:
+                assert isinstance(wl.schedule_by_day, dict)
+                av = Availability.CreateFromSchedule(wl.schedule_by_day)
+            else:
+                slots = crud.get_worker_slots(
+                    s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
+                )
+                av = Availability.CreateFromSlots(slots)
+
+        busy_slots = crud.get_worker_slots(
+            s, worker.worker_id, slot_types=["busy", "visit"]
+        )
+        av.ReduceAvailabilityBySlots(busy_slots)
+        # TODO SPLIT BY SERVICE SELECTED LENGTH
+        av.SplitByLength(length_seconds=45 * 60)
+        worker_avs.append(av)
+
+    av = Availability.WorkersToClient(worker_avs)
     return av
 
 
@@ -539,3 +436,7 @@ async def create_worker_weekly_slot(
     print(db_slot.schedule_by_day)
     # d = {"slot_id": db_slot.slot_id, **db_slot.schedule_by_day}
     return "OK"
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

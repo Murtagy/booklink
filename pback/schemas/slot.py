@@ -7,6 +7,7 @@ from pydantic import BaseModel as BM
 class CreateSlot(BM):
     name: str
     slot_type: Union[Literal["busy"], Literal["available"], Literal["visit"]]
+    worker_id: Optional[int]
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
 
