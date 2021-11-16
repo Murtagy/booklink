@@ -21,11 +21,14 @@ button {
 
 #name {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
+    font-family: 'Times New Roman';
 }
 
 #job {
     font-style:italic;
+    font-family: 'Times New Roman';
+    font-size: 16px;
 }
 
 button:hover {
