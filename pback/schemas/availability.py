@@ -20,6 +20,15 @@ class TimeSlot(BM):
     dt_to: datetime.datetime
     slot_type: TimeSlotType
 
+    def __str__(self):
+        return str(self.dt_from) + ":::" + str(self.dt_to) + " " + str(self.slot_type)
+
+    def __hash__(self):
+        return hash(str(self))
+
+    def __gt__(self, other):
+        return self.dt_from > other.dt_from
+
 
 class Day(BM):
     date: datetime.date
@@ -211,7 +220,10 @@ class Availability(BM):
                 days[date].extend(day.timeslots)
         days_l = []
         for date, timeslots in days.items():
-            d = Day(date=date, timeslots=timeslots)
+            reduced = set(timeslots)
+            reduced_timeslots = list(reduced)
+            reduced_timeslots.sort()
+            d = Day(date=date, timeslots=reduced_timeslots)
             days_l.append(d)
 
         return cls(days=days_l)

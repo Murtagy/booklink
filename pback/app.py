@@ -93,7 +93,7 @@ async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
     # TODO add to client created_by user
     access_token = crud.create_user_token(s, db_user.user_id)
     jwt = jwtfy(access_token)
-    return {"access_token": jwt, "token_type": "bearer"}
+    return {"access_token": jwt, "token_type": "bearer", "client_id": db_client.client_id}
 
 
 async def get_current_user_or_none(
@@ -279,6 +279,19 @@ async def delete_worker(worker_id: str):
     return True
 
 
+@app.get("/workers", response_model=List[OutWorker])
+async def get_workers(
+    s: Session = Depends(get_db_session),
+    current_user: models.User = Depends(get_current_user),
+):
+    db_workers = crud.get_workers(s, current_user.client_id)
+    # assert db_workers is not None
+
+    # assert current_user.client_id == db_worker.client_id
+
+    return db_workers
+
+
 @app.post("/file")
 async def create_file(
     file: UploadFile = File(...),
@@ -307,57 +320,53 @@ async def get_file(
     return r
 
 
-@app.get("/worker_availability/{worker_id}")
+async def _get_worker_availability(s: Session, current_user: models.User, worker: models.Worker) -> Availability:
+    if worker.use_company_schedule:
+        wl = crud.get_client_weeklyslot(s, worker.client_id)
+        assert wl
+        assert isinstance(wl.schedule_by_day, dict)
+        av = Availability.CreateFromSchedule(wl.schedule_by_day)
+    else:
+        wl = crud.get_worker_weeklyslot(s, worker.worker_id)
+        if wl is not None:
+            assert isinstance(wl.schedule_by_day, dict)
+            av = Availability.CreateFromSchedule(wl.schedule_by_day)
+        else:
+            slots = crud.get_worker_slots(
+                s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
+            )
+            av = Availability.CreateFromSlots(slots)
+
+    busy_slots = crud.get_worker_slots(
+        s, worker.worker_id, slot_types=["busy", "visit"]
+    )
+    av.ReduceAvailabilityBySlots(busy_slots)
+    # TODO SPLIT BY SERVICE SELECTED LENGTH
+    av.SplitByLength(length_seconds=45 * 60)
+    return av
+
+
+@app.get("/worker_availability/{worker_id}", response_model=Availability)
 async def get_worker_availability(
-    worker_id=None,
+    worker_id: int,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ) -> Availability:
     worker = crud.get_worker(s, worker_id)
-    assert worker is not None
-    uses_company_schedule = worker.use_company_schedule
-    if uses_company_schedule:
-        company_schedule = crud.get_client_weeklyslot(s, worker.client_id)
-    # NOT DONE
-    assert company_schedule
-    assert isinstance(company_schedule.schedule_by_day, dict)
-    return Availability.CreateFromSchedule(company_schedule.schedule_by_day)
+    av = await _get_worker_availability(s, current_user, worker)
+    return av
 
 
-@app.get("/client_availability/{client_id}")
+@app.get("/client_availability/{client_id}", response_model=Availability)
 async def get_client_availability(
     client_id: int,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ) -> Availability:
-    # weekly_slots = crud.get_client_weeklyslot(s, client_id)
-    # assert weekly_slots
-    # assert isinstance(weekly_slots.schedule_by_day, dict)
     workers = crud.get_workers(s, client_id)
     worker_avs: List[Availability] = []
     for worker in workers:
-        if worker.use_company_schedule:
-            wl = crud.get_client_weeklyslot(s, worker.client_id)
-            assert wl
-            assert isinstance(wl.schedule_by_day, dict)
-            av = Availability.CreateFromSchedule(wl.schedule_by_day)
-        else:
-            wl = crud.get_worker_weeklyslot(s, worker.worker_id)
-            if wl is not None:
-                assert isinstance(wl.schedule_by_day, dict)
-                av = Availability.CreateFromSchedule(wl.schedule_by_day)
-            else:
-                slots = crud.get_worker_slots(
-                    s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
-                )
-                av = Availability.CreateFromSlots(slots)
-
-        busy_slots = crud.get_worker_slots(
-            s, worker.worker_id, slot_types=["busy", "visit"]
-        )
-        av.ReduceAvailabilityBySlots(busy_slots)
-        # TODO SPLIT BY SERVICE SELECTED LENGTH
-        av.SplitByLength(length_seconds=45 * 60)
+        av = await _get_worker_availability(s, current_user, worker)
         worker_avs.append(av)
 
     av = Availability.WorkersToClient(worker_avs)

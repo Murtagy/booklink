@@ -6,6 +6,7 @@ from pydantic import BaseModel as BM
 class CreateWorker(BM):
     name: str
     job_title: str
+    use_company_schedule: Optional[bool]
 
 
 class UpdateWorker(BM):

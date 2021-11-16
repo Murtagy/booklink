@@ -113,11 +113,12 @@ def get_workers(db: Session, client_id: int) -> List[Worker]:
 
 
 def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> Worker:
+    w = worker
     db_worker = Worker(
-        name=worker.name,
-        job_title=worker.job_title,
+        name=w.name,
+        job_title=w.job_title,
         client_id=client_id,
-        use_company_schedule=True,
+        use_company_schedule=w.use_company_schedule if w.use_company_schedule is not None else True,
     )
     db.add(db_worker)
     db.commit()
