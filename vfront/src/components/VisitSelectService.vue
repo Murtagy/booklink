@@ -1,18 +1,16 @@
 <template>
   <div v-if="services"> 
-    <form>
-        <ul>
-        <li class="button">
-            <button>Далее <img src="../assets/arrow.png"></button>
-        </li>
-        {{checkedServices}}
-        <li v-for="service in services" :key="service.name">
-            <input type="checkbox" class="checkbox" name="service" :id="service.id" :value="service" v-model="checkedServices">
-            <label :for="service.id">{{service.name}}</label>
-            <span class="price">{{service.price}} {{service.currency}}</span>
-        </li>
-        </ul>       
-    </form>
+    <ul>
+    <li class="button">
+        <button @click="emitServices">Далее <img src="../assets/arrow.png"></button>
+    </li>
+    {{checkedServices}}
+    <li v-for="service in services" :key="service.name">
+        <input type="checkbox" class="checkbox" name="service" :id="service.id" :value="service" v-model="checkedServices">
+        <label :for="service.id">{{service.name}}</label>
+        <span class="price">{{service.price}} {{service.currency}}</span>
+    </li>
+    </ul>       
   </div>
 </template>
 
@@ -36,7 +34,11 @@ export default {
         }
     },
     methods: {
-        changeCurrentScreen: function (x) { this.current_screen = x}
+        emitServices: function () { 
+            this.$emit('check-services', this.checkedServices);
+            this.$emit('go-start-screen'); 
+            console.log(this.checkedServices)
+        }
     }
 };
 
