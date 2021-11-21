@@ -27,7 +27,9 @@ export default {
     data () { 
         return { 
             // visit-type-form, visit-select- service/worker/datetime
-            "current_screen": "visit-type-form" 
+            "current_screen": "visit-type-form",
+            "worker": null,
+            "services": null,
         }
     },
     methods: {
