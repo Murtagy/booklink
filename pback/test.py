@@ -1,9 +1,11 @@
+import datetime
 import random
 
 import requests
 
 localhost = "http://127.0.0.1:8000/"
 
+### CREATE NEW CLIENT
 username = str(random.randint(0, 1000)) + "test2"
 r = requests.post(
     localhost + "signup",
@@ -15,6 +17,10 @@ r = requests.post(
     },
 )
 print(r.text)
+CLIENT_ID = r.json()["client_id"]
+###
+
+### ASSURE LOGIN
 token = r.json()["access_token"]
 r = requests.get(localhost + "users/me", headers={"Authorization": "Bearer " + token})
 assert r.status_code == 200
@@ -30,13 +36,40 @@ r = requests.post(
 )
 print(r.text)
 assert r.status_code == 200
+###
 
+### Create worker
 r = requests.post(
     localhost + "worker",
     headers=headers,
     json={"name": "Макс", "job_title": "Разработчик"},
 )
 print(r.text)
+
+r = requests.get(
+    localhost + "workers",
+    headers=headers,
+)
+print(r.text)
+assert len(r.json()) == 1
+WORKER_ID = r.json()[0]["worker_id"]
+### 
+
+### Create worker (2)
+r = requests.post(
+    localhost + "worker",
+    headers=headers,
+    json={"name": "Макс", "job_title": "Разработчик"},
+)
+print(r.text)
+
+r = requests.get(
+    localhost + "workers",
+    headers=headers,
+)
+print(r.text)
+assert len(r.json()) == 2
+### 
 
 # r = requests.get(localhost + "visit/1")
 # print(r.text)
@@ -73,21 +106,23 @@ print(r.text)
 
 # print('Finished')
 
+# r = requests.post(
+#     localhost + "client_slot/1",
+#     headers=headers,
+#     json={
+#         "name": "nn",
+#         "slot_type": "busy",
+#         "from_datetime": "2021-11-15 12:00:00",
+#         "to_datetime": "2021-11-15 14:00:00",
+#     },
+# )
+
+###  Test client availability
 r = requests.post(
-    localhost + "client_slot/1",
+    localhost + f"client_weekly_slot/{CLIENT_ID}",
     headers=headers,
     json={
-        "name": "nn",
-        "slot_type": "busy",
-        "from_datetime": "2021-11-15 12:00:00",
-        "to_datetime": "2021-11-15 14:00:00",
-    },
-)
-r = requests.post(
-    localhost + "client_weekly_slot/1",
-    headers=headers,
-    json={
-        "mo": [["03:01", "20:01"]],
+        "mo": [["13:15", "14:00"], ["15:00", "23:00"]],
         "tu": None,
         "we": None,
         "th": None,
@@ -98,10 +133,46 @@ r = requests.post(
 )
 
 r = requests.get(
-    localhost + "client_availability/1",
+    localhost + f"client_availability/{CLIENT_ID}",
     headers=headers,
 )
-print(r.text)
+days = r.json()["days"]
+for day in days:
+    date = day["date"]
+    date = datetime.datetime.fromisoformat(date)
+    if date.weekday() == 0:
+        break
+
+assert date.weekday() == 0
+timeslots = day["timeslots"]
+assert timeslots[0]["dt_from"] == "2021-11-22T13:15:00"
+assert timeslots[0]["dt_to"] == "2021-11-22T14:00:00"
+assert timeslots[1]["dt_from"] == "2021-11-22T15:00:00"
+assert timeslots[1]["dt_to"] == "2021-11-22T15:45:00"
+print(timeslots)
+###
+
+
+### Test worker availability
+r = requests.get(
+    localhost + f"worker_availability/{WORKER_ID}",
+    headers=headers,
+)
+days = r.json()["days"]
+for day in days:
+    date = day["date"]
+    date = datetime.datetime.fromisoformat(date)
+    if date.weekday() == 0:
+        break
+
+assert date.weekday() == 0
+timeslots = day["timeslots"]
+assert timeslots[0]["dt_from"] == "2021-11-22T13:15:00"
+assert timeslots[0]["dt_to"] == "2021-11-22T14:00:00"
+assert timeslots[1]["dt_from"] == "2021-11-22T15:00:00"
+assert timeslots[1]["dt_to"] == "2021-11-22T15:45:00"
+print(timeslots)
+##
 
 
 # r = requests.post(

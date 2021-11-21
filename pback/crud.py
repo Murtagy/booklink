@@ -108,12 +108,17 @@ def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
     return db.query(Worker).filter(Worker.worker_id == worker_id).first()
 
 
+def get_workers(db: Session, client_id: int) -> List[Worker]:
+    return db.query(Worker).filter(Worker.client_id == client_id).all()
+
+
 def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> Worker:
+    w = worker
     db_worker = Worker(
-        name=worker.name,
-        job_title=worker.job_title,
+        name=w.name,
+        job_title=w.job_title,
         client_id=client_id,
-        use_company_schedule=True,
+        use_company_schedule=w.use_company_schedule if w.use_company_schedule is not None else True,
     )
     db.add(db_worker)
     db.commit()
@@ -170,10 +175,10 @@ def delete_slot(db: Session, slot_id: int) -> None:
 
 
 def get_client_slots(
-    db: Session, slot_id: int, *, slot_types: Optional[List[str]]
+    db: Session, client_id: int, *, slot_types: Optional[List[str]]
 ) -> List[Slot]:
     # add filtering
-    q = db.query(Slot).filter(Slot.slot_id == slot_id)
+    q = db.query(Slot).filter(Slot.client_id == client_id)
     if slot_types:
         q.filter(Slot.slot_type.in_(slot_types))
     return q.all()
@@ -191,6 +196,16 @@ def get_client_weeklyslot(db: Session, client_id: int) -> Optional[WeeklySlot]:
 def get_worker_weeklyslot(db: Session, worker_id: int) -> Optional[WeeklySlot]:
     # add filtering
     return db.query(WeeklySlot).filter(WeeklySlot.worker_id == worker_id).first()
+
+
+def get_worker_slots(
+    db: Session, worker_id: int, *, slot_types: Optional[List[str]]
+) -> List[Slot]:
+    # add filtering
+    q = db.query(Slot).filter(Slot.worker_id == worker_id)
+    if slot_types:
+        q.filter(Slot.slot_type.in_(slot_types))
+    return q.all()
 
 
 def create_weekly_slot(
