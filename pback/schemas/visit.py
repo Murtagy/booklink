@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Literal, Tuple
+from typing import List, Literal, Optional
 
 from pydantic import BaseModel as BM
 
@@ -15,6 +15,8 @@ class InServiceToVisit(BM):
 class OutVisit(BM):
     version: Literal[1] = 1
     phone: str
+    # from_dt: datetime.datetime
+    # to_dt: datetime.datetime
 
     class Config:
         orm_mode = True
@@ -32,9 +34,12 @@ class OutVisit(BM):
 
 class InVisit(BM):
     version: Literal[1]
+    from_dt: datetime.datetime
+    to_dt: datetime.datetime
     phone: str
     email: str
     client_id: int
+    worker_id: Optional[int]
     services: List[InServiceToVisit]
     remind_me: bool
 

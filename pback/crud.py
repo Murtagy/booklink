@@ -2,7 +2,7 @@ import datetime
 import json
 import uuid
 from datetime import timedelta
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
@@ -118,7 +118,9 @@ def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> 
         name=w.name,
         job_title=w.job_title,
         client_id=client_id,
-        use_company_schedule=w.use_company_schedule if w.use_company_schedule is not None else True,
+        use_company_schedule=w.use_company_schedule
+        if w.use_company_schedule is not None
+        else True,
     )
     db.add(db_worker)
     db.commit()
@@ -142,14 +144,8 @@ def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
     return db.query(Slot).filter(Slot.slot_id == slot_id).first()
 
 
-def create_slot(
-    db: Session, slot: schemas.CreateSlot, client_id: int, *, worker_id: int = None
-) -> Slot:
+def create_slot(db: Session, slot: schemas.CreateSlot) -> Slot:
     d = slot.dict()
-
-    d["client_id"] = client_id
-    if worker_id:
-        d["worker_id"] = worker_id
 
     db_slot = Slot(**d)
     db.add(db_slot)
@@ -180,7 +176,7 @@ def get_client_slots(
     # add filtering
     q = db.query(Slot).filter(Slot.client_id == client_id)
     if slot_types:
-        q.filter(Slot.slot_type.in_(slot_types))
+        q = q.filter(Slot.slot_type.in_(slot_types))
     return q.all()
 
 
@@ -204,7 +200,7 @@ def get_worker_slots(
     # add filtering
     q = db.query(Slot).filter(Slot.worker_id == worker_id)
     if slot_types:
-        q.filter(Slot.slot_type.in_(slot_types))
+        q = q.filter(Slot.slot_type.in_(slot_types))
     return q.all()
 
 

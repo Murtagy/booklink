@@ -1,7 +1,8 @@
 import json
+import random
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import structlog
 import uvicorn  # type: ignore
@@ -16,7 +17,12 @@ import crud
 import db
 import models
 from schemas import InVisit, OutVisit, TokenOut, UserCreate, UserOut
-from schemas.availability import Availability, TimeSlotType
+from schemas.availability import (
+    Availability,
+    AvailabilityPerWorker,
+    TimeSlot,
+    TimeSlotType,
+)
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot, WeeklySlot
 from schemas.worker import CreateWorker, OutWorker, UpdateWorker
 from utils.users import oauth, validate_password
@@ -93,7 +99,11 @@ async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
     # TODO add to client created_by user
     access_token = crud.create_user_token(s, db_user.user_id)
     jwt = jwtfy(access_token)
-    return {"access_token": jwt, "token_type": "bearer", "client_id": db_client.client_id}
+    return {
+        "access_token": jwt,
+        "token_type": "bearer",
+        "client_id": db_client.client_id,
+    }
 
 
 async def get_current_user_or_none(
@@ -240,6 +250,11 @@ async def create_worker(
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ):
+    # TODO notify user that he needs to add company schedule
+    # if worker.use_company_schedule:
+    # wl = crud.get_client_weeklyslot(s, current_user.client_id)
+    # if wl is None:
+    # raise HTTPException(428, "Schedule needs to be created first")
     client_id = current_user.client_id
     db_worker = crud.create_worker(s, worker, client_id)
     return db_worker
@@ -320,86 +335,72 @@ async def get_file(
     return r
 
 
-async def _get_worker_availability(s: Session, current_user: models.User, worker: models.Worker) -> Availability:
-    if worker.use_company_schedule:
-        wl = crud.get_client_weeklyslot(s, worker.client_id)
-        assert wl
-        assert isinstance(wl.schedule_by_day, dict)
-        av = Availability.CreateFromSchedule(wl.schedule_by_day)
-    else:
-        wl = crud.get_worker_weeklyslot(s, worker.worker_id)
-        if wl is not None:
-            assert isinstance(wl.schedule_by_day, dict)
-            av = Availability.CreateFromSchedule(wl.schedule_by_day)
-        else:
-            slots = crud.get_worker_slots(
-                s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
-            )
-            av = Availability.CreateFromSlots(slots)
-
-    busy_slots = crud.get_worker_slots(
-        s, worker.worker_id, slot_types=["busy", "visit"]
-    )
-    av.ReduceAvailabilityBySlots(busy_slots)
-    # TODO SPLIT BY SERVICE SELECTED LENGTH
-    av.SplitByLength(length_seconds=45 * 60)
-    return av
-
-
 @app.get("/worker_availability/{worker_id}", response_model=Availability)
 async def get_worker_availability(
     worker_id: int,
+    service_id: Optional[int] = None,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ) -> Availability:
     worker = crud.get_worker(s, worker_id)
-    av = await _get_worker_availability(s, current_user, worker)
+    # TODO, get length from service_id
+    service_length = None
+    if service_id:
+        service_length = 45 * 60
+    av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
     return av
 
 
-@app.get("/client_availability/{client_id}", response_model=Availability)
+@app.get("/client_availability/{client_id}", response_model=AvailabilityPerWorker)
 async def get_client_availability(
     client_id: int,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
-) -> Availability:
-    workers = crud.get_workers(s, client_id)
-    worker_avs: List[Availability] = []
-    for worker in workers:
-        av = await _get_worker_availability(s, current_user, worker)
-        worker_avs.append(av)
-
-    av = Availability.WorkersToClient(worker_avs)
-    return av
+) -> AvailabilityPerWorker:
+    d = await _get_client_availability(client_id, s)
+    return AvailabilityPerWorker.FromDict(d)
 
 
-@app.post("/worker_slot/{worker_id}")
-async def create_worker_slot(
-    worker_id: int,
-    slot: CreateSlot,
-    s: Session = Depends(get_db_session),
-    current_user: models.User = Depends(get_current_user),
-):
-    # check same client
-    # check time being free
-    db_worker = crud.get_worker(s, worker_id)
-    assert db_worker
-    client_id = db_worker.client_id
-    db_slot = crud.create_slot(s, slot, client_id, worker_id=worker_id)
-    return db_slot
-
-
-@app.post("/client_slot/{client_id}", response_model=Slot)
-async def create_client_slot(
+async def _get_client_availability(
     client_id: int,
+    s: Session = Depends(get_db_session),
+) -> Dict[int, Availability]:
+    workers = crud.get_workers(s, client_id)
+    worker_avs: Dict[int, Availability] = {}
+    for worker in workers:
+        av = await Availability.GetWorkerAV(s, worker)
+        worker_avs[worker.worker_id] = av
+    return worker_avs
+
+
+@app.post("/public_create_slot")
+async def create_slot(
+    slot: CreateSlot,
+    s: Session = Depends(get_db_session),
+):
+    if slot.slot_type not in [TimeSlotType.VISIT]:
+        raise HTTPException(status_code=400, detail=f"Wrong slot type {slot.slot_type}")
+
+    exc = HTTPException(status_code=409, detail="Slot is not availiable")
+    slot = await slot.visit_pick_worker_and_check(s, exc=exc)
+
+    db_slot = crud.create_slot(s, slot)
+    return {"slot_id": db_slot.slot_id}
+
+
+@app.post("/create_slot")
+async def create_slot(
     slot: CreateSlot,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ):
-    # check same client
-    # check time being free
-    db_slot = crud.create_slot(s, slot, client_id)
-    return db_slot
+    # TODO check against availability
+    if slot.slot_type == TimeSlotType.VISIT:
+        exc = HTTPException(status_code=409, detail="Slot is not availiable")
+        slot = await slot.visit_pick_worker_and_check(s, exc=exc)
+    # for now I let availiability to duplicate
+    db_slot = crud.create_slot(s, slot)
+    return {"slot_id": db_slot.slot_id}
 
 
 @app.delete("/slot/{slot_id}", response_model=Slot)

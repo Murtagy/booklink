@@ -39,7 +39,7 @@ class Token(BM):
 class TokenOut(BM):
     access_token: str
     token_type: str
-    # + 
+    # +
     client_id: int
 
     class Config:

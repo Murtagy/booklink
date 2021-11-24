@@ -1,4 +1,9 @@
+# vscode
+*.env
+launch.json
+
 # local db
+sql_app.db
 *.db
 
 # Byte-compiled / optimized / DLL files

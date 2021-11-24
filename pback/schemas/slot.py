@@ -1,15 +1,45 @@
 import datetime
+import random
 from typing import List, Literal, Optional, Tuple, Union
 
+from fastapi.exceptions import HTTPException
 from pydantic import BaseModel as BM
+from sqlalchemy.orm import Session  # type: ignore
+
+from .availability import Availability
 
 
 class CreateSlot(BM):
     name: str
     slot_type: Union[Literal["busy"], Literal["available"], Literal["visit"]]
+    client_id: int
     worker_id: Optional[int]
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
+
+    async def visit_pick_worker_and_check(
+        self, s: Session, *, exc: HTTPException
+    ) -> "CreateSlot":
+        slot = self
+        worker_id = slot.worker_id
+        if worker_id:
+            av = await Availability.GetWorkerAV(s, worker_id)
+            if not av.CheckSlot(slot):
+                raise exc
+
+        else:
+            client_av = await _get_client_availability(s, slot.client_id)
+            workers_av = [
+                worker_id for (worker_id, av) in client_av.items() if av.CheckSlot(slot)
+            ]
+            if len(workers_av) == 0:
+                raise exc
+
+            worker_id = random.choice(workers_av)
+            av = await Availability.GetWorkerAV(s, worker_id)
+            assert av.CheckSlot(slot)
+            slot.worker_id = worker_id
+        return slot
 
 
 class UpdateSlot(BM):

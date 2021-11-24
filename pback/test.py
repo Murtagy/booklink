@@ -53,23 +53,33 @@ r = requests.get(
 print(r.text)
 assert len(r.json()) == 1
 WORKER_ID = r.json()[0]["worker_id"]
-### 
+###
 
 ### Create worker (2)
 r = requests.post(
     localhost + "worker",
     headers=headers,
-    json={"name": "Макс", "job_title": "Разработчик"},
+    json={"name": "Макс", "job_title": "Разработчик", "use_company_schedule": True},
+)
+# assert r.status_code == 428
+
+### Create worker (3)
+r = requests.post(
+    localhost + "worker",
+    headers=headers,
+    json={"name": "Макс", "job_title": "Разработчик", "use_company_schedule": False},
 )
 print(r.text)
+WORKER_NO_SCHEDULE_ID = r.json()["worker_id"]
 
+### Check workers n
 r = requests.get(
     localhost + "workers",
     headers=headers,
 )
 print(r.text)
-assert len(r.json()) == 2
-### 
+assert len(r.json()) == 3
+###
 
 # r = requests.get(localhost + "visit/1")
 # print(r.text)
@@ -131,33 +141,36 @@ r = requests.post(
         "su": None,
     },
 )
+assert r.status_code == 200, r.text
 
-r = requests.get(
-    localhost + f"client_availability/{CLIENT_ID}",
-    headers=headers,
-)
-days = r.json()["days"]
-for day in days:
-    date = day["date"]
-    date = datetime.datetime.fromisoformat(date)
-    if date.weekday() == 0:
-        break
+# r = requests.get(
+#     localhost + f"client_availability/{CLIENT_ID}",
+#     headers=headers,
+# )
+# days = r.json()["days"]
+# for day in days:
+#     date = day["date"]
+#     date = datetime.datetime.fromisoformat(date)
+#     if date.weekday() == 0:
+#         break
 
-assert date.weekday() == 0
-timeslots = day["timeslots"]
-assert timeslots[0]["dt_from"] == "2021-11-22T13:15:00"
-assert timeslots[0]["dt_to"] == "2021-11-22T14:00:00"
-assert timeslots[1]["dt_from"] == "2021-11-22T15:00:00"
-assert timeslots[1]["dt_to"] == "2021-11-22T15:45:00"
-print(timeslots)
+# assert date.weekday() == 0
+# timeslots = day["timeslots"]
+# assert timeslots[0]["dt_from"] == "2021-11-29T13:15:00"
+# assert timeslots[0]["dt_to"] == "2021-11-29T14:00:00"
+# assert timeslots[1]["dt_from"] == "2021-11-29T15:00:00"
+# assert timeslots[1]["dt_to"] == "2021-11-29T15:45:00"
+# print(timeslots)
 ###
 
 
 ### Test worker availability
 r = requests.get(
-    localhost + f"worker_availability/{WORKER_ID}",
+    localhost + f"worker_availability/{WORKER_ID}?service_id=5",
     headers=headers,
 )
+assert r.status_code == 200, r.text
+
 days = r.json()["days"]
 for day in days:
     date = day["date"]
@@ -167,11 +180,68 @@ for day in days:
 
 assert date.weekday() == 0
 timeslots = day["timeslots"]
-assert timeslots[0]["dt_from"] == "2021-11-22T13:15:00"
-assert timeslots[0]["dt_to"] == "2021-11-22T14:00:00"
-assert timeslots[1]["dt_from"] == "2021-11-22T15:00:00"
-assert timeslots[1]["dt_to"] == "2021-11-22T15:45:00"
-print(timeslots)
+assert timeslots[0]["dt_from"] == "2021-11-29T13:15:00"
+assert timeslots[0]["dt_to"] == "2021-11-29T14:00:00"
+assert timeslots[1]["dt_from"] == "2021-11-29T15:00:00"
+assert timeslots[1]["dt_to"] == "2021-11-29T15:45:00"
+# print(timeslots)
+
+## WORKER_NO_SCHEDULE_ID
+r = requests.post(
+    localhost + f"create_slot",
+    headers=headers,
+    json={
+        "name": "Рабочее время",
+        "slot_type": "available",
+        "client_id": CLIENT_ID,
+        "worker_id": WORKER_NO_SCHEDULE_ID,
+        "from_datetime": "2022-01-01T08:00:00",
+        "to_datetime": "2022-01-01T18:00:00",
+    },
+)
+assert r.status_code == 200, r.text
+
+r = requests.post(
+    localhost + f"public_create_slot",
+    json={
+        "name": "Визит клиент",
+        "slot_type": "visit",
+        "client_id": CLIENT_ID,
+        "worker_id": WORKER_NO_SCHEDULE_ID,
+        "from_datetime": "2022-01-01T09:00:00",
+        "to_datetime": "2022-01-01T10:00:00",
+    },
+)
+assert r.status_code == 200, r.text
+
+r = requests.get(
+    localhost + f"worker_availability/{WORKER_NO_SCHEDULE_ID}",
+    headers=headers,
+)
+
+days = r.json()["days"]
+# print(days)
+assert len(days) == 1
+day = days[0]
+assert len(day["timeslots"]) == 2, day[
+    "timeslots"
+]  # assert 2 timeslots, no split by time requested
+
+r = requests.post(
+    localhost + f"create_slot",
+    headers=headers,
+    json={
+        "name": "Визит клиент",
+        "slot_type": "visit",
+        "client_id": CLIENT_ID,
+        "worker_id": WORKER_NO_SCHEDULE_ID,
+        "from_datetime": "2022-01-01T09:45:00",
+        "to_datetime": "2022-01-01T10:00:00",
+    },
+)
+
+assert r.status_code == 409, r.text
+
 ##
 
 
@@ -189,3 +259,7 @@ print(timeslots)
 #     },
 # )
 # print(r.text)
+
+print("*" * 20)
+print(" " * 5, "SUCCESS")
+print("*" * 20)

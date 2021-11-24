@@ -2,10 +2,14 @@ import collections
 import datetime
 import math
 from enum import Enum
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel as BM
 
+# from .slot import CreateSlot
+from sqlalchemy.orm import Session
+
+import crud
 import models
 
 
@@ -79,6 +83,7 @@ class Availability(BM):
     def CreateFromSlots(cls, slots: List[models.Slot]):
         days: Dict[datetime.date, Day] = {}
         for slot in slots:
+            print(slot.slot_type)
             assert slot.slot_type == TimeSlotType.AVAILABLE
             slot_from_date = slot.from_datetime.date()
             if slot_from_date in days:
@@ -88,8 +93,8 @@ class Availability(BM):
 
             day.timeslots.append(
                 TimeSlot(
-                    from_dt=slot.from_datetime,
-                    to_dt=slot.to_datetime,
+                    dt_from=slot.from_datetime,
+                    dt_to=slot.to_datetime,
                     slot_type=slot.slot_type,
                 )
             )
@@ -210,20 +215,98 @@ class Availability(BM):
             self.days[iday] = day
         return
 
+    def CheckSlot(self, slot) -> bool:
+        assert slot.slot_type == "visit"
+        for day in self.days:
+            prev_t = None
+            for t in day.timeslots:
+                if prev_t and prev_t.dt_to == t.dt_from:
+                    # bypassing per-service length split
+                    print(f"t dt from {t.dt_from} -> {prev_t.dt_from}")
+                    t.dt_from = prev_t.dt_from
+
+                if t.dt_from <= slot.from_datetime and slot.to_datetime <= t.dt_to:
+                    print(
+                        "Able to fit visit in availability slot",
+                        t.dt_from,
+                        t.dt_to,
+                        t.slot_type,
+                        slot.from_datetime,
+                        slot.to_datetime,
+                    )
+                    return True
+                else:
+                    print(
+                        "Skip slot for visit",
+                        t.dt_from,
+                        t.dt_to,
+                        t.slot_type,
+                        slot.from_datetime,
+                        slot.to_datetime,
+                    )
+                prev_t = t
+        print("Not time for visit")
+        return False
+
     @classmethod
     def WorkersToClient(cls, avs: List["Availability"]):
-        """Returns availabiltiy of client, which may consist of colliding worker timeslots"""
-        days = collections.defaultdict(list)
-        for av in avs:
-            for day in av.days:
-                date = day.date
-                days[date].extend(day.timeslots)
-        days_l = []
-        for date, timeslots in days.items():
-            reduced = set(timeslots)
-            reduced_timeslots = list(reduced)
-            reduced_timeslots.sort()
-            d = Day(date=date, timeslots=reduced_timeslots)
-            days_l.append(d)
+        raise NotImplemented
+        # """Returns availabiltiy of client, which may consist of colliding worker timeslots"""
+        # days = collections.defaultdict(list)
+        # for av in avs:
+        #     for day in av.days:
+        #         date = day.date
+        #         days[date].extend(day.timeslots)
+        # days_l = []
+        # for date, timeslots in days.items():
+        #     reduced = set(timeslots)
+        #     reduced_timeslots = list(reduced)
+        #     reduced_timeslots.sort()
+        #     d = Day(date=date, timeslots=reduced_timeslots)
+        #     days_l.append(d)
 
-        return cls(days=days_l)
+        # return cls(days=days_l)
+
+    @classmethod
+    async def GetWorkerAV(
+        cls,
+        s: Session,
+        worker: Union[int, models.Worker],
+        *,
+        service_length: Optional[int] = None,
+    ) -> "Availability":
+        Availability = cls
+        if isinstance(worker, int):
+            worker = crud.get_worker(s, worker)
+
+        if worker.use_company_schedule:
+            wl = crud.get_client_weeklyslot(s, worker.client_id)
+            assert wl
+            assert isinstance(wl.schedule_by_day, dict)
+            av = Availability.CreateFromSchedule(wl.schedule_by_day)
+        else:
+            wl = crud.get_worker_weeklyslot(s, worker.worker_id)
+            if wl is not None:
+                assert isinstance(wl.schedule_by_day, dict)
+                av = Availability.CreateFromSchedule(wl.schedule_by_day)
+            else:
+                slots = crud.get_worker_slots(
+                    s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
+                )
+                av = Availability.CreateFromSlots(slots)
+
+        busy_slots = crud.get_worker_slots(
+            s, worker.worker_id, slot_types=[TimeSlotType.BUSY, TimeSlotType.VISIT]
+        )
+        av.ReduceAvailabilityBySlots(busy_slots)
+        if service_length:
+            av.SplitByLength(length_seconds=45 * 60)
+        return av
+
+
+class AvailabilityPerWorker(BM):
+    availability: Dict[int, Availability]
+
+    @classmethod
+    def FromDict(cls, availability: Dict[int, Availability]):
+        return cls(availability=availability)
