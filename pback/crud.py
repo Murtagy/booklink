@@ -8,7 +8,7 @@ from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from models import Client, File, Slot, Token, User, Visit, WeeklySlot, Worker
+from models import Client, File, Service, Slot, Token, User, Visit, WeeklySlot, Worker
 from utils.users import hash_password, make_salt
 
 
@@ -219,3 +219,13 @@ def create_weekly_slot(
     db.commit()
     db.refresh(db_slot)
     return db_slot
+
+
+def create_service(db: Session, service: schemas.CreateService, client_id: int) -> Service:
+    serv = service.dict()
+    db_service = Service(**serv, client_id=client_id)
+    db.add(db_service)
+    db.commit()
+    db.refresh(db_service)
+    return db_service
+

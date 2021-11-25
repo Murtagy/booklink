@@ -96,6 +96,8 @@ class Service(BaseModel):
 
     name = Column(String, nullable=False)
     price = Column(Float)
+    price_lower_bound = Column(Float)
+    price_higher_bound = Column(Float)
     seconds = Column(Integer)  # length
     display_description = Column(String)
     description = Column(String)
