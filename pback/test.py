@@ -188,7 +188,7 @@ assert timeslots[1]["dt_to"] == "2021-11-29T15:45:00"
 
 ## WORKER_NO_SCHEDULE_ID
 r = requests.post(
-    localhost + f"create_slot",
+    localhost + f"slot",
     headers=headers,
     json={
         "name": "Рабочее время",
@@ -202,7 +202,7 @@ r = requests.post(
 assert r.status_code == 200, r.text
 
 r = requests.post(
-    localhost + f"public_create_slot",
+    localhost + f"public_slot",
     json={
         "name": "Визит клиент",
         "slot_type": "visit",

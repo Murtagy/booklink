@@ -25,6 +25,7 @@ from schemas.availability import (
 )
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot, WeeklySlot
 from schemas.worker import CreateWorker, OutWorker, UpdateWorker
+from schemas.service import CreateService, OutService
 from utils.users import oauth, validate_password
 
 SECRET_KEY = "12325e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -373,7 +374,7 @@ async def _get_client_availability(
     return worker_avs
 
 
-@app.post("/public_create_slot")
+@app.post("/public_slot")
 async def create_slot(
     slot: CreateSlot,
     s: Session = Depends(get_db_session),
@@ -388,7 +389,7 @@ async def create_slot(
     return {"slot_id": db_slot.slot_id}
 
 
-@app.post("/create_slot")
+@app.post("/slot")
 async def create_slot(
     slot: CreateSlot,
     s: Session = Depends(get_db_session),
@@ -446,6 +447,18 @@ async def create_worker_weekly_slot(
     print(db_slot.schedule_by_day)
     # d = {"slot_id": db_slot.slot_id, **db_slot.schedule_by_day}
     return "OK"
+
+
+# WORKERS
+@app.post("/service", response_model=OutService)
+async def create_worker(
+    service: CreateService,
+    s: Session = Depends(get_db_session),
+    current_user: models.User = Depends(get_current_user),
+):
+    client_id = current_user.client_id
+    db_service = crud.create_worker(s, service, client_id)
+    return db_service
 
 
 if __name__ == "__main__":
