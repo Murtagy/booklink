@@ -38,6 +38,11 @@ const routes = [
     name: 'Blank',
     component: () => import('../pages/Blank.vue')
   },
+  {
+    path: '/calendar',
+    name: 'Calendar',
+    component: () => import('../pages/Calendar.vue')
+  },
 ]
 
 const router = new VueRouter({

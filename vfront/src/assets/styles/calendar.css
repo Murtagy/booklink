@@ -1,0 +1,24 @@
+div.main {
+    font-family:"TimesNewRoman";
+}
+
+div.month {
+    text-align: center;
+    padding:30px;
+    font-size: 22px;
+}
+
+div.dates {
+    display:grid;
+    grid-template-columns: repeat(7,1fr);
+    grid-auto-rows: minmax(140px auto);
+    grid-gap:3px;
+    padding:20px;
+    width:auto;
+    font-size: 18px;
+}
+
+span {
+    padding: 20px;
+    border: 2px solid rgb(119, 96, 205);
+}
