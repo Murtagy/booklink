@@ -1,12 +1,10 @@
-import json
-import random
 from enum import Enum
 from io import BytesIO
 from typing import Any, Dict, List, Literal, Optional, Union
 
 import structlog
 import uvicorn  # type: ignore
-from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
+from fastapi import Depends, FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.security import OAuth2PasswordRequestForm
@@ -16,6 +14,7 @@ from sqlalchemy.orm import Session  # type: ignore
 import crud
 import db
 import models
+import app_exceptions as exceptions
 from schemas import InVisit, OutVisit, TokenOut, UserCreate, UserOut
 from schemas.availability import (
     Availability,
@@ -91,10 +90,10 @@ async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
 
     db_user = crud.get_user_by_email(s, user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail="User email already exists")
+        raise exceptions.EmailExists
     db_user = crud.get_user_by_username(s, user.username)
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
+        raise exceptions.UsernameExists
     db_client = crud.create_client(s, user.company)
     db_user = crud.create_user(s, user, db_client.client_id)
     # TODO add to client created_by user
@@ -118,25 +117,18 @@ async def get_current_user_or_none(
         return None
 
 
-BadTokenException = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Bad token!!!",
-    headers={"WWW-Authenticate": "Bearer"},
-)
-
-
 async def get_current_user(
     token: Optional[str] = Depends(oauth), s: Session = Depends(get_db_session)
 ) -> models.User:
     try:
         token_id = unjwttfy_token_id(token)
         if token_id is None:
-            raise BadTokenException
+            raise exceptions.BadToken
     except JWTError:
-        raise BadTokenException
+        raise exceptions.BadToken
     user = crud.get_user_by_token_id(s, token_id=token_id)
     if user is None:
-        raise BadTokenException
+        raise exceptions.BadToken
     return user
 
 
@@ -159,11 +151,10 @@ async def login_for_access_token(
 ):
     db_user = crud.get_user_by_username(s, form_data.username)
     if not db_user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise exceptions.BadCreds
     hashed_password = db_user.hashed_password
     if validate_password(form_data.password, hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-
+        raise exceptions.BadCreds
     access_token = crud.create_user_token(s, db_user.user_id)
     jwt_token = jwtfy(access_token)
     return {"access_token": jwt_token, "token_type": "bearer"}
@@ -179,7 +170,7 @@ def get_visit(
     # return OutVisit.Example()
     visit = crud.get_visit(s, visit_id)
     if not visit:
-        raise HTTPException(status_code=404, detail="Visit not found")
+        raise exceptions.VisitNotFound
     return visit
 
 
@@ -344,10 +335,10 @@ async def get_worker_availability(
     current_user: models.User = Depends(get_current_user),
 ) -> Availability:
     worker = crud.get_worker(s, worker_id)
-    # TODO, get length from service_id
     service_length = None
     if service_id:
-        service_length = 45 * 60
+        service = crud.get_service(s, service_id)
+        service_length = service.length_seconds
     av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
     return av
 
@@ -355,21 +346,27 @@ async def get_worker_availability(
 @app.get("/client_availability/{client_id}", response_model=AvailabilityPerWorker)
 async def get_client_availability(
     client_id: int,
-    s: Session = Depends(get_db_session),
+    service_id: Optional[int] = None,
     current_user: models.User = Depends(get_current_user),
+    s: Session = Depends(get_db_session),
 ) -> AvailabilityPerWorker:
-    d = await _get_client_availability(client_id, s)
+    service_length = None
+    if service_id:
+        service = crud.get_service(s, service_id)
+        service_length = service.length_seconds
+    d = await _get_client_availability(client_id, service_length)
     return AvailabilityPerWorker.FromDict(d)
 
 
 async def _get_client_availability(
     client_id: int,
+    service_length: Optional[int],
     s: Session = Depends(get_db_session),
 ) -> Dict[int, Availability]:
     workers = crud.get_workers(s, client_id)
     worker_avs: Dict[int, Availability] = {}
     for worker in workers:
-        av = await Availability.GetWorkerAV(s, worker)
+        av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
         worker_avs[worker.worker_id] = av
     return worker_avs
 
@@ -380,10 +377,9 @@ async def create_slot(
     s: Session = Depends(get_db_session),
 ):
     if slot.slot_type not in [TimeSlotType.VISIT]:
-        raise HTTPException(status_code=400, detail=f"Wrong slot type {slot.slot_type}")
+        raise exceptions.SlotType
 
-    exc = HTTPException(status_code=409, detail="Slot is not availiable")
-    slot = await slot.visit_pick_worker_and_check(s, exc=exc)
+    slot = await slot.visit_pick_worker_and_check(s, exc=exceptions.SlotNotAvailable)
 
     db_slot = crud.create_slot(s, slot)
     return {"slot_id": db_slot.slot_id}
@@ -397,8 +393,7 @@ async def create_slot(
 ):
     # TODO check against availability
     if slot.slot_type == TimeSlotType.VISIT:
-        exc = HTTPException(status_code=409, detail="Slot is not availiable")
-        slot = await slot.visit_pick_worker_and_check(s, exc=exc)
+        slot = await slot.visit_pick_worker_and_check(s, exc=exceptions.SlotNotAvailable)
     # for now I let availiability to duplicate
     db_slot = crud.create_slot(s, slot)
     return {"slot_id": db_slot.slot_id}
