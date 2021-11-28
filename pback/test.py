@@ -228,7 +228,7 @@ assert len(day["timeslots"]) == 2, day[
 ]  # assert 2 timeslots, no split by time requested
 
 r = requests.post(
-    localhost + f"create_slot",
+    localhost + f"slot",
     headers=headers,
     json={
         "name": "Визит клиент",
