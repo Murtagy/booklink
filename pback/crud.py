@@ -4,7 +4,7 @@ import uuid
 from datetime import timedelta
 from typing import List, Optional, Tuple, Union
 
-from fastapi import UploadFile
+from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
@@ -221,7 +221,9 @@ def create_weekly_slot(
     return db_slot
 
 
-def create_service(db: Session, service: schemas.CreateService, client_id: int) -> Service:
+def create_service(
+    db: Session, service: schemas.CreateService, client_id: int
+) -> Service:
     serv = service.dict()
     db_service = Service(**serv, client_id=client_id)
     db.add(db_service)
@@ -229,3 +231,20 @@ def create_service(db: Session, service: schemas.CreateService, client_id: int) 
     db.refresh(db_service)
     return db_service
 
+
+def get_service(
+    db: Session, service_id: int, *, not_found: Optional[HTTPException] = None
+) -> Optional[Service]:
+    q = db.query(Service).filter(Service.service_id == service_id)
+    slot = q.first()
+    if not slot and not_found:
+        raise not_found
+    return slot
+
+
+def get_services(db: Session, client_id: int, *, worker_id: Optional[int] = None):
+    q = db.query(Service).filter(Service.client_id == client_id)
+    if worker_id:
+        q.filter(Service.worker_id == worker_id)
+
+    return q.all()

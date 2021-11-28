@@ -11,10 +11,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # type: ignore
 from sqlalchemy.orm import Session  # type: ignore
 
+import app_exceptions as exceptions
 import crud
 import db
 import models
-import app_exceptions as exceptions
 from schemas import InVisit, OutVisit, TokenOut, UserCreate, UserOut
 from schemas.availability import (
     Availability,
@@ -22,9 +22,9 @@ from schemas.availability import (
     TimeSlot,
     TimeSlotType,
 )
+from schemas.service import CreateService, OutService
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot, WeeklySlot
 from schemas.worker import CreateWorker, OutWorker, UpdateWorker
-from schemas.service import CreateService, OutService
 from utils.users import oauth, validate_password
 
 SECRET_KEY = "12325e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -337,8 +337,8 @@ async def get_worker_availability(
     worker = crud.get_worker(s, worker_id)
     service_length = None
     if service_id:
-        service = crud.get_service(s, service_id)
-        service_length = service.length_seconds
+        service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
+        service_length = service.seconds
     av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
     return av
 
@@ -352,8 +352,8 @@ async def get_client_availability(
 ) -> AvailabilityPerWorker:
     service_length = None
     if service_id:
-        service = crud.get_service(s, service_id)
-        service_length = service.length_seconds
+        service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
+        service_length = service.seconds
     d = await _get_client_availability(client_id, service_length)
     return AvailabilityPerWorker.FromDict(d)
 
@@ -393,7 +393,9 @@ async def create_slot(
 ):
     # TODO check against availability
     if slot.slot_type == TimeSlotType.VISIT:
-        slot = await slot.visit_pick_worker_and_check(s, exc=exceptions.SlotNotAvailable)
+        slot = await slot.visit_pick_worker_and_check(
+            s, exc=exceptions.SlotNotAvailable
+        )
     # for now I let availiability to duplicate
     db_slot = crud.create_slot(s, slot)
     return {"slot_id": db_slot.slot_id}
@@ -444,16 +446,33 @@ async def create_worker_weekly_slot(
     return "OK"
 
 
-# WORKERS
 @app.post("/service", response_model=OutService)
-async def create_worker(
+async def create_service(
     service: CreateService,
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ):
     client_id = current_user.client_id
-    db_service = crud.create_worker(s, service, client_id)
+    db_service = crud.create_service(s, service, client_id)
     return db_service
+
+
+@app.get("/service/{service_id}")
+async def get_service(
+    service_id: int,
+    s: Session = Depends(get_db_session),
+):
+    return crud.get_service(s, service_id)
+
+
+@app.get("/client/{client_id}/services")
+async def get_services(
+    client_id: int,
+    worker_id: Optional[int],
+    s: Session = Depends(get_db_session),
+    current_user: models.User = Depends(get_current_user),
+):
+    return crud.get_services(s, client_id, worker_id=worker_id)
 
 
 if __name__ == "__main__":

@@ -23,7 +23,7 @@ CLIENT_ID = r.json()["client_id"]
 ### ASSURE LOGIN
 token = r.json()["access_token"]
 r = requests.get(localhost + "users/me", headers={"Authorization": "Bearer " + token})
-assert r.status_code == 200
+assert r.status_code == 200, r.text
 
 headers = {"Authorization": "Bearer " + token}
 
@@ -35,7 +35,7 @@ r = requests.post(
     },
 )
 print(r.text)
-assert r.status_code == 200
+assert r.status_code == 200, r.text
 ###
 
 ### Create worker
@@ -51,7 +51,7 @@ r = requests.get(
     headers=headers,
 )
 print(r.text)
-assert len(r.json()) == 1
+assert len(r.json()) == 1, r.text
 WORKER_ID = r.json()[0]["worker_id"]
 ###
 
@@ -81,51 +81,34 @@ print(r.text)
 assert len(r.json()) == 3
 ###
 
-# r = requests.get(localhost + "visit/1")
-# print(r.text)
+### Services
+r = requests.post(
+    localhost + f"service",
+    headers=headers,
+    json={
+        "name": "Стрижка",
+        "price": 13.1,
+        # price_lower_bound: Optional[float]
+        # price_higher_bound: Optional[float]
+        "seconds": 45 * 60,
+        "description": "Ножницы, все такое",
+    }
+)
+SERVICE_ID = r.json()["service_id"]
 
-# r = requests.post(
-#     localhost + "visit",
-#     json={
-#         "version": 1,
-#         "phone": "375",
-#         "email": "email@example.com",
-#         "client_id": "cc",  # no validation happens on transfer
-#         "services": [],
-#         "remind_me": True,
-#     },
-# )
-# print(r.text)
+r = requests.get(
+    localhost + f"service/{SERVICE_ID}",
+)
+assert r.json()["service_id"] == SERVICE_ID, r.text
 
-# r = requests.get(localhost+'visits')
-# print(r.text)
 
-# r = requests.put(localhost+'visit/5', json={
-#     'version': 1,
-#     'phone': '375',
-#     'client_id': 'cc',
-#     'services': [],
-#     'email': 'email@example.com',
-#     'type': 'type',
-#     'remind_me': False,
-# })
-# print(r.text)
+r = requests.get(
+    localhost + f"client/{CLIENT_ID}/services",
+)
+j = r.json()
+assert len(j) == 1, r.text
 
-# r = requests.get(localhost+'availability/5')
-# print(r.text)
-
-# print('Finished')
-
-# r = requests.post(
-#     localhost + "client_slot/1",
-#     headers=headers,
-#     json={
-#         "name": "nn",
-#         "slot_type": "busy",
-#         "from_datetime": "2021-11-15 12:00:00",
-#         "to_datetime": "2021-11-15 14:00:00",
-#     },
-# )
+### 
 
 ###  Test client availability
 r = requests.post(
@@ -166,7 +149,7 @@ assert r.status_code == 200, r.text
 
 ### Test worker availability
 r = requests.get(
-    localhost + f"worker_availability/{WORKER_ID}?service_id=5",
+    localhost + f"worker_availability/{WORKER_ID}?service_id={SERVICE_ID}",
     headers=headers,
 )
 assert r.status_code == 200, r.text
