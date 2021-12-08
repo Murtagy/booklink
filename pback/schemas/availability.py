@@ -271,13 +271,16 @@ class Availability(BM):
     async def GetWorkerAV(
         cls,
         s: Session,
-        worker: Union[int, models.Worker],
+        worker_u: Union[int, models.Worker],
         *,
         service_length: Optional[int] = None,
     ) -> "Availability":
         Availability = cls
-        if isinstance(worker, int):
-            worker = crud.get_worker(s, worker)
+        if isinstance(worker_u, int):
+            worker = crud.get_worker(s, worker_u)
+            assert worker is not None
+        else:
+            worker = worker_u
 
         if worker.use_company_schedule:
             wl = crud.get_client_weeklyslot(s, worker.client_id)
@@ -302,6 +305,19 @@ class Availability(BM):
         if service_length:
             av.SplitByLength(length_seconds=45 * 60)
         return av
+
+
+async def _get_client_availability(
+    client_id: int,
+    service_length: Optional[int],
+    s: Session,
+) -> Dict[int, Availability]:
+    workers = crud.get_workers(s, client_id)
+    worker_avs: Dict[int, Availability] = {}
+    for worker in workers:
+        av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
+        worker_avs[worker.worker_id] = av
+    return worker_avs
 
 
 class AvailabilityPerWorker(BM):

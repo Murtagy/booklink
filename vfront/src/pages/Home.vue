@@ -17,6 +17,7 @@
 </template>
 
 <script>
+console.log("HARDCODE", process.env.HARDCODE)
 export default {
     data() {return {'message': ''}},
 }

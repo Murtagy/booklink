@@ -242,9 +242,9 @@ def get_service(
     return slot
 
 
-def get_services(db: Session, client_id: int, *, worker_id: Optional[int] = None):
-    q = db.query(Service).filter(Service.client_id == client_id)
-    if worker_id:
-        q.filter(Service.worker_id == worker_id)
+# def get_services(db: Session, client_id: int, *, worker_id: Optional[int] = None):
+#     q = db.query(Service).filter(Service.client_id == client_id)
+#     if worker_id:
+#         q.filter(Service.worker_id == worker_id)
 
-    return q.all()
+#     return q.all()

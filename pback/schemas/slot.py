@@ -6,7 +6,7 @@ from fastapi.exceptions import HTTPException
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
-from .availability import Availability
+from .availability import Availability, _get_client_availability
 
 
 class CreateSlot(BM):
@@ -21,14 +21,15 @@ class CreateSlot(BM):
         self, s: Session, *, exc: HTTPException
     ) -> "CreateSlot":
         slot = self
-        worker_id = slot.worker_id
-        if worker_id:
+        _worker_id = slot.worker_id
+        if _worker_id:
+            worker_id = _worker_id
             av = await Availability.GetWorkerAV(s, worker_id)
             if not av.CheckSlot(slot):
                 raise exc
 
         else:
-            client_av = await _get_client_availability(s, slot.client_id)
+            client_av = await _get_client_availability(slot.client_id, None, s)
             workers_av = [
                 worker_id for (worker_id, av) in client_av.items() if av.CheckSlot(slot)
             ]

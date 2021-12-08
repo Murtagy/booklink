@@ -92,7 +92,7 @@ r = requests.post(
         # price_higher_bound: Optional[float]
         "seconds": 45 * 60,
         "description": "Ножницы, все такое",
-    }
+    },
 )
 SERVICE_ID = r.json()["service_id"]
 
@@ -108,7 +108,7 @@ r = requests.get(
 j = r.json()
 assert len(j) == 1, r.text
 
-### 
+###
 
 ###  Test client availability
 r = requests.post(
@@ -163,10 +163,10 @@ for day in days:
 
 assert date.weekday() == 0
 timeslots = day["timeslots"]
-assert timeslots[0]["dt_from"] == "2021-11-29T13:15:00"
-assert timeslots[0]["dt_to"] == "2021-11-29T14:00:00"
-assert timeslots[1]["dt_from"] == "2021-11-29T15:00:00"
-assert timeslots[1]["dt_to"] == "2021-11-29T15:45:00"
+assert timeslots[0]["dt_from"] == "2021-12-06T13:15:00"
+assert timeslots[0]["dt_to"] == "2021-12-06T14:00:00"
+assert timeslots[1]["dt_from"] == "2021-12-06T15:00:00"
+assert timeslots[1]["dt_to"] == "2021-12-06T15:45:00"
 # print(timeslots)
 
 ## WORKER_NO_SCHEDULE_ID

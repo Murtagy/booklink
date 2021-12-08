@@ -21,6 +21,7 @@ from schemas.availability import (
     AvailabilityPerWorker,
     TimeSlot,
     TimeSlotType,
+    _get_client_availability,
 )
 from schemas.service import CreateService, OutService
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot, WeeklySlot
@@ -332,12 +333,14 @@ async def get_worker_availability(
     worker_id: int,
     service_id: Optional[int] = None,
     s: Session = Depends(get_db_session),
-    current_user: models.User = Depends(get_current_user),
+    # current_user: models.User = Depends(get_current_user),
 ) -> Availability:
     worker = crud.get_worker(s, worker_id)
+    assert worker is not None
     service_length = None
     if service_id:
         service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
+        assert service is not None
         service_length = service.seconds
     av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
     return av
@@ -347,32 +350,20 @@ async def get_worker_availability(
 async def get_client_availability(
     client_id: int,
     service_id: Optional[int] = None,
-    current_user: models.User = Depends(get_current_user),
     s: Session = Depends(get_db_session),
+    # current_user: models.User = Depends(get_current_user),
 ) -> AvailabilityPerWorker:
     service_length = None
     if service_id:
         service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
+        assert service is not None
         service_length = service.seconds
-    d = await _get_client_availability(client_id, service_length)
+    d = await _get_client_availability(client_id, service_length, s)
     return AvailabilityPerWorker.FromDict(d)
 
 
-async def _get_client_availability(
-    client_id: int,
-    service_length: Optional[int],
-    s: Session = Depends(get_db_session),
-) -> Dict[int, Availability]:
-    workers = crud.get_workers(s, client_id)
-    worker_avs: Dict[int, Availability] = {}
-    for worker in workers:
-        av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
-        worker_avs[worker.worker_id] = av
-    return worker_avs
-
-
 @app.post("/public_slot")
-async def create_slot(
+async def public_create_slot(
     slot: CreateSlot,
     s: Session = Depends(get_db_session),
 ):
@@ -465,14 +456,14 @@ async def get_service(
     return crud.get_service(s, service_id)
 
 
-@app.get("/client/{client_id}/services")
-async def get_services(
-    client_id: int,
-    worker_id: Optional[int],
-    s: Session = Depends(get_db_session),
-    current_user: models.User = Depends(get_current_user),
-):
-    return crud.get_services(s, client_id, worker_id=worker_id)
+# @app.get("/client/{client_id}/services")
+# async def get_services(
+#     client_id: int,
+#     worker_id: Optional[int],
+#     s: Session = Depends(get_db_session),
+#     current_user: models.User = Depends(get_current_user),
+# ):
+#     return crud.get_services(s, client_id, worker_id=worker_id)
 
 
 if __name__ == "__main__":
