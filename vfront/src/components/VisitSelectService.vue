@@ -1,5 +1,6 @@
 <template>
   <div v-if="services"> 
+    <form>
     <ul>
     <li class="button">
         <button @click="emitServices">Далее <img src="../assets/arrow.png"></button>
@@ -10,7 +11,8 @@
         <label :for="service.id">{{service.name}}</label>
         <span class="price">{{service.price}} {{service.currency}}</span>
     </li>
-    </ul>       
+    </ul>   
+    </form>    
   </div>
 </template>
 
