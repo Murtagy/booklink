@@ -11,7 +11,7 @@
     <p> Пн, вт, ср, чт, пт, сб, вс </p>
     <div v-if="availability == null"> Loading ... </div>
     <div v-if="availability != null" class="dates">
-    <span v-for="day in calendar_dates" :key=day.getTime() v-bind:class="{clickable: isAvailable(day)}" >{{ day.getUTCDate() }}</span>
+    <span v-for="day in calendar_dates" :key=day.getTime() v-bind:class="{clickable: isAvailable(day), empty: isNotSelectedMonth(day)}" >{{ isNotSelectedMonth(day) ? '' : day.getUTCDate() }}</span>
     </div>
     <br />
     <div class="explication">
@@ -113,11 +113,12 @@ export default {
         },
         IsLessThenToday(date) {
             const today = new Date()
-            return date > today;
+            return date < today;
         },
         isAvailable(date){
             // validates date against calendar and availability
             if (this.IsLessThenToday(date)) { return false }
+            if (this.isNotSelectedMonth(date)) { return false }
             
             return true
         },
@@ -137,6 +138,9 @@ export default {
             console.log(this.calendar_start_date)
 
             this.updateCalendarDates()
+        },
+        isNotSelectedMonth(date){
+            return (date.getUTCMonth() != this.calendar_start_date.getUTCMonth())
         },
     },
     created() {
