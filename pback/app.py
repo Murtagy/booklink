@@ -448,7 +448,7 @@ async def create_service(
     return db_service
 
 
-@app.get("/service/{service_id}")
+@app.get("/service/{service_id}", response_model=OutService)
 async def get_service(
     service_id: int,
     s: Session = Depends(get_db_session),

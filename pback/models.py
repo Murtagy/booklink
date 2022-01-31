@@ -13,10 +13,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 
-from db import BaseModel, TableCreatedAt, TableId
+from db import BaseModel, ModelImpl, TableCreatedAt, TableId
 
 
-class Visit(BaseModel):
+class Visit(BaseModel, ModelImpl):
     __tablename__ = "visits"
 
     visit_id = TableId()
@@ -35,7 +35,7 @@ class Visit(BaseModel):
     slot_id = Column(Integer, ForeignKey("slots.slot_id"))
 
 
-class Client(BaseModel):
+class Client(BaseModel, ModelImpl):
     __tablename__ = "clients"
 
     client_id = TableId()
@@ -46,7 +46,7 @@ class Client(BaseModel):
     name = Column(String, index=True)
 
 
-class Worker(BaseModel):
+class Worker(BaseModel, ModelImpl):
     __tablename__ = "workers"
 
     worker_id = TableId()
@@ -64,7 +64,7 @@ class Worker(BaseModel):
     # use_company_services = Column(Boolean, nullable=False)
 
 
-class File(BaseModel):
+class File(BaseModel, ModelImpl):
     __tablename__ = "files"
 
     file_id = TableId()
@@ -77,7 +77,7 @@ class File(BaseModel):
     worker_id = Column(Integer, ForeignKey("workers.worker_id"))
 
 
-class Customer(BaseModel):
+class Customer(BaseModel, ModelImpl):
     __tablename__ = "customers"
 
     customer_id = TableId()
@@ -86,7 +86,7 @@ class Customer(BaseModel):
 
 
 # how Workers get their services
-class Service(BaseModel):
+class Service(BaseModel, ModelImpl):
     __tablename__ = "services"
 
     service_id = TableId()
@@ -106,7 +106,7 @@ class Service(BaseModel):
     # worker_inheritance = Column(String)  # give all
 
 
-class WorkersServices(BaseModel):
+class WorkersServices(BaseModel, ModelImpl):
     # abilities of worker
     __tablename__ = "workers_services"
 
@@ -118,7 +118,7 @@ class WorkersServices(BaseModel):
     # rel_type = Column(String)  # include
 
 
-class User(BaseModel):
+class User(BaseModel, ModelImpl):
     __tablename__ = "users"
 
     user_id = TableId()
@@ -133,7 +133,7 @@ class User(BaseModel):
     # is_active = Column(Boolean, default=True)
 
 
-class Token(BaseModel):
+class Token(BaseModel, ModelImpl):
     __tablename__ = "tokens"
 
     token_id = TableId()
@@ -142,7 +142,7 @@ class Token(BaseModel):
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
 
-class WeeklySlot(BaseModel):
+class WeeklySlot(BaseModel, ModelImpl):
     __tablename__ = "weekly_slots"
 
     active_from = Column(DateTime(timezone=True))
@@ -156,7 +156,7 @@ class WeeklySlot(BaseModel):
     schedule_by_day = Column(JSON, nullable=False)
 
 
-class Slot(BaseModel):
+class Slot(BaseModel, ModelImpl):
     __tablename__ = "slots"
 
     slot_id = TableId()

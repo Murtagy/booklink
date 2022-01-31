@@ -13,7 +13,7 @@ from utils.users import hash_password, make_salt
 
 
 def get_visit(db: Session, visit_id: int) -> Optional[Visit]:
-    return db.query(Visit).filter(Visit.visit_id == visit_id).first()
+    return Visit.get_by_id(db, visit_id)
 
 
 def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
@@ -101,11 +101,11 @@ def load_file(db: Session, file: UploadFile, client_id: int) -> int:
 
 
 def read_file(db: Session, file_id: int) -> Optional[File]:
-    return db.query(File).filter(File.file_id == file_id).first()
+    return File.get_by_id(db, file_id)
 
 
 def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
-    return db.query(Worker).filter(Worker.worker_id == worker_id).first()
+    return Worker.get_by_id(db, worker_id)
 
 
 def get_workers(db: Session, client_id: int) -> List[Worker]:
@@ -141,7 +141,7 @@ def update_worker(db: Session, worker: schemas.UpdateWorker, worker_id: int) -> 
 
 
 def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
-    return db.query(Slot).filter(Slot.slot_id == slot_id).first()
+    return Slot.get_by_id(db, slot_id)
 
 
 def create_slot(db: Session, slot: schemas.CreateSlot) -> Slot:
