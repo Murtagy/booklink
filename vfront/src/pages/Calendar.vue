@@ -4,7 +4,7 @@
     <button class="left" @click="moveToPrevMonth">
       <img class="left" src="../assets/arrow2.png" />
     </button>
-    <div class="month">Ноябрь 2021</div>
+    <div class="month"> {{ months_rus[calendar_start_date.getMonth()] }} {{ calendar_start_date.getFullYear() }}</div>
     <button class="right" @click="moveToNextMonth">
       <img class="right" src="../assets/arrow2.png" />
     </button>
@@ -32,13 +32,31 @@
 
 <script>
 import WideHeader from "../components/WideHeader.vue";
+
+const months_rus = {
+    0:  'Январь'  ,
+    1:  'Февраль' ,
+    2:  'Март'    ,
+    3:  'Апрель'  ,
+    4:  'Май'     ,
+    5:  'Июнь'    ,
+    6:  'Июль'    ,
+    7:  'Август'  ,
+    8:  'Сентябрь',
+    9:  'Октябрь' ,
+    10: 'Ноябрь'  ,
+    11: 'Декабрь' ,
+}
+
 export default {
     data() { 
+        const today = new Date()
         return {
             'availability': null, 
-            'calendar_start_date': new Date(),
+            'calendar_start_date': today,
             'calendar_dates': [],
             'no_backend': true,
+            'months_rus': months_rus,
         } 
     },
     components: { WideHeader },
@@ -112,6 +130,9 @@ export default {
             this.calendar_dates = calendar_dates
         },
         IsLessThenToday(date) {
+            // @bug
+            // here might be a bug in comparison, e.g. date with current timestamp compared with almost the same date
+            // triggered when updating the page fast enough
             const today = new Date()
             return date < today;
         },
