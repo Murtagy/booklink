@@ -23,12 +23,12 @@ button {
 }
 
 button.left {
-  margin-top: 140px;
-  margin-left: 18%;
+  margin-top: 150px;
+  margin-left: 16%;
 }
 
 button.right {
-  margin-right: 18%;
+  margin-right: 16%;
 }
 
 div.month {
@@ -37,9 +37,10 @@ div.month {
   margin-right: 25%;
   text-align: center;
   padding: 10px;
-  font-size: 22px;
+  font-size: 25px;
   font-weight: bolder;
   display: inline-block;
+  border-bottom: 3px solid rgb(119, 96, 205);
 }
 
 div.dates {
@@ -55,7 +56,14 @@ div.dates {
   margin-right: 6%;
 }
 
-span {
+span.day {
+  margin-top: 25px;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+span.dates {
   padding: 20px;
   border: 2px solid rgb(119, 96, 205);
 }
@@ -76,6 +84,7 @@ span.square {
   padding: 0;
   padding-left: 18px;
   margin-left: 12%;
+  border: 2px solid rgb(119, 96, 205);
 }
 
 span.description {

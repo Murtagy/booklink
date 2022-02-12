@@ -8,10 +8,10 @@
     <button class="right" @click="moveToNextMonth">
       <img class="right" src="../assets/arrow2.png" />
     </button>
-    <p> Пн, вт, ср, чт, пт, сб, вс </p>
     <div v-if="availability == null"> Loading ... </div>
     <div v-if="availability != null" class="dates">
-    <span v-for="day in calendar_dates" :key=day.getTime() v-bind:class="{clickable: isAvailable(day), empty: isNotSelectedMonth(day)}" >{{ isNotSelectedMonth(day) ? '' : day.getUTCDate() }}</span>
+    <span class=day>Пн</span><span class=day>Вт</span><span class=day>Ср</span><span class=day>Чт</span><span class=day>Пт</span><span class=day>Сб</span><span class=day>Вс</span>
+    <span v-for="day in calendar_dates" :key=day.getTime() v-bind:class="{clickable: isAvailable(day), empty: isNotSelectedMonth(day)}" class=dates>{{ isNotSelectedMonth(day) ? '' : day.getUTCDate() }}</span>
     </div>
     <br />
     <div class="explication">
