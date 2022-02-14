@@ -1,3 +1,6 @@
+// todo - move render and logic in different places, here should be only render part
+// todo - copy to components
+
 <template>
   <div class="main">
     <wide-header title="Выбор даты"></wide-header>
@@ -8,10 +11,16 @@
     <button class="right" @click="moveToNextMonth">
       <img class="right" src="../assets/arrow2.png" />
     </button>
-    <div v-if="availability == null"> Loading ... </div>
-    <div v-if="availability != null" class="dates">
+    <div 
+        v-if="(availability == null & availability_mode)"
+    > Loading ... 
+    </div>
+    <div 
+        v-if="!availability_mode || (availability != null && availability_mode)" 
+        class="dates"
+    >
     <span class=day>Пн</span><span class=day>Вт</span><span class=day>Ср</span><span class=day>Чт</span><span class=day>Пт</span><span class=day>Сб</span><span class=day>Вс</span>
-    <span v-for="day in calendar_dates" :key=day.getTime() v-bind:class="{clickable: isAvailable(day), empty: isNotSelectedMonth(day)}" class=dates>{{ isNotSelectedMonth(day) ? '' : day.getUTCDate() }}</span>
+    <span v-for="day in calendar_dates" :key=day.getTime() v-bind:class="{clickable: isClickable(day), empty: isNotSelectedMonth(day)}" class=dates>{{ isNotSelectedMonth(day) ? '' : day.getUTCDate() }}</span>
     </div>
     <br />
     <div class="explication">
@@ -25,8 +34,6 @@
         <!-- class="empty" for empty cells -->
     </div>
     
-    <!-- <p> Это временно, потом уберу, бусь </p> -->
-    <!-- {{ availability }} -->
   </div>
 </template>
 
@@ -52,52 +59,25 @@ export default {
     data() { 
         const today = new Date()
         return {
-            'availability': null, 
+            // 'availability': this.INavailability, 
+            // 'availability_mode': this.availability_mode,
             'calendar_start_date': today,
             'calendar_dates': [],
-            'no_backend': true,
             'months_rus': months_rus,
+            'no_backend': false,  // todo switch to env var
         } 
     },
+    props: ['availability', 'availability_mode'], // todo - handle None
     components: { WideHeader },
+    created() {
+      //   console.debug('Created Calendar page')
+      //   if (this.no_backend) {
+      //       this.availability = true
+      //   } else {
+      //       this.getAvailability()
+        this.updateCalendarDates();
+    },
     methods: {
-        getAvailability() {
-            console.log('Getting availability',)
-            this.$api.get('/client_availability/1?service_id=1', {"headers": {'Authorization': 'bearer ' + this.$store.state.jwt_auth}})
-            .then(response => { 
-                if (response.data == null) {
-                    console.log('GOT AVAILABILITY', response); 
-                    alert('Empty')
-                }
-                else {
-                    let availability = response.data.availability; 
-                    console.log('GOT AVAILABILITY', response); 
-                    this.availability = this.parseAvailability(availability);  
-                }
-            }).catch(e => console.log(e))
-        },
-        parseAvailability(a) {
-            console.log('Parsing...', a)
-            const av = {}
-            for (const worker_av of Object.values(a)) {
-                // console.log('worker_av', worker_av)
-                for (const row of worker_av['days']) {
-                    // console.log('row', row)
-                    const dt = row['date']
-                    for (const ts of row['timeslots'] ) {
-                        let _date
-                        if (av[dt] != null) {_date = av[dt]}
-                        else {_date = {};}
-                        const from = ts['dt_from']
-                        _date[from] = true;
-                        av[dt] = _date
-                    }
-                }
-            }
-            console.log('Parsed')
-
-            return av
-        },
         findCalendarBase(_date) {
             // finds a cell to begin calendar with (Monday which is 1st in current month or prior to that)
             let date = new Date(_date)
@@ -136,12 +116,37 @@ export default {
             const today = new Date()
             return date < today;
         },
-        isAvailable(date){
+        isClickable(date){
             // validates date against calendar and availability
             if (this.IsLessThenToday(date)) { return false }
             if (this.isNotSelectedMonth(date)) { return false }
+            if (this.isAvailable(date)) { return false }
             
             return true
+        },
+        isAvailable(__date) {
+            if (!this.availability_mode) {
+                return true 
+            }
+            if (this.availability == undefined) { 
+                // still loading?
+                return false
+            } 
+            
+            // js date to YYYY-MM-DD str
+            // ? do I need to care about UTC offset, seems no. https://stackoverflow.com/questions/23593052/format-javascript-date-as-yyyy-mm-dd
+            const _date = new Date(__date)
+            const date = _date.toISOString().split("T")[0];
+
+            if ( !(date in this.availability) ) {
+                return false
+            }
+            const timeslots = this.availability[date];
+            if ( timeslots.length == 0 ) {
+                return false
+            }
+            return true;
+
         },
         moveToNextMonth() {
             const date = this.calendar_start_date;
@@ -164,15 +169,7 @@ export default {
             return (date.getUTCMonth() != this.calendar_start_date.getUTCMonth())
         },
     },
-    created() {
-        console.debug('Created Calendar page')
-        if (this.no_backend) {
-            this.availability = true
-        } else {
-            this.getAvailability()
-        }
-        this.updateCalendarDates()
-    }
+
 }
 
 </script>
