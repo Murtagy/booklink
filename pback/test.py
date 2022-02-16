@@ -1,14 +1,16 @@
 import datetime
 import random
 
-from app import app
 from fastapi.testclient import TestClient
+
+from app import app
 
 client = TestClient(app)
 
 localhost = "http://127.0.0.1:8000/"
 
 ### Actions code
+
 
 def signup(username):
     r = client.post(
@@ -21,6 +23,7 @@ def signup(username):
         },
     )
     return r
+
 
 def login(username):
     r = client.post(
@@ -53,6 +56,7 @@ def get_workers():
     )
     return r
 
+
 def create_service(service):
     r = client.post(
         localhost + f"service",
@@ -66,6 +70,7 @@ def get_service(service_id):
     return client.get(
         localhost + f"service/{service_id}",
     )
+
 
 def get_client_service(client_id):
     return client.get(
@@ -91,10 +96,11 @@ def get_worker_availability(worker_id, service_id=None):
         headers=headers,
     )
 
+
 def create_slot(slot, *, public):
-    url = localhost  + f"slot"
+    url = localhost + f"slot"
     if public:
-        url = localhost  + f"public_slot"
+        url = localhost + f"public_slot"
 
     return client.post(
         url,
@@ -106,7 +112,9 @@ def create_slot(slot, *, public):
 def get_me():
     return client.get(localhost + "users/me", headers=headers)
 
+
 ### Tests code
+
 
 def test_portyanka():
     global headers
@@ -124,7 +132,6 @@ def test_portyanka():
     ### ASSURE LOGIN
     r = get_me()
     assert r.status_code == 200, r.text
-
 
     r = login(username)
     print(r.text)
@@ -157,20 +164,21 @@ def test_portyanka():
     ###
 
     ### Services
-    r = create_service({
-        "name": "Стрижка",
-        "price": 13.1,
-        # price_lower_bound: Optional[float]
-        # price_higher_bound: Optional[float]
-        "seconds": 45 * 60,
-        "description": "Ножницы, все такое",
-    })
+    r = create_service(
+        {
+            "name": "Стрижка",
+            "price": 13.1,
+            # price_lower_bound: Optional[float]
+            # price_higher_bound: Optional[float]
+            "seconds": 45 * 60,
+            "description": "Ножницы, все такое",
+        }
+    )
 
     SERVICE_ID = r.json()["service_id"]
 
     r = get_service(SERVICE_ID)
     assert r.json()["service_id"] == SERVICE_ID, r.text
-
 
     r = get_client_service(CLIENT_ID)
     j = r.json()
@@ -211,7 +219,6 @@ def test_portyanka():
     # assert timeslots[1]["dt_to"] == "2021-11-29T15:45:00"
     # print(timeslots)
     ###
-
 
     ### Test worker availability
     r = get_worker_availability(WORKER_ID, SERVICE_ID)
@@ -268,19 +275,18 @@ def test_portyanka():
     ]  # assert 2 timeslots, no split by time requested
 
     visit = {
-            "name": "Визит клиент",
-            "slot_type": "visit",
-            "client_id": CLIENT_ID,
-            "worker_id": WORKER_NO_SCHEDULE_ID,
-            "from_datetime": "2022-01-01T09:45:00",
-            "to_datetime": "2022-01-01T10:00:00",
-        }
+        "name": "Визит клиент",
+        "slot_type": "visit",
+        "client_id": CLIENT_ID,
+        "worker_id": WORKER_NO_SCHEDULE_ID,
+        "from_datetime": "2022-01-01T09:45:00",
+        "to_datetime": "2022-01-01T10:00:00",
+    }
 
     r = create_slot(visit, public=False)
     assert r.status_code == 409, r.text
 
     ##
-
 
     # r = client.post(
     #     localhost + "worker_weekly_slot/1",
