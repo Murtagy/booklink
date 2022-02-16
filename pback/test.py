@@ -1,13 +1,16 @@
 import datetime
 import random
 
-import requests
+from app import app
+from fastapi.testclient import TestClient
+
+client = TestClient(app)
 
 localhost = "http://127.0.0.1:8000/"
 
 ### CREATE NEW CLIENT
 username = str(random.randint(0, 1000)) + "test2"
-r = requests.post(
+r = client.post(
     localhost + "signup",
     json={
         "company": "Comp",
@@ -22,12 +25,12 @@ CLIENT_ID = r.json()["client_id"]
 
 ### ASSURE LOGIN
 token = r.json()["access_token"]
-r = requests.get(localhost + "users/me", headers={"Authorization": "Bearer " + token})
+r = client.get(localhost + "users/me", headers={"Authorization": "Bearer " + token})
 assert r.status_code == 200, r.text
 
 headers = {"Authorization": "Bearer " + token}
 
-r = requests.post(
+r = client.post(
     localhost + "token",
     data={
         "username": username,
@@ -39,14 +42,14 @@ assert r.status_code == 200, r.text
 ###
 
 ### Create worker
-r = requests.post(
+r = client.post(
     localhost + "worker",
     headers=headers,
     json={"name": "Макс", "job_title": "Разработчик"},
 )
 print(r.text)
 
-r = requests.get(
+r = client.get(
     localhost + "workers",
     headers=headers,
 )
@@ -56,7 +59,7 @@ WORKER_ID = r.json()[0]["worker_id"]
 ###
 
 ### Create worker (2)
-r = requests.post(
+r = client.post(
     localhost + "worker",
     headers=headers,
     json={"name": "Макс", "job_title": "Разработчик", "use_company_schedule": True},
@@ -64,7 +67,7 @@ r = requests.post(
 # assert r.status_code == 428
 
 ### Create worker (3)
-r = requests.post(
+r = client.post(
     localhost + "worker",
     headers=headers,
     json={"name": "Макс", "job_title": "Разработчик", "use_company_schedule": False},
@@ -73,7 +76,7 @@ print(r.text)
 WORKER_NO_SCHEDULE_ID = r.json()["worker_id"]
 
 ### Check workers n
-r = requests.get(
+r = client.get(
     localhost + "workers",
     headers=headers,
 )
@@ -82,7 +85,7 @@ assert len(r.json()) == 3
 ###
 
 ### Services
-r = requests.post(
+r = client.post(
     localhost + f"service",
     headers=headers,
     json={
@@ -96,13 +99,13 @@ r = requests.post(
 )
 SERVICE_ID = r.json()["service_id"]
 
-r = requests.get(
+r = client.get(
     localhost + f"service/{SERVICE_ID}",
 )
 assert r.json()["service_id"] == SERVICE_ID, r.text
 
 
-r = requests.get(
+r = client.get(
     localhost + f"client/{CLIENT_ID}/services",
 )
 j = r.json()
@@ -111,7 +114,7 @@ assert len(j) == 1, r.text
 ###
 
 ###  Test client availability
-r = requests.post(
+r = client.post(
     localhost + f"client_weekly_slot/{CLIENT_ID}",
     headers=headers,
     json={
@@ -126,7 +129,7 @@ r = requests.post(
 )
 assert r.status_code == 200, r.text
 
-# r = requests.get(
+# r = client.get(
 #     localhost + f"client_availability/{CLIENT_ID}",
 #     headers=headers,
 # )
@@ -148,7 +151,7 @@ assert r.status_code == 200, r.text
 
 
 ### Test worker availability
-r = requests.get(
+r = client.get(
     localhost + f"worker_availability/{WORKER_ID}?service_id={SERVICE_ID}",
     headers=headers,
 )
@@ -170,7 +173,7 @@ assert timeslots[1]["dt_to"] == "2021-12-06T15:45:00"
 # print(timeslots)
 
 ## WORKER_NO_SCHEDULE_ID
-r = requests.post(
+r = client.post(
     localhost + f"slot",
     headers=headers,
     json={
@@ -184,7 +187,7 @@ r = requests.post(
 )
 assert r.status_code == 200, r.text
 
-r = requests.post(
+r = client.post(
     localhost + f"public_slot",
     json={
         "name": "Визит клиент",
@@ -197,7 +200,7 @@ r = requests.post(
 )
 assert r.status_code == 200, r.text
 
-r = requests.get(
+r = client.get(
     localhost + f"worker_availability/{WORKER_NO_SCHEDULE_ID}",
     headers=headers,
 )
@@ -210,7 +213,7 @@ assert len(day["timeslots"]) == 2, day[
     "timeslots"
 ]  # assert 2 timeslots, no split by time requested
 
-r = requests.post(
+r = client.post(
     localhost + f"slot",
     headers=headers,
     json={
@@ -228,7 +231,7 @@ assert r.status_code == 409, r.text
 ##
 
 
-# r = requests.post(
+# r = client.post(
 #     localhost + "worker_weekly_slot/1",
 #     headers=headers,
 #     json={
