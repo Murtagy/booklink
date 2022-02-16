@@ -19,21 +19,19 @@
 <style scoped src="@/assets/styles/services.css"></style>
 
 <script>
+import services_mock from "@/mocks/services_mock.js"
 
 export default {
     components: { },
     data () { 
-        return { 
-            services: [ // test data for now
-                {"name": "Услуга X", "price": 25, "currency": "бел.руб", "id": "some_id1"}, 
-                {"name": "Услуга Y", "price": 25, "currency": "бел.руб", "id": "some_id2"},
-                {"name": "Услуга Z", "price": 25, "currency": "бел.руб", "id": "some_id3"},
-                {"name": "Услуга A", "price": 25, "currency": "бел.руб", "id": "some_id4"}, 
-                {"name": "Услуга B", "price": 25, "currency": "бел.руб", "id": "some_id5"},
-                {"name": "Услуга C", "price": 25, "currency": "бел.руб", "id": "some_id6"},
-            ],
-            checkedServices: [],
+        if (process.env.VUE_APP_OFFLINE) {
+            return { 
+                services: services_mock["mock"],
+                checkedServices: [],
+            }
         }
+        // TODO get services in online mode
+
     },
     methods: {
         emitServices: function () { 

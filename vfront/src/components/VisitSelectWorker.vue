@@ -1,12 +1,12 @@
 <template>
     <div id="main">
-        <button @click="emitWorker({'name': 'Анастасия Кoвалёва'})"><img src="../assets/worker-photo.jpg"><span id="name">Анастасия Кoвалёва</span><br><br><span id="job">Мастер-бровист</span><br><br>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et, esse sunt qui quis saepe neque, ea impedit laborum illum, dolores error nobis natus doloremque cumque nemo! Neque quisquam nemo unde. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Error eum odio cupiditate officiis laboriosam quibusdam quod sint, illo praesentium adipisci atque suscipit consectetur in nesciunt quasi quas explicabo earum mollitia?</button>
-        <button @click="emitWorker({'name': 'Анастасия Кoвалёва'})"><img src="../assets/worker-photo.jpg"><span id="name">Анастасия Кoвалёва</span><br><br><span id="job">Мастер-бровист</span><br><br>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et, esse sunt qui quis saepe neque, ea impedit laborum illum, dolores error nobis natus doloremque cumque nemo! Neque quisquam nemo unde. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Error eum odio cupiditate officiis laboriosam quibusdam quod sint, illo praesentium adipisci atque suscipit consectetur in nesciunt quasi quas explicabo earum mollitia?</button>
-        <button @click="emitWorker({'name': 'Анастасия Кoвалёва'})"><img src="../assets/worker-photo.jpg"><span id="name">Анастасия Кoвалёва</span><br><br><span id="job">Мастер-бровист</span><br><br>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et, esse sunt qui quis saepe neque, ea impedit laborum illum, dolores error nobis natus doloremque cumque nemo! Neque quisquam nemo unde. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Error eum odio cupiditate officiis laboriosam quibusdam quod sint, illo praesentium adipisci atque suscipit consectetur in nesciunt quasi quas explicabo earum mollitia?</button>
-        <button @click="emitWorker({'name': 'Анастасия Кoвалёва'})"><img src="../assets/worker-photo.jpg"><span id="name">Анастасия Кoвалёва</span><br><br><span id="job">Мастер-бровист</span><br><br>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et, esse sunt qui quis saepe neque, ea impedit laborum illum, dolores error nobis natus doloremque cumque nemo! Neque quisquam nemo unde. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Error eum odio cupiditate officiis laboriosam quibusdam quod sint, illo praesentium adipisci atque suscipit consectetur in nesciunt quasi quas explicabo earum mollitia?</button>
-        <button @click="emitWorker({'name': 'Анастасия Кoвалёва'})"><img src="../assets/worker-photo.jpg"><span id="name">Анастасия Кoвалёва</span><br><br><span id="job">Мастер-бровист</span><br><br>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et, esse sunt qui quis saepe neque, ea impedit laborum illum, dolores error nobis natus doloremque cumque nemo! Neque quisquam nemo unde. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Error eum odio cupiditate officiis laboriosam quibusdam quod sint, illo praesentium adipisci atque suscipit consectetur in nesciunt quasi quas explicabo earum mollitia?</button>
-        <button @click="emitWorker({'name': 'Анастасия Кoвалёва'})"><img src="../assets/worker-photo.jpg"><span id="name">Анастасия Кoвалёва</span><br><br><span id="job">Мастер-бровист</span><br><br>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et, esse sunt qui quis saepe neque, ea impedit laborum illum, dolores error nobis natus doloremque cumque nemo! Neque quisquam nemo unde. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Error eum odio cupiditate officiis laboriosam quibusdam quod sint, illo praesentium adipisci atque suscipit consectetur in nesciunt quasi quas explicabo earum mollitia?</button>
-        <button @click="emitWorker({'name': 'Анастасия Кoвалёва'})"><img src="../assets/worker-photo.jpg"><span id="name">Анастасия Кoвалёва</span><br><br><span id="job">Мастер-бровист</span><br><br>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et, esse sunt qui quis saepe neque, ea impedit laborum illum, dolores error nobis natus doloremque cumque nemo! Neque quisquam nemo unde. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Error eum odio cupiditate officiis laboriosam quibusdam quod sint, illo praesentium adipisci atque suscipit consectetur in nesciunt quasi quas explicabo earum mollitia?</button>
+        <button 
+            v-for="worker in workers" :key="worker.id" 
+            @click="emitWorker({'name': worker.name})">
+            <img src="../assets/worker-photo.jpg">
+            <span id="name">{{ worker.name }} </span>
+            <br><br><span id="job">{{ worker.job_title }}</span><br>
+            <br>{{ worker.description }} </button>
     </div>
 </template>
 
@@ -14,12 +14,15 @@
 
 <script>
 
+import workers_mock from "@/mocks/workers_mock.js"
+
 export default {
     components: { },
     data () { 
+        if (process.env.VUE_APP_OFFLINE) {
         return { 
-            workers: [ //  TODO test data
-            ],
+            workers: workers_mock["mock"],
+        }
         }
     },
     methods: {

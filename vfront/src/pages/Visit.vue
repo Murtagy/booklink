@@ -63,27 +63,25 @@ import VisitSelectDatetime from '@/components/VisitSelectDatetime.vue';
 import VisitSelectService from '@/components/VisitSelectService.vue';
 import VisitSelectWorker from '@/components/VisitSelectWorker.vue';
 
+import availability_mock from "@/mocks/availability_mock.js"
+
 export default {
     components: { WideHeader, VisitSelectDatetime, VisitSelectService, VisitSelectWorker },
     data () { 
+        var availability = null
+        if (process.env.VUE_APP_OFFLINE) {
+            availability = availability_mock["mock"]
+        }
         return { 
             // visit-type-form, visit-select- service/worker/datetime
-            'availability': null, 
+            'availability': availability, 
             "current_screen": "start",
             "worker": null,
             "services": [],
             "visit_time": null,
         }
     },
-      // created() {
-      //   console.debug('Created Calendar page')
-      //   if (this.no_backend) {
-      //       this.availability = true
-      //   } else {
-      //       this.getAvailability()
-      //   }
-      //   // this.updateCalendarDates()
-      // },
+
     methods: {
         changeCurrentScreen: function (x) { console.log('Change screen!', x); this.current_screen = x},
         applyCheckedServices: function (x) { 
@@ -96,20 +94,25 @@ export default {
           console(date, slots)
         },
         getAvailability() {
-            // sets this.availability
-            console.log('Getting availability',)
-            this.$api.get('/client_availability/1?service_id=1', {"headers": {'Authorization': 'bearer ' + this.$store.state.jwt_auth}})
-            .then(response => { 
-                if (response.data == null) {
-                    console.log('GOT AVAILABILITY', response); 
-                    alert('Empty')
-                }
-                else {
-                    let availability = response.data.availability; 
-                    console.log('GOT AVAILABILITY', response); 
-                    this.availability = this.parseAvailability(availability);  
-                }
-            }).catch(e => console.log(e))
+          // if (process.env.VUE_APP_OFFLINE) { 
+          //   this.availability = this.parseAvailability(availability_mock["mock"]);  
+          //   return 
+          // }
+
+          // sets this.availability
+          console.log('Getting availability',)
+          this.$api.get('/client_availability/1?service_id=1', {"headers": {'Authorization': 'bearer ' + this.$store.state.jwt_auth}})
+          .then(response => { 
+              if (response.data == null) {
+                  console.log('GOT AVAILABILITY', response); 
+                  alert('Empty')
+              }
+              else {
+                  let availability = response.data.availability; 
+                  console.log('GOT AVAILABILITY', response); 
+                  this.availability = this.parseAvailability(availability);  
+              }
+          }).catch(e => console.log(e))
         },
         parseAvailability(a) {
             console.log('Parsing...', a)

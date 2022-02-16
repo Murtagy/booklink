@@ -64,7 +64,7 @@ export default {
             'calendar_start_date': today,
             'calendar_dates': [],
             'months_rus': months_rus,
-            'no_backend': false,  // todo switch to env var
+            'no_backend': process.env.VUE_APP_OFFLINE,  // todo switch to env var
         } 
     },
     props: ['availability', 'availability_mode'], // todo - handle None
@@ -125,6 +125,7 @@ export default {
             return true
         },
         isAvailable(__date) {
+            // for now 
             if (!this.availability_mode) {
                 return true 
             }
@@ -135,6 +136,7 @@ export default {
             
             // js date to YYYY-MM-DD str
             // ? do I need to care about UTC offset, seems no. https://stackoverflow.com/questions/23593052/format-javascript-date-as-yyyy-mm-dd
+            // ^ todo: need to handle date offset
             const _date = new Date(__date)
             const date = _date.toISOString().split("T")[0];
 

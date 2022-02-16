@@ -33,6 +33,7 @@ export default {
     components: { WideHeader },
     data() {return {}},
     methods: {},
+    props: ['date', 'timeslots']
 }
 </script>
 
