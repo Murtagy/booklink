@@ -23,7 +23,7 @@ from schemas.availability import (
     TimeSlotType,
     _get_client_availability,
 )
-from schemas.service import CreateService, OutService
+from schemas.service import CreateService, OutService, OutServices
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot, WeeklySlot
 from schemas.worker import CreateWorker, OutWorker, UpdateWorker
 from utils.users import oauth, validate_password
@@ -338,13 +338,16 @@ async def get_worker_availability(
     worker = crud.get_worker(s, worker_id)
     assert worker is not None
 
-    total_service_length = None
+    total_service_length: Optional[int] = None
     if services:
-        _services = [int(s) for s in services.split(',')]
+        _services = [int(s) for s in services.split(",")]
         total_service_length = 0
         for service_id in _services:
-            service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
+            service = crud.get_service(
+                s, service_id, not_found=exceptions.ServiceNotFound
+            )
             assert service is not None
+            assert service.seconds is not None  # this is strange, mad mypy
             total_service_length += service.seconds
     av = await Availability.GetWorkerAV(s, worker, service_length=total_service_length)
     return av
@@ -358,13 +361,17 @@ async def get_client_availability(
     # current_user: models.User = Depends(get_current_user),
 ) -> AvailabilityPerWorker:
     total_service_length = None
-
     if services:
+        _services = [int(s) for s in services.split(",")]
         total_service_length = 0
-        for service_id in services:
-            service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
+        for service_id in _services:
+            service = crud.get_service(
+                s, service_id, not_found=exceptions.ServiceNotFound
+            )
             assert service is not None
+            assert service.seconds is not None  # this is strange, mad mypy
             total_service_length += service.seconds
+
     d = await _get_client_availability(client_id, total_service_length, s)
     return AvailabilityPerWorker.FromDict(d)
 
@@ -463,14 +470,14 @@ async def get_service(
     return crud.get_service(s, service_id)
 
 
-# @app.get("/client/{client_id}/services")
-# async def get_services(
-#     client_id: int,
-#     worker_id: Optional[int],
-#     s: Session = Depends(get_db_session),
-#     current_user: models.User = Depends(get_current_user),
-# ):
-#     return crud.get_services(s, client_id, worker_id=worker_id)
+@app.get("/client/{client_id}/services", response_model=OutServices)
+async def get_services(
+    client_id: int,
+    worker_id: Optional[int],
+    s: Session = Depends(get_db_session),
+    current_user: models.User = Depends(get_current_user),
+):
+    return crud.get_services(s, client_id, worker_id=worker_id)
 
 
 if __name__ == "__main__":

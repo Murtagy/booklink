@@ -108,6 +108,7 @@ class Service(BaseModel, ModelImpl):
 
 class WorkersServices(BaseModel, ModelImpl):
     # abilities of worker
+    # idea is that an owner will manually check what services each worker should have
     __tablename__ = "workers_services"
 
     rel_id = TableId()

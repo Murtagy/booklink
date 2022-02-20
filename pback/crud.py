@@ -8,7 +8,18 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from models import Client, File, Service, Slot, Token, User, Visit, WeeklySlot, Worker
+from models import (
+    Client,
+    File,
+    Service,
+    Slot,
+    Token,
+    User,
+    Visit,
+    WeeklySlot,
+    Worker,
+    WorkersServices,
+)
 from utils.users import hash_password, make_salt
 
 
@@ -242,9 +253,20 @@ def get_service(
     return slot
 
 
-# def get_services(db: Session, client_id: int, *, worker_id: Optional[int] = None):
-#     q = db.query(Service).filter(Service.client_id == client_id)
-#     if worker_id:
-#         q.filter(Service.worker_id == worker_id)
+def get_services(db: Session, client_id: int, *, worker_id: Optional[int] = None):
+    if worker_id:
+        return _get_services_for_worker(db, client_id, worker_id)
+    return _get_services_for_client(db, client_id)
 
-#     return q.all()
+
+def _get_services_for_client(db: Session, client_id: int):
+    q = db.query(Service).filter(Service.client_id == client_id)
+    return q.all()
+
+
+def _get_services_for_worker(db: Session, client_id: int, worker_id: int):
+    worker_services = db.query(WorkersServices).filter(
+        WorkersServices.worker_id == worker_id
+    )
+    q = db.query(Service).filter(Service.service_id._in(worker_services))  # todo: test
+    return q.all()

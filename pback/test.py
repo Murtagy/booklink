@@ -89,7 +89,10 @@ def create_client_weekly_slot(client_id, schedule):
 def get_worker_availability(worker_id, services=None):
     url = f"worker_availability/{worker_id}"
     if services is not None:
-        url = localhost + f"worker_availability/{worker_id}?services={','.join([str(i) for i in services])}"
+        url = (
+            localhost
+            + f"worker_availability/{worker_id}?services={','.join([str(i) for i in services])}"
+        )
     print(url)
 
     return client.get(
