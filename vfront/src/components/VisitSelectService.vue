@@ -19,19 +19,14 @@
 <style scoped src="@/assets/styles/services.css"></style>
 
 <script>
-import services_mock from "@/mocks/services_mock.js"
 
 export default {
     components: { },
     data () { 
-        if (process.env.VUE_APP_OFFLINE) {
             return { 
-                services: services_mock["mock"],
                 checkedServices: [],
             }
-        }
         // TODO get services in online mode
-
     },
     methods: {
         emitServices: function () { 
@@ -39,7 +34,8 @@ export default {
             this.$emit('go-start-screen'); 
             console.log(this.checkedServices)
         }
-    }
+    },
+    props: ["services"],
 };
 
 </script>

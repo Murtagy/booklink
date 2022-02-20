@@ -9,48 +9,47 @@
         <li>
           <button v-on:click="changeCurrentScreen('visit-select-service')" ><img src="../assets/list-icon.jpg">Услуга</button>
 
-          <div v-if="services.length != 0"> 
-              <ul>
-                <li v-for="service in services" :key="service.id">
+          <span v-if="checked_services.length != 0"> 
+                <p v-for="service in checked_services" :key="service.id">
                   {{service.name}} {{service.price}} {{service.currency}}
-                </li>
-              </ul>
-          </div>
+                </p>
+          </span>
 
         </li>
         <li>
           <button v-on:click="changeCurrentScreen('visit-select-worker')" ><img src="../assets/worker-icon.png">Сотрудник</button>
 
-          <div v-if="worker!=null" class="selected">
+          <span v-if="worker!=null" class="selected">
             {{ worker.name }}
-          </div>
+          </span>
 
         </li>
-        <li>
+        <li v-show="(checked_services.length > 0)">
           <button v-on:click="changeCurrentScreen('visit-select-datetime')" ><img src="../assets/calendar-icon.png">Дата и время</button>
-          <div v-if=" visit_time != null " class="selected">
-            Дата и время
-          </div>
+          <span v-if=" visit_time != null " class="selected">
+            Дата и время {visit_time}
+          </span>
         </li>
       </ul>
           <input type="button" value="Сформировать запись" name="create-visit" id="create-visit">
     </form>
 
-    <visit-select-datetime
-      v-if="current_screen=='visit-select-datetime'" 
-      v-on:go-start-screen="changeCurrentScreen('start')"
-      v-on:select-date="applySelectedDate"
-      v-bind:availability="availability"
-    />
     <visit-select-service      
       v-if="current_screen=='visit-select-service'"  
       v-on:go-start-screen="changeCurrentScreen('start')"
       v-on:check-services="applyCheckedServices"
+      v-bind:services="services"
     />
     <visit-select-worker   
       v-if="current_screen=='visit-select-worker'"
       v-on:go-start-screen="changeCurrentScreen('start')"
       v-on:select-worker=applySelectedWorker
+    />
+    <visit-select-datetime
+      v-if="current_screen=='visit-select-datetime'" 
+      v-on:go-start-screen="changeCurrentScreen('start')"
+      v-on:select-date="applySelectedDate"
+      v-bind:availability="availability"
     />
   </div>
 </template>
@@ -64,28 +63,38 @@ import VisitSelectService from '@/components/VisitSelectService.vue';
 import VisitSelectWorker from '@/components/VisitSelectWorker.vue';
 
 import availability_mock from "@/mocks/availability_mock.js"
+import services_mock from "@/mocks/services_mock.js"
 
 export default {
     components: { WideHeader, VisitSelectDatetime, VisitSelectService, VisitSelectWorker },
     data () { 
         var availability = null
+        var services = []
         if (process.env.VUE_APP_OFFLINE) {
             availability = availability_mock["mock"]
+            services = services_mock["mock"]
         }
         return { 
             // visit-type-form, visit-select- service/worker/datetime
-            'availability': availability, 
+            "availability": availability, 
+            "checked_services": [],
+            "client_id": null,  // sets when mounted
             "current_screen": "start",
-            "worker": null,
-            "services": [],
+            "services": services,
             "visit_time": null,
+            "worker": null,
         }
     },
-
+    mounted() {
+      this.client_id = this.$route.query.org || null;  // setting null to avoid undefined
+      this.getServices();
+      // alert(`client_id ${this.client_id}`)
+    },
     methods: {
         changeCurrentScreen: function (x) { console.log('Change screen!', x); this.current_screen = x},
+        // todo: flush selection (something has been selected, current availability might be wrong)
         applyCheckedServices: function (x) { 
-          this.services = x;
+          this.checked_services = x;
           this.getAvailability();
         },
         applySelectedWorker: function (x) { this.worker = x },
@@ -93,16 +102,40 @@ export default {
           // todo: slots are parsed in a map atm, date: bool, not sure why did it, might be better to parse that into a simple array
           console(date, slots)
         },
+        getServices() {
+          function handle_gs_error(error) {
+            console.log(error);
+          }
+          function handle_gs_response(response) {
+              if (response.data == null) {
+                  console.log('Got services', response); 
+                  alert('Empty')
+              }
+              else {
+                  let services = response.data.services; 
+                  console.log('Got services', response); 
+                  this.services = this.parseServices(services);  
+              }
+          }
+          let path = `/client/${this.client_id}/services`
+          this.$api.get(
+            path,
+            // no need for auth here, keeping for example use
+            // {"headers": {'Authorization': 'bearer ' + this.$store.state.jwt_auth}}
+          )
+          .then(handle_gs_response).catch(handle_gs_error)
+        },
+        parseServices(s) {
+          // todo
+        },
         getAvailability() {
-          // if (process.env.VUE_APP_OFFLINE) { 
-          //   this.availability = this.parseAvailability(availability_mock["mock"]);  
-          //   return 
-          // }
-
           // sets this.availability
-          console.log('Getting availability',)
-          this.$api.get('/client_availability/1?service_id=1', {"headers": {'Authorization': 'bearer ' + this.$store.state.jwt_auth}})
-          .then(response => { 
+
+          // todo: check if called in offline
+          function handle_av_error(error) {
+            console.log(error);
+          }
+          function handle_av_response(response) {
               if (response.data == null) {
                   console.log('GOT AVAILABILITY', response); 
                   alert('Empty')
@@ -112,7 +145,19 @@ export default {
                   console.log('GOT AVAILABILITY', response); 
                   this.availability = this.parseAvailability(availability);  
               }
-          }).catch(e => console.log(e))
+          }
+
+          console.log('Getting availability',)
+          let path = `/client_availability/${this.client_id}`
+          if (this.checked_services.length > 0) {
+            path += `?services=${this.checked_services.join(",")}`
+          }
+          this.$api.get(
+            path,
+            // no need for auth here, keeping for example use
+            // {"headers": {'Authorization': 'bearer ' + this.$store.state.jwt_auth}}
+          )
+          .then(handle_av_response).catch(handle_av_error)
         },
         parseAvailability(a) {
             console.log('Parsing...', a)
