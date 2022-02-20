@@ -58,12 +58,12 @@ class Availability(BM):
             target_day = today + datetime.timedelta(days=day_delta)
             weekday = DAYS[target_day.weekday()]
             list_from_to = schedule[weekday] if schedule else []
-            print(list_from_to)
+            # print(list_from_to)
             if not list_from_to:
                 continue
             timeslots = []
             for l in list_from_to:
-                print(l)
+                # print(l)
                 time_from = datetime.datetime.strptime(l[0], "%H:%M")
                 time_to = datetime.datetime.strptime(l[1], "%H:%M")
                 dt_from = datetime.datetime.combine(target_day, time_from.time())
@@ -83,7 +83,7 @@ class Availability(BM):
     def CreateFromSlots(cls, slots: List[models.Slot]):
         days: Dict[datetime.date, Day] = {}
         for slot in slots:
-            print(slot.slot_type)
+            # print(slot.slot_type)
             assert slot.slot_type == TimeSlotType.AVAILABLE
             slot_from_date = slot.from_datetime.date()
             if slot_from_date in days:
@@ -110,20 +110,20 @@ class Availability(BM):
         """Reduces timeslots by busy/visit slots"""
         # need assure sort
         # @speed - sorted version
-        print("Reducing")
+        # print("Reducing")
         days = self.days
-        print(slots)
+        # print(slots)
         for slot in slots:
-            print("Slot", slot.from_datetime, slot.to_datetime)
+            # print("Slot", slot.from_datetime, slot.to_datetime)
             assert slot.slot_type in [TimeSlotType.BUSY, TimeSlotType.VISIT]
             for iday, day in enumerate(days):
-                print(day.date)
+                # print(day.date)
                 new_ts = []
                 date = day.date
                 if not slot.from_datetime.date() <= date <= slot.to_datetime.date():
                     continue
 
-                print("Not skipped")
+                # print("Not skipped")
                 for its, ts in enumerate(day.timeslots):
                     f = ts.dt_from
                     t = ts.dt_to
@@ -167,7 +167,7 @@ class Availability(BM):
                     # f_  _t
                     #   FT
                     if F > f and T < t:
-                        print("SLOT IN")
+                        # print("SLOT IN")
                         # we create 2 slots for that
                         new_ts.append(
                             TimeSlot(
@@ -222,30 +222,31 @@ class Availability(BM):
             for t in day.timeslots:
                 if prev_t and prev_t.dt_to == t.dt_from:
                     # bypassing per-service length split
-                    print(f"t dt from {t.dt_from} -> {prev_t.dt_from}")
+                    # print(f"t dt from {t.dt_from} -> {prev_t.dt_from}")
                     t.dt_from = prev_t.dt_from
 
                 if t.dt_from <= slot.from_datetime and slot.to_datetime <= t.dt_to:
-                    print(
-                        "Able to fit visit in availability slot",
-                        t.dt_from,
-                        t.dt_to,
-                        t.slot_type,
-                        slot.from_datetime,
-                        slot.to_datetime,
-                    )
+                    # print(
+                    #     "Able to fit visit in availability slot",
+                    #     t.dt_from,
+                    #     t.dt_to,
+                    #     t.slot_type,
+                    #     slot.from_datetime,
+                    #     slot.to_datetime,
+                    # )
                     return True
                 else:
-                    print(
-                        "Skip slot for visit",
-                        t.dt_from,
-                        t.dt_to,
-                        t.slot_type,
-                        slot.from_datetime,
-                        slot.to_datetime,
-                    )
+                    pass
+                    # print(
+                    #     "Skip slot for visit",
+                    #     t.dt_from,
+                    #     t.dt_to,
+                    #     t.slot_type,
+                    #     slot.from_datetime,
+                    #     slot.to_datetime,
+                    # )
                 prev_t = t
-        print("Not time for visit")
+        # print("Not time for visit")
         return False
 
     @classmethod
@@ -303,7 +304,7 @@ class Availability(BM):
         )
         av.ReduceAvailabilityBySlots(busy_slots)
         if service_length:
-            av.SplitByLength(length_seconds=45 * 60)
+            av.SplitByLength(length_seconds=service_length)
         return av
 
 

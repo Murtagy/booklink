@@ -86,7 +86,7 @@ def unjwttfy_token_id(token: Optional[str]) -> Optional[str]:
 
 @app.post("/signup", response_model=TokenOut)
 async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
-    print(user)
+    # print(user)
     # return {"access_token": 'asda', "token_type": "bearer"}
 
     db_user = crud.get_user_by_email(s, user.email)
@@ -111,10 +111,10 @@ async def get_current_user_or_none(
     token: Optional[str] = Depends(oauth), s: Session = Depends(get_db_session)
 ) -> Optional[models.User]:
     if token:
-        print("TOKEN")
+        # print("TOKEN")
         return await get_current_user(token, s)
     else:
-        print("NO TOKEN")
+        # print("NO TOKEN")
         return None
 
 
@@ -319,7 +319,7 @@ async def get_file(
 ) -> StreamingResponse:
     f = crud.read_file(s, int(file_name))
     assert f is not None
-    print("File id:", f.file_id)
+    # print("File id:", f.file_id)
     b = f.file
     bytes_io = BytesIO()
     bytes_io.write(b)
@@ -331,33 +331,40 @@ async def get_file(
 @app.get("/worker_availability/{worker_id}", response_model=Availability)
 async def get_worker_availability(
     worker_id: int,
-    service_id: Optional[int] = None,
+    services: str = None,
     s: Session = Depends(get_db_session),
     # current_user: models.User = Depends(get_current_user),
 ) -> Availability:
     worker = crud.get_worker(s, worker_id)
     assert worker is not None
-    service_length = None
-    if service_id:
-        service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
-        assert service is not None
-        service_length = service.seconds
-    av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
+    total_service_length = 0
+    if services:
+        _services = [int(s) for s in services.split(',')]
+        total_service_length = 0
+        for service_id in _services:
+            service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
+            assert service is not None
+            total_service_length += service.seconds
+    av = await Availability.GetWorkerAV(s, worker, service_length=total_service_length)
     return av
 
 
 @app.get("/client_availability/{client_id}", response_model=AvailabilityPerWorker)
 async def get_client_availability(
     client_id: int,
-    service_id: Optional[int] = None,
+    services: list[int] = None,
     s: Session = Depends(get_db_session),
     # current_user: models.User = Depends(get_current_user),
 ) -> AvailabilityPerWorker:
     service_length = None
-    if service_id:
-        service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
-        assert service is not None
-        service_length = service.seconds
+
+    print(services)
+    if services:
+        total_service_length = 0
+        for service_id in services:
+            service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
+            assert service is not None
+            total_service_length += service.seconds
     d = await _get_client_availability(client_id, service_length, s)
     return AvailabilityPerWorker.FromDict(d)
 
@@ -432,7 +439,7 @@ async def create_worker_weekly_slot(
     assert db_worker
     client_id = db_worker.client_id
     db_slot = crud.create_weekly_slot(s, slot, client_id, worker_id=worker_id)
-    print(db_slot.schedule_by_day)
+    # print(db_slot.schedule_by_day)
     # d = {"slot_id": db_slot.slot_id, **db_slot.schedule_by_day}
     return "OK"
 

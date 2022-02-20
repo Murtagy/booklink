@@ -86,10 +86,11 @@ def create_client_weekly_slot(client_id, schedule):
     )
 
 
-def get_worker_availability(worker_id, service_id=None):
+def get_worker_availability(worker_id, services=None):
     url = f"worker_availability/{worker_id}"
-    if service_id is not None:
-        url = localhost + f"worker_availability/{worker_id}?service_id={service_id}"
+    if services is not None:
+        url = localhost + f"worker_availability/{worker_id}?services={','.join([str(i) for i in services])}"
+    print(url)
 
     return client.get(
         url,
@@ -134,16 +135,16 @@ def test_portyanka():
     assert r.status_code == 200, r.text
 
     r = login(username)
-    print(r.text)
+    # print(r.text)
     assert r.status_code == 200, r.text
     ###
 
     ### Create worker
     r = create_worker()
-    print(r.text)
+    # print(r.text)
 
     r = get_workers()
-    print(r.text)
+    # print(r.text)
     assert len(r.json()) == 1, r.text
     WORKER_ID = r.json()[0]["worker_id"]
     ###
@@ -154,12 +155,12 @@ def test_portyanka():
 
     ### Create worker (3)
     r = create_worker(use_company_schedule=False)
-    print(r.text)
+    # print(r.text)
     WORKER_NO_SCHEDULE_ID = r.json()["worker_id"]
 
     ### Check workers n
     r = get_workers()
-    print(r.text)
+    # print(r.text)
     assert len(r.json()) == 3
     ###
 
@@ -221,8 +222,9 @@ def test_portyanka():
     ###
 
     ### Test worker availability
-    r = get_worker_availability(WORKER_ID, SERVICE_ID)
+    r = get_worker_availability(WORKER_ID, [SERVICE_ID, 8])
     assert r.status_code == 200, r.text
+    print(r.text)
 
     days = r.json()["days"]
     for day in days:
@@ -264,7 +266,7 @@ def test_portyanka():
 
     assert r.status_code == 200, r.text
 
-    r = get_worker_availability(WORKER_NO_SCHEDULE_ID, SERVICE_ID)
+    r = get_worker_availability(WORKER_NO_SCHEDULE_ID, [SERVICE_ID])
 
     days = r.json()["days"]
     # print(days)
