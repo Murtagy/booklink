@@ -337,7 +337,8 @@ async def get_worker_availability(
 ) -> Availability:
     worker = crud.get_worker(s, worker_id)
     assert worker is not None
-    total_service_length = 0
+
+    total_service_length = None
     if services:
         _services = [int(s) for s in services.split(',')]
         total_service_length = 0
@@ -352,20 +353,19 @@ async def get_worker_availability(
 @app.get("/client_availability/{client_id}", response_model=AvailabilityPerWorker)
 async def get_client_availability(
     client_id: int,
-    services: list[int] = None,
+    services: str = None,
     s: Session = Depends(get_db_session),
     # current_user: models.User = Depends(get_current_user),
 ) -> AvailabilityPerWorker:
-    service_length = None
+    total_service_length = None
 
-    print(services)
     if services:
         total_service_length = 0
         for service_id in services:
             service = crud.get_service(s, service_id, not_found=exceptions.ServiceNotFound)
             assert service is not None
             total_service_length += service.seconds
-    d = await _get_client_availability(client_id, service_length, s)
+    d = await _get_client_availability(client_id, total_service_length, s)
     return AvailabilityPerWorker.FromDict(d)
 
 
