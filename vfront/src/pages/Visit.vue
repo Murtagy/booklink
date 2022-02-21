@@ -1,3 +1,7 @@
+// Main page of visit booking process.
+// Visit page is in control of fetching the data and setting the props of other components
+// Other pages are considered sub-pages and are not independant
+
 <template>
   <div 
 
@@ -79,7 +83,6 @@ export default {
             workers = workers_mock["mock"]
         }
         return { 
-            // visit-type-form, visit-select- service/worker/datetime
             "availability": availability, 
             "checked_services": [],
             "client_id": null,  // sets when mounted
@@ -88,6 +91,8 @@ export default {
             "visit_time": null,
             "worker": null,
             "workers": workers,
+            // todo: add loading (passed to child components and renders loading screen while something is loaded)
+            // todo: expose selection in the path; https://forum.vuejs.org/t/how-to-restore-the-exact-state-of-a-route-when-clicking-the-back-button/109105/6
         }
     },
     computed: {
