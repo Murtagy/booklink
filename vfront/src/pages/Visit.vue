@@ -44,6 +44,7 @@
       v-if="current_screen=='visit-select-worker'"
       v-on:go-start-screen="changeCurrentScreen('start')"
       v-on:select-worker=applySelectedWorker
+      v-bind:workers="workers"
     />
     <visit-select-datetime
       v-if="current_screen=='visit-select-datetime'" 
@@ -64,15 +65,18 @@ import VisitSelectWorker from '@/components/VisitSelectWorker.vue';
 
 import availability_mock from "@/mocks/availability_mock.js"
 import services_mock from "@/mocks/services_mock.js"
+import workers_mock from "@/mocks/workers_mock.js"
 
 export default {
     components: { WideHeader, VisitSelectDatetime, VisitSelectService, VisitSelectWorker },
     data () { 
         var availability = null
         var services = []
-        if (process.env.VUE_APP_OFFLINE) {
+        var workers = []
+        if (process.env.VUE_APP_OFFLINE == true) {
             availability = availability_mock["mock"]
             services = services_mock["mock"]
+            workers = workers_mock["mock"]
         }
         return { 
             // visit-type-form, visit-select- service/worker/datetime
@@ -83,10 +87,18 @@ export default {
             "services": services,
             "visit_time": null,
             "worker": null,
+            "workers": workers,
         }
+    },
+    computed: {
+      checkedServicesIds() {
+        return this.checked_services.map(s => { return s.service_id })
+      }
     },
     mounted() {
       this.client_id = this.$route.query.org || null;  // setting null to avoid undefined
+      
+      this.getWorkers();
       this.getServices();
       // alert(`client_id ${this.client_id}`)
     },
@@ -102,11 +114,42 @@ export default {
           // todo: slots are parsed in a map atm, date: bool, not sure why did it, might be better to parse that into a simple array
           console(date, slots)
         },
+        getWorkers() { 
+         function handle_gw_error(error) {
+            console.log(error);
+          }
+          function _handle_gw_response(response) {
+              // notice - this is bound to the function below 
+              if (response.data == null) {
+                  console.log('Got workers', response); 
+                  alert('Empty')
+              }
+              else {
+                  let workers = response.data.workers; 
+                  console.log('Got workers', response); 
+                  this.workers = this.parseWorkers(workers);  
+              }
+          }
+          const handle_gw_response = _handle_gw_response.bind(this)
+
+          let path = `/client/${this.client_id}/workers`
+          this.$api.get(
+            path,
+          )
+          .then(handle_gw_response).catch(handle_gw_error)
+        },
+        parseWorkers(w) {
+          // todo
+          console.log(w)
+          return w;
+        },
         getServices() {
           function handle_gs_error(error) {
             console.log(error);
           }
-          function handle_gs_response(response) {
+
+          function _handle_gs_response(response) {
+              // notice - this is bound to the function below 
               if (response.data == null) {
                   console.log('Got services', response); 
                   alert('Empty')
@@ -117,6 +160,8 @@ export default {
                   this.services = this.parseServices(services);  
               }
           }
+          const handle_gs_response = _handle_gs_response.bind(this)
+
           let path = `/client/${this.client_id}/services`
           this.$api.get(
             path,
@@ -127,6 +172,8 @@ export default {
         },
         parseServices(s) {
           // todo
+          console.log(s)
+          return s;
         },
         getAvailability() {
           // sets this.availability
@@ -135,7 +182,7 @@ export default {
           function handle_av_error(error) {
             console.log(error);
           }
-          function handle_av_response(response) {
+          function _handle_av_response(response) {
               if (response.data == null) {
                   console.log('GOT AVAILABILITY', response); 
                   alert('Empty')
@@ -146,12 +193,17 @@ export default {
                   this.availability = this.parseAvailability(availability);  
               }
           }
+          const handle_av_response = _handle_av_response.bind(this)
 
           console.log('Getting availability',)
-          let path = `/client_availability/${this.client_id}`
-          if (this.checked_services.length > 0) {
-            path += `?services=${this.checked_services.join(",")}`
+          let path = `/client/${this.client_id}/availability`
+          if (this.worker != null) {
+            path = `/client/${this.client_id}/worker/${this.worker.worker_id}/availability`
           }
+          if (this.checked_services.length > 0) {
+            path += `?services=${this.checkedServicesIds.join(",")}`
+          }
+          // todo add workers 
           this.$api.get(
             path,
             // no need for auth here, keeping for example use

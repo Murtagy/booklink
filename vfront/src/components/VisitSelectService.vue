@@ -6,9 +6,9 @@
         <button @click="emitServices">Далее <img src="../assets/arrow.png"></button>
     </li>
     {{checkedServices}}
-    <li v-for="service in services" :key="service.name">
-        <input type="checkbox" class="checkbox" name="service" :id="service.id" :value="service" v-model="checkedServices">
-        <label :for="service.id">{{service.name}}</label>
+    <li v-for="service in services" :key="service.service_id">
+        <input type="checkbox" class="checkbox" name="service" :id="service.service_id" :value="service" v-model="checkedServices">
+        <label :for="service.service_id">{{service.name}}</label>
         <span class="price">{{service.price}} {{service.currency}}</span>
     </li>
     </ul>   

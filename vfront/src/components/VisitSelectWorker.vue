@@ -1,8 +1,8 @@
 <template>
     <div id="main">
         <button 
-            v-for="worker in workers" :key="worker.id" 
-            @click="emitWorker({'name': worker.name})">
+            v-for="worker in workers" :key="worker.worker_id" 
+            @click="emitWorker(worker)">
             <img src="../assets/worker-photo.jpg">
             <span id="name">{{ worker.name }} </span>
             <br><br><span id="job">{{ worker.job_title }}</span><br>
@@ -14,24 +14,17 @@
 
 <script>
 
-import workers_mock from "@/mocks/workers_mock.js"
-
 export default {
     components: { },
-    data () { 
-        if (process.env.VUE_APP_OFFLINE) {
-        return { 
-            workers: workers_mock["mock"],
-        }
-        }
+    data () { return {} 
     },
     methods: {
         emitWorker: function (x) { 
             this.$emit('select-worker', x);
             this.$emit('go-start-screen'); 
-            console.log(this.checkedServices)
         }
-    }
+    },
+    props: ["workers"],
 };
 
 
