@@ -86,13 +86,10 @@ def create_client_weekly_slot(client_id, schedule):
     )
 
 
-def get_worker_availability(worker_id, services=None):
-    url = f"worker_availability/{worker_id}"
+def get_worker_availability(client_id, worker_id, services=None):
+    url = f"client/{client_id}/worker/{worker_id}/availability"
     if services is not None:
-        url = (
-            localhost
-            + f"worker_availability/{worker_id}?services={','.join([str(i) for i in services])}"
-        )
+        url += f"?services={','.join([str(i) for i in services])}"
     print(url)
 
     return client.get(
@@ -149,7 +146,7 @@ def test_portyanka():
     r = get_workers()
     # print(r.text)
     assert len(r.json()) == 1, r.text
-    WORKER_ID = r.json()[0]["worker_id"]
+    WORKER_ID = r.json()["workers"][0]["worker_id"]
     ###
 
     ### Create worker (2)
@@ -164,7 +161,7 @@ def test_portyanka():
     ### Check workers n
     r = get_workers()
     # print(r.text)
-    assert len(r.json()) == 3
+    assert len(r.json()["workers"]) == 3
     ###
 
     ### Services
@@ -184,6 +181,18 @@ def test_portyanka():
     r = get_service(SERVICE_ID)
     assert r.json()["service_id"] == SERVICE_ID, r.text
 
+    r = create_service(
+        {
+            "name": "Стрижка",
+            "price": 13.1,
+            # price_lower_bound: Optional[float]
+            # price_higher_bound: Optional[float]
+            "seconds": 45 * 60,
+            "description": "Ножницы, все такое",
+        }
+    )
+
+    SERVICE_ID2 = r.json()["service_id"]
     r = get_client_service(CLIENT_ID)
     j = r.json()
     assert len(j) == 1, r.text
@@ -225,7 +234,7 @@ def test_portyanka():
     ###
 
     ### Test worker availability
-    r = get_worker_availability(WORKER_ID, [SERVICE_ID, 8])
+    r = get_worker_availability(CLIENT_ID, WORKER_ID, [SERVICE_ID])
     assert r.status_code == 200, r.text
     print(r.text)
 
@@ -238,10 +247,32 @@ def test_portyanka():
 
     assert date.weekday() == 0
     timeslots = day["timeslots"]
-    assert timeslots[0]["dt_from"] == "2021-12-06T13:15:00"
-    assert timeslots[0]["dt_to"] == "2021-12-06T14:00:00"
-    assert timeslots[1]["dt_from"] == "2021-12-06T15:00:00"
-    assert timeslots[1]["dt_to"] == "2021-12-06T15:45:00"
+    
+    parse = datetime.datetime.fromisoformat
+    dt_from0, dt_to0 = parse(timeslots[0]["dt_from"]), parse(timeslots[0]["dt_to"])
+    dt_from1, dt_to1 = parse(timeslots[1]["dt_from"]), parse(timeslots[1]["dt_to"])
+    assert (dt_to0 - dt_from0).total_seconds() / 60 == 45
+    assert (dt_to1 - dt_from1).total_seconds() / 60 == 45
+    # availability for 2 services
+    r = get_worker_availability(CLIENT_ID, WORKER_ID, [SERVICE_ID, SERVICE_ID2])
+    assert r.status_code == 200, r.text
+    print(r.text)
+
+    days = r.json()["days"]
+    for day in days:
+        date = day["date"]
+        date = datetime.datetime.fromisoformat(date)
+        if date.weekday() == 0:
+            break
+
+    assert date.weekday() == 0
+    timeslots = day["timeslots"]
+    
+    parse = datetime.datetime.fromisoformat
+    dt_from0, dt_to0 = parse(timeslots[0]["dt_from"]), parse(timeslots[0]["dt_to"])
+    dt_from1, dt_to1 = parse(timeslots[1]["dt_from"]), parse(timeslots[1]["dt_to"])
+    assert (dt_to0 - dt_from0).total_seconds() / 60 == 90
+    assert (dt_to1 - dt_from1).total_seconds() / 60 == 90
     # print(timeslots)
 
     ## WORKER_NO_SCHEDULE_ID
@@ -269,7 +300,7 @@ def test_portyanka():
 
     assert r.status_code == 200, r.text
 
-    r = get_worker_availability(WORKER_NO_SCHEDULE_ID, [SERVICE_ID])
+    r = get_worker_availability(CLIENT_ID, WORKER_NO_SCHEDULE_ID)
 
     days = r.json()["days"]
     # print(days)

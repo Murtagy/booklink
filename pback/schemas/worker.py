@@ -33,3 +33,7 @@ class OutWorker(BM):
 
     class Config:
         orm_mode = True
+
+
+class OutWorkers(BM):
+    workers: list[OutWorker]

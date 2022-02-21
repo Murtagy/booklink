@@ -25,7 +25,7 @@ from schemas.availability import (
 )
 from schemas.service import CreateService, OutService, OutServices
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot, WeeklySlot
-from schemas.worker import CreateWorker, OutWorker, UpdateWorker
+from schemas.worker import CreateWorker, OutWorker, UpdateWorker, OutWorkers
 from utils.users import oauth, validate_password
 
 SECRET_KEY = "12325e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -287,17 +287,25 @@ async def delete_worker(worker_id: str):
     return True
 
 
-@app.get("/workers", response_model=List[OutWorker])
+@app.get("/client/{client_id}/workers", response_model=OutWorkers)
+async def get_workers_by_client(
+    client_id: int,
+    s: Session = Depends(get_db_session),
+    # current_user: models.User = Depends(get_current_user),
+):
+    db_workers = crud.get_workers(s, client_id)
+    
+    return OutWorkers(workers=db_workers)
+
+
+@app.get("/workers", response_model=OutWorkers)
 async def get_workers(
     s: Session = Depends(get_db_session),
     current_user: models.User = Depends(get_current_user),
 ):
     db_workers = crud.get_workers(s, current_user.client_id)
-    # assert db_workers is not None
-
-    # assert current_user.client_id == db_worker.client_id
-
-    return db_workers
+    
+    return OutWorkers(workers=db_workers)
 
 
 @app.post("/file")
@@ -328,7 +336,7 @@ async def get_file(
     return r
 
 
-@app.get("/worker_availability/{worker_id}", response_model=Availability)
+@app.get("/client/{client_id}/worker/{worker_id}/availability", response_model=Availability)
 async def get_worker_availability(
     worker_id: int,
     services: str = None,
@@ -353,7 +361,7 @@ async def get_worker_availability(
     return av
 
 
-@app.get("/client_availability/{client_id}", response_model=AvailabilityPerWorker)
+@app.get("/client/{client_id}/availability/", response_model=AvailabilityPerWorker)
 async def get_client_availability(
     client_id: int,
     services: str = None,
@@ -470,8 +478,17 @@ async def get_service(
     return crud.get_service(s, service_id)
 
 
+@app.get("/client/{client_id}/service/{service_id}", response_model=OutService)
+async def get_service_by_client(
+    client_id: int,
+    service_id: int,
+    s: Session = Depends(get_db_session),
+):
+    return crud.get_service(s, service_id)
+
+
 @app.get("/client/{client_id}/services", response_model=OutServices)
-async def get_services(
+async def get_services_by_client(
     client_id: int,
     worker_id: Optional[int],
     s: Session = Depends(get_db_session),
