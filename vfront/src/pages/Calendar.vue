@@ -20,7 +20,14 @@
         class="dates"
     >
     <span class=day>Пн</span><span class=day>Вт</span><span class=day>Ср</span><span class=day>Чт</span><span class=day>Пт</span><span class=day>Сб</span><span class=day>Вс</span>
-    <span v-for="day in calendar_dates" :key=day.getTime() v-bind:class="{clickable: isClickable(day), empty: isNotSelectedMonth(day)}" class=dates>{{ isNotSelectedMonth(day) ? '' : day.getUTCDate() }}</span>
+    <span 
+        v-for="day in calendar_dates"
+        :key=day.getTime()
+        v-bind:class="{clickable: isClickable(day), empty: isNotSelectedMonth(day)}"
+        class=dates
+        @click="emitDate(day)"
+    >{{ isNotSelectedMonth(day) ? '' : day.getUTCDate() }}
+    </span>
     </div>
     <br />
     <div class="explication">
@@ -78,6 +85,9 @@ export default {
         this.updateCalendarDates();
     },
     methods: {
+        emitDate(day) {
+            this.$emit('pick-date', day)
+        },
         findCalendarBase(_date) {
             // finds a cell to begin calendar with (Monday which is 1st in current month or prior to that)
             let date = new Date(_date)
