@@ -25,7 +25,7 @@
         :key=day.getTime()
         v-bind:class="{clickable: isClickable(day), empty: isNotSelectedMonth(day)}"
         class=dates
-        @click="emitDate(day)"
+        @click="emitDateIfClickable(day)"
     >{{ isNotSelectedMonth(day) ? '' : day.getUTCDate() }}
     </span>
     </div>
@@ -85,8 +85,10 @@ export default {
         this.updateCalendarDates();
     },
     methods: {
-        emitDate(day) {
-            this.$emit('pick-date', day)
+        emitDateIfClickable(day) {
+            if (this.isClickable(day)) {
+                this.$emit('pick-date', day)
+            }
         },
         findCalendarBase(_date) {
             // finds a cell to begin calendar with (Monday which is 1st in current month or prior to that)
@@ -130,9 +132,9 @@ export default {
             // validates date against calendar and availability
             if (this.IsLessThenToday(date)) { return false }
             if (this.isNotSelectedMonth(date)) { return false }
-            if (this.isAvailable(date)) { return false }
+            if (this.isAvailable(date)) { return true }
             
-            return true
+            return false
         },
         isAvailable(__date) {
             // for now 
@@ -154,7 +156,7 @@ export default {
                 return false
             }
             const timeslots = this.availability[date];
-            if ( timeslots.length == 0 ) {
+            if ( Object.keys(timeslots).length == 0 ) {
                 return false
             }
             return true;
