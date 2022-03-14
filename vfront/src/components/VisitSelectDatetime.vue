@@ -3,11 +3,12 @@
         <calendar v-if="screen=='calendar'"
             v-bind:availability=availability
             v-bind:availability_mode=availability_mode
-            v-on:pick-date="pickDate"
+            @pick-date="pickDate"
         />
         <TimeSched v-if="screen=='time'"
             v-bind:date=selected_date
             v-bind:timeslots=timeslots
+            @pick-timeslot="pickTimeSlot"
         />
     </div>
 </template>
@@ -38,6 +39,10 @@ export default {
 
             this.timeslots = this.availability[date]
             this.screen = 'time'
+        },
+        pickTimeSlot(x) {
+            console.log('Picked timeslot', x)
+            this.$emit('select-datetime', this.selected_date, x)
         }
     }
 

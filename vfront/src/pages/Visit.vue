@@ -11,7 +11,7 @@
     <form v-if="current_screen=='start'">
       <ul>
         <li>
-          <button v-on:click="changeCurrentScreen('visit-select-service')" ><img src="../assets/list-icon.jpg">Услуга</button>
+          <button @click="changeCurrentScreen('visit-select-service')" ><img src="../assets/list-icon.jpg">Услуга</button>
 
           <span v-if="checked_services.length != 0"> 
                 <p v-for="service in checked_services" :key="service.id">
@@ -21,7 +21,7 @@
 
         </li>
         <li>
-          <button v-on:click="changeCurrentScreen('visit-select-worker')" ><img src="../assets/worker-icon.png">Сотрудник</button>
+          <button @click="changeCurrentScreen('visit-select-worker')" ><img src="../assets/worker-icon.png">Сотрудник</button>
 
           <span v-if="worker!=null" class="selected">
             {{ worker.name }}
@@ -29,9 +29,9 @@
 
         </li>
         <li v-show="(checked_services.length > 0)">
-          <button v-on:click="changeCurrentScreen('visit-select-datetime')" ><img src="../assets/calendar-icon.png">Дата и время</button>
+          <button @click="changeCurrentScreen('visit-select-datetime')" ><img src="../assets/calendar-icon.png">Дата и время</button>
           <span v-if=" visit_time != null " class="selected">
-            Дата и время {visit_time}
+            Дата и время {{visit_time}}
           </span>
         </li>
       </ul>
@@ -40,20 +40,20 @@
 
     <visit-select-service      
       v-if="current_screen=='visit-select-service'"  
-      v-on:go-start-screen="changeCurrentScreen('start')"
-      v-on:check-services="applyCheckedServices"
+      @go-start-screen="changeCurrentScreen('start')"
+      @check-services="applyCheckedServices"
       v-bind:services="services"
     />
     <visit-select-worker   
       v-if="current_screen=='visit-select-worker'"
-      v-on:go-start-screen="changeCurrentScreen('start')"
-      v-on:select-worker=applySelectedWorker
+      @go-start-screen="changeCurrentScreen('start')"
+      @select-worker=applySelectedWorker
       v-bind:workers="workers"
     />
     <visit-select-datetime
       v-if="current_screen=='visit-select-datetime'" 
-      v-on:go-start-screen="changeCurrentScreen('start')"
-      v-on:select-date="applySelectedDate"
+      @go-start-screen="changeCurrentScreen('start')"
+      @select-datetime="applySelectedDateTime"
       v-bind:availability="availability"
     />
   </div>
@@ -113,11 +113,17 @@ export default {
         applyCheckedServices: function (x) { 
           this.checked_services = x;
           this.getAvailability();
+          this.changeCurrentScreen('start')
         },
-        applySelectedWorker: function (x) { this.worker = x },
-        applySelectedDate: function (date, slots) {
+        applySelectedWorker: function (x) {
+          this.worker = x 
+          this.changeCurrentScreen('start')
+        },
+        applySelectedDateTime: function (date, slot) {
           // todo: slots are parsed in a map atm, date: bool, not sure why did it, might be better to parse that into a simple array
-          console(date, slots)
+          console.log(date, slot)
+          this.visit_time = slot
+          this.changeCurrentScreen('start')
         },
         getWorkers() { 
          function handle_gw_error(error) {

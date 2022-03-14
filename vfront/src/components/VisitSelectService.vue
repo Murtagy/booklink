@@ -31,7 +31,6 @@ export default {
     methods: {
         emitServices: function () { 
             this.$emit('check-services', this.checkedServices);
-            this.$emit('go-start-screen'); 
             console.log(this.checkedServices)
         }
     },

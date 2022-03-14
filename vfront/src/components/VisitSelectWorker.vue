@@ -21,7 +21,6 @@ export default {
     methods: {
         emitWorker: function (x) { 
             this.$emit('select-worker', x);
-            this.$emit('go-start-screen'); 
         }
     },
     props: ["workers"],

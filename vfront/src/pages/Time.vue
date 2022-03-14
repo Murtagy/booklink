@@ -17,7 +17,9 @@
         >
           <th>{{row}}</th>
           <td v-for="time in filterRowTimeslots(row)" 
-            :key=time><button>{{formatTimeSlot(time)}}</button></td
+            :key=time
+            @click="emitTimeSlot(time)"
+          ><button>{{formatTimeSlot(time)}}</button></td
           >
         </tr>
 
@@ -60,6 +62,10 @@ export default {
         const hours = ts.map(_ts => new Date(_ts) )
         return hours.filter(_ts => _ts.getHours() == hour)
       },
+      emitTimeSlot(timeslot) {
+        console.log('Emit ts', timeslot)
+        this.$emit('pick-timeslot', timeslot)
+      }
     },
     props: ['date', 'timeslots']
 }
