@@ -1,18 +1,16 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
-<script> 
-import '@/assets/styles/main.css'
+<script>
+import "@/assets/styles/main.css";
 
 export default {
-  components: {
-  },
+  components: {},
   data() {
-    return {}
+    return {};
   },
-
-}
+};
 </script>

@@ -1,59 +1,52 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 
-Vue.use(VueRouter)
-
-const routes = [
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
   {
-    path: '/',
-    name: 'Home',
-    component: () => import('../pages/Home.vue')
+    path: "/",
+    name: "Home",
+    component: () => import("../pages/HomePage.vue"),
   },
   {
-    path: '/registration',
-    name: 'Registration',
+    path: "/registration",
+    name: "Registration",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     // component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-    component: () => import('../pages/Registration.vue')
+    component: () => import("../pages/RegistrationPage.vue"),
   },
   {
-    path: '/visit',
-    name: 'Visit',
-    component: () => import('../pages/Visit.vue')
+    path: "/visit",
+    name: "Visit",
+    component: () => import("../pages/VisitPage.vue"),
   },
   {
-    path: '/my_user',
-    name: 'User',
-    component: () => import('../pages/MyUser.vue')
+    path: "/my_user",
+    name: "User",
+    component: () => import("../pages/MyUser.vue"),
   },
   {
-    path: '/dev',
-    name: 'Dev',
-    component: () => import('../pages/Dev.vue')
+    path: "/dev",
+    name: "Dev",
+    component: () => import("../pages/DevPage.vue"),
   },
   {
-    path: '/blank',
-    name: 'Blank',
-    component: () => import('../pages/Blank.vue')
+    path: "/blank",
+    name: "Blank",
+    component: () => import("../pages/BlankPage.vue"),
   },
   {
-    path: '/calendar',
-    name: 'Calendar',
-    component: () => import('../pages/Calendar.vue')
+    path: "/calendar",
+    name: "Calendar",
+    component: () => import("../pages/CalendarPicker.vue"),
   },
   {
-    path: '/time',
-    name: 'Time',
-    component: () => import('../pages/Time.vue')
+    path: "/time",
+    name: "Time",
+    component: () => import("../pages/TimePicker.vue"),
   },
 ]
-
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes
 })
-
-export default router
+export default router;

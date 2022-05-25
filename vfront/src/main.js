@@ -1,24 +1,34 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import axios from 'axios'
-import App from './App.vue'
-import router from './router/router_main'
-import store from './app_store'
+import { createApp } from "vue";
 
-Vue.config.productionTip = false
-Vue.use(Vuex)
-Vue.use({
-    install (Vue) {
-    Vue.prototype.$api = axios.create({
-      baseURL: 'http://localhost:8000/'
-    })
-  }
-})
+import axios from "axios";
+import { createPinia } from "pinia";
 
+import App from "./App.vue";
+import router from "./router/router_main";
+import useStore from "./app_store";
 
-new Vue({
-  // data: {http: axios},
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+const app = createApp(App);
+// Vue.config.productionTip = false;
+
+const apiPlugin = {
+  install(app) {
+    // configure the app
+    app.config.globalProperties.$api = axios.create({
+      baseURL: "http://localhost:8000/",
+    });
+  },
+};
+
+const authPlugin = {
+  install(app) {
+    // configure the app
+    app.config.globalProperties.$authStore = useStore();
+  },
+};
+
+app.use(createPinia())
+app.use(apiPlugin);
+app.use(authPlugin);
+app.use(router);
+
+app.mount("#app");
