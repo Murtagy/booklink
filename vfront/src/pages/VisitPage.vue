@@ -144,7 +144,7 @@ export default {
     },
     getWorkers() {
       if (import.meta.env.VITE_APP_OFFLINE == "true") {
-        return 
+        return;
       }
 
       function handle_gw_error(error) {
@@ -173,7 +173,7 @@ export default {
     },
     getServices() {
       if (import.meta.env.VITE_APP_OFFLINE == "true") {
-        return 
+        return;
       }
 
       function handle_gs_error(error) {

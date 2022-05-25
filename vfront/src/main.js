@@ -26,7 +26,7 @@ const authPlugin = {
   },
 };
 
-app.use(createPinia())
+app.use(createPinia());
 app.use(apiPlugin);
 app.use(authPlugin);
 app.use(router);
