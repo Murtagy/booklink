@@ -80,31 +80,66 @@ export default {
   methods: {
     Register() {
       console.log("REGISTER");
-      // let token = null
-      this.$api
-        .post("/signup", {
-          username: this.username,
-          email: this.email,
-          company: this.company,
-          password: this.password,
-        })
-        .then((response) => {
-          let token = response.data.access_token;
-          if (token) {
-            this.$store.commit("setJwt", token);
-            this.$router.push("/my_user");
-          } else {
-            this.DisplayError("Произошла ошибка!");
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-          this.DisplayError("Произошла ошибка");
-        });
+      if (this.password != this.password_confirmation) {
+        alert('Пароль не совпадает')
+      }
+      else if (this.password == "") {
+        alert('Форма не заполнена')
+      }
+      else if (this.email == "") {
+        alert('Форма не заполнена')
+      }
+      else if (this.username == "") {
+        alert('Форма не заполнена')
+      }
+      else if (this.company == "") {
+        alert('Форма не заполнена')
+      }
+      else {
+        this.$api
+          .post("/signup", {
+            username: this.username,
+            email: this.email,
+            company: this.company,
+            password: this.password,
+          })
+          .then((response) => {
+            let token = response.data.access_token;
+            if (token) {
+              this.$authStore.setJwt(token);
+              this.$router.push("/my_user");
+            } else {
+              this.DisplayError("Произошла ошибка");
+            }
+          })
+          .catch((e) => {
+            if (e.response) {
+              this.DisplayErrorFromResponse(e.response);
+            }
+            else {
+              this.DisplayError(e);
+            }
+          });
+      };
       // TODO catch error
     },
-    DisplayError(t) {
-      alert(t);
+    DisplayError(e) {
+      alert("Произошла ошибка", e);
+    },
+    DisplayErrorFromResponse(response) {
+      let details = response.data.detail
+      let msg;
+      if (details) {
+        switch(details) {
+          case "User email already exists":
+            msg = "User email already exists";
+          case "User email already exists":
+            msg = "Username already exists";
+          default:
+            msg = details;
+        }
+        alert(msg);
+      }
     },
   },
 };

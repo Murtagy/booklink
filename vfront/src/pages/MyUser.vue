@@ -9,10 +9,10 @@ export default {
   },
   methods: {
     getUser() {
-      console.log("Getting user for jwt", this.$store.state.jwt_auth);
+      console.log("Getting user for jwt", this.$authStore.jwt_auth);
       this.$api
         .get("/my_user", {
-          headers: { Authorization: "bearer " + this.$store.state.jwt_auth },
+          headers: { Authorization: "bearer " + this.$authStore.jwt_auth },
         })
         .then((response) => {
           if (response.data == null) {

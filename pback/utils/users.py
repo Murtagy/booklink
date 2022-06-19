@@ -38,11 +38,8 @@ async def get_current_user_or_none(
     token: Optional[str] = Depends(oauth), s: Session = Depends(db.get_session)
 ) -> Optional[models.User]:
     if token:
-        # print("TOKEN")
         return await get_current_user(token, s)
-    else:
-        # print("NO TOKEN")
-        return None
+    return None
 
 
 async def get_current_user(

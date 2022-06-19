@@ -198,7 +198,7 @@ export default {
         .get(
           path
           // no need for auth here, keeping for example use
-          // {"headers": {'Authorization': 'bearer ' + this.$store.state.jwt_auth}}
+          // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
         )
         .then(handle_gs_response)
         .catch(handle_gs_error);
@@ -240,7 +240,7 @@ export default {
         .get(
           path
           // no need for auth here, keeping for example use
-          // {"headers": {'Authorization': 'bearer ' + this.$store.state.jwt_auth}}
+          // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
         )
         .then(handle_av_response)
         .catch(handle_av_error);

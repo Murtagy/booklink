@@ -30,17 +30,17 @@ function checkAuthCookie() {
   return getCookie("jwtAuth");
 }
 
-const useStore = defineStore("auth", {
-  state: () => {
-    return { jwt_auth: checkAuthCookie() };
-  },
+const authStore = defineStore("auth", {
+  state: () => ({
+    jwt_auth: checkAuthCookie(),
+  }),
   actions: {
-    setJwt(state, jwt) {
+    setJwt(jwt) {
       console.log("Setting token");
       setCookie("jwtAuth", jwt, 14);
-      state.jwt_auth = jwt;
+      this.jwt_auth = jwt;
     },
   },
 });
 // const initialized_store = store()
-export default useStore;
+export default authStore;

@@ -5,7 +5,7 @@ import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import router from "./router/router_main";
-import useStore from "./app_store";
+import authStore from "./auth_store";
 
 const app = createApp(App);
 // Vue.config.productionTip = false;
@@ -22,7 +22,7 @@ const apiPlugin = {
 const authPlugin = {
   install(app) {
     // configure the app
-    app.config.globalProperties.$authStore = useStore();
+    app.config.globalProperties.$authStore = authStore();
   },
 };
 

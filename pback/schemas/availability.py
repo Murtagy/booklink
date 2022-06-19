@@ -220,32 +220,14 @@ class Availability(BM):
             prev_t = None
             for t in day.timeslots:
                 if prev_t and prev_t.dt_to == t.dt_from:
-                    # bypassing per-service length split
-                    # print(f"t dt from {t.dt_from} -> {prev_t.dt_from}")
+                    # extending t, building an availability 
                     t.dt_from = prev_t.dt_from
 
                 if t.dt_from <= slot.from_datetime and slot.to_datetime <= t.dt_to:
-                    # print(
-                    #     "Able to fit visit in availability slot",
-                    #     t.dt_from,
-                    #     t.dt_to,
-                    #     t.slot_type,
-                    #     slot.from_datetime,
-                    #     slot.to_datetime,
-                    # )
                     return True
-                else:
-                    pass
-                    # print(
-                    #     "Skip slot for visit",
-                    #     t.dt_from,
-                    #     t.dt_to,
-                    #     t.slot_type,
-                    #     slot.from_datetime,
-                    #     slot.to_datetime,
-                    # )
+
                 prev_t = t
-        # print("Not time for visit")
+
         return False
 
     @classmethod
