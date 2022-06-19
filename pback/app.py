@@ -8,7 +8,6 @@ from fastapi import Depends, FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from jose import JWTError, jwt  # type: ignore
 from sqlalchemy.orm import Session  # type: ignore
 
 import app_exceptions as exceptions
@@ -25,11 +24,12 @@ from schemas.availability import (
 from schemas.service import CreateService, OutService, OutServices
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot
 from schemas.worker import CreateWorker, OutWorker, OutWorkers, UpdateWorker
-from utils.users import oauth, validate_password
-
-SECRET_KEY = "12325e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
+from utils.users import (
+    get_current_user,
+    get_current_user_or_none,
+    jwtfy,
+    validate_password,
+)
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -53,14 +53,6 @@ app.add_middleware(
 db.BaseModel.metadata.create_all(bind=db.engine)
 logger = structlog.get_logger()
 
-# Dependency
-def get_db_session():
-    session = db.SessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
-
 
 class StrEnum(str, Enum):
     ...
@@ -72,19 +64,8 @@ async def ping():
 
 
 # USERS
-def jwtfy(token: models.Token):
-    return jwt.encode({"sub": str(token.token_id)}, SECRET_KEY, algorithm=ALGORITHM)
-
-
-def unjwttfy_token_id(token: Optional[str]) -> Optional[str]:
-    if token is None:
-        return None
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    return payload.get("sub")
-
-
 @app.post("/signup", response_model=TokenOut)
-async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
+async def create_user(user: UserCreate, s: Session = Depends(db.get_session)):
     # print(user)
     # return {"access_token": 'asda', "token_type": "bearer"}
 
@@ -106,32 +87,6 @@ async def create_user(user: UserCreate, s: Session = Depends(get_db_session)):
     }
 
 
-async def get_current_user_or_none(
-    token: Optional[str] = Depends(oauth), s: Session = Depends(get_db_session)
-) -> Optional[models.User]:
-    if token:
-        # print("TOKEN")
-        return await get_current_user(token, s)
-    else:
-        # print("NO TOKEN")
-        return None
-
-
-async def get_current_user(
-    token: Optional[str] = Depends(oauth), s: Session = Depends(get_db_session)
-) -> models.User:
-    try:
-        token_id = unjwttfy_token_id(token)
-        if token_id is None:
-            raise exceptions.BadToken
-    except JWTError:
-        raise exceptions.BadToken
-    user = crud.get_user_by_token_id(s, token_id=token_id)
-    if user is None:
-        raise exceptions.BadToken
-    return user
-
-
 @app.get("/users/me/", response_model=UserOut)
 async def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
@@ -147,7 +102,7 @@ async def read_users_me2(
 @app.post("/token")
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
 ):
     db_user = crud.get_user_by_username(s, form_data.username)
     if not db_user:
@@ -164,7 +119,7 @@ async def login_for_access_token(
 @app.get("/visit/{visit_id}", response_model=OutVisit)
 def get_visit(
     visit_id: int,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ) -> models.Visit:
     # return OutVisit.Example()
@@ -177,7 +132,7 @@ def get_visit(
 @app.post("/public_visit", response_model=OutVisit)
 def public_create_visit(
     visit: InVisit,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     # TODO: visitor
 ) -> models.Visit:
     db_visit = crud.create_visit(s, visit)
@@ -187,7 +142,7 @@ def public_create_visit(
 @app.post("/visit", response_model=OutVisit)
 def create_visit(
     visit: InVisit,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
 ) -> models.Visit:
     db_visit = crud.create_visit(s, visit)
@@ -198,7 +153,7 @@ def create_visit(
 async def get_avaliability(
     client_id: int,
     worker_id: Optional[int] = None,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     # TODO Visitor
 ):
     # schedule =
@@ -212,7 +167,7 @@ async def get_avaliability(
 @app.get("/visits")
 async def get_visits(
     worker_id: Optional[int] = None,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     client_id = current_user.client_id
@@ -224,7 +179,7 @@ async def get_visits(
 async def update_visit(
     visit_id: str,
     visit: InVisit,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
 ):
     return None
@@ -239,7 +194,7 @@ async def delete_visit(visit_id: str):
 @app.post("/worker", response_model=OutWorker)
 async def create_worker(
     worker: CreateWorker,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     # TODO notify user that he needs to add company schedule
@@ -255,7 +210,7 @@ async def create_worker(
 @app.get("/worker/{worker_id}", response_model=OutWorker)
 async def get_worker(
     worker_id: int,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     db_worker = crud.get_worker(s, worker_id)
@@ -270,7 +225,7 @@ async def get_worker(
 async def update_worker(
     worker_id: int,
     worker: UpdateWorker,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     db_worker = crud.get_worker(s, worker_id)
@@ -289,7 +244,7 @@ async def delete_worker(worker_id: str):
 @app.get("/client/{client_id}/workers", response_model=OutWorkers)
 async def get_workers_by_client(
     client_id: int,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(get_current_user),
 ):
     db_workers = crud.get_workers(s, client_id)
@@ -299,7 +254,7 @@ async def get_workers_by_client(
 
 @app.get("/workers", response_model=OutWorkers)
 async def get_workers(
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     db_workers = crud.get_workers(s, current_user.client_id)
@@ -310,7 +265,7 @@ async def get_workers(
 @app.post("/file")
 async def create_file(
     file: UploadFile = File(...),
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
 ):
     # TODO check user
@@ -321,7 +276,7 @@ async def create_file(
 @app.get("/file/{file_name}")
 async def get_file(
     file_name: str,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     # current_user: Optional[models.User] = Depends(get_current_user_or_none),
 ) -> StreamingResponse:
     f = crud.read_file(s, int(file_name))
@@ -341,7 +296,7 @@ async def get_file(
 async def get_worker_availability(
     worker_id: int,
     services: str = None,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(get_current_user),
 ) -> Availability:
     worker = crud.get_worker(s, worker_id)
@@ -366,7 +321,7 @@ async def get_worker_availability(
 async def get_client_availability(
     client_id: int,
     services: str = None,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(get_current_user),
 ) -> AvailabilityPerWorker:
     total_service_length = None
@@ -388,7 +343,7 @@ async def get_client_availability(
 @app.post("/public_slot")
 async def public_create_slot(
     slot: CreateSlot,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
 ):
     if slot.slot_type not in [TimeSlotType.VISIT]:
         raise exceptions.SlotType
@@ -402,7 +357,7 @@ async def public_create_slot(
 @app.post("/slot")
 async def create_slot(
     slot: CreateSlot,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     # TODO check against availability
@@ -418,7 +373,7 @@ async def create_slot(
 @app.delete("/slot/{slot_id}", response_model=Slot)
 async def delete_client_slot(
     slot_id: int,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     # check same client
@@ -432,7 +387,7 @@ async def delete_client_slot(
 async def create_client_weekly_slot(
     client_id: int,
     slot: CreateWeeklySlot,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     # check same client
@@ -446,7 +401,7 @@ async def create_client_weekly_slot(
 async def create_worker_weekly_slot(
     worker_id: int,
     slot: CreateWeeklySlot,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     # check same client
@@ -463,7 +418,7 @@ async def create_worker_weekly_slot(
 @app.post("/service", response_model=OutService)
 async def create_service(
     service: CreateService,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ):
     client_id = current_user.client_id
@@ -474,7 +429,7 @@ async def create_service(
 @app.get("/service/{service_id}", response_model=OutService)
 async def get_service(
     service_id: int,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
 ):
     return crud.get_service(s, service_id)
 
@@ -483,7 +438,7 @@ async def get_service(
 async def get_service_by_client(
     client_id: int,
     service_id: int,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
 ):
     return crud.get_service(s, service_id)
 
@@ -492,7 +447,7 @@ async def get_service_by_client(
 async def get_services_by_client(
     client_id: int,
     worker_id: Optional[int] = None,
-    s: Session = Depends(get_db_session),
+    s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(get_current_user),
 ):
     services = crud.get_services(s, client_id, worker_id=worker_id)

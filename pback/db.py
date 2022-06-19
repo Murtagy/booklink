@@ -31,3 +31,11 @@ def TableId():
 
 def TableCreatedAt():
     return Column(DateTime(timezone=True), default=func.now())
+
+
+def get_session():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
