@@ -50,7 +50,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-models.BaseModel.metadata.create_all(bind=db.engine)
+db.BaseModel.metadata.create_all(bind=db.engine)
 logger = structlog.get_logger()
 
 # Dependency
