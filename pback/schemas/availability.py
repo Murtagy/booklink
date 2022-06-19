@@ -1,7 +1,7 @@
 import datetime
 import math
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 from pydantic import BaseModel as BM
 
@@ -35,7 +35,7 @@ class TimeSlot(BM):
 
 class Day(BM):
     date: datetime.date
-    timeslots: List[TimeSlot]
+    timeslots: list[TimeSlot]
 
 
 DAYS = {0: "mo", 1: "tu", 2: "we", 3: "th", 4: "fr", 5: "st", 6: "su"}
@@ -44,11 +44,11 @@ N_DAYS = 99
 
 class Availability(BM):
     # by day to easily map to calendar
-    days: List[Day]
+    days: list[Day]
 
     @classmethod
     def CreateFromSchedule(
-        cls, schedule: Dict[str, Any], n_days: int = N_DAYS
+        cls, schedule: dict[str, Any], n_days: int = N_DAYS
     ) -> "Availability":  # optional schedule
         """creates TimeSlots from Schedule"""
         days = []
@@ -79,8 +79,8 @@ class Availability(BM):
         return cls(days=days)
 
     @classmethod
-    def CreateFromSlots(cls, slots: List[models.Slot]):
-        days: Dict[datetime.date, Day] = {}
+    def CreateFromSlots(cls, slots: list[models.Slot]):
+        days: dict[datetime.date, Day] = {}
         for slot in slots:
             # print(slot.slot_type)
             assert slot.slot_type == TimeSlotType.AVAILABLE
@@ -103,9 +103,9 @@ class Availability(BM):
         return cls(days=days_l)
 
     # def IncreaseAvailabilityBySlots(
-    #     self, slots: List[models.Slot]):
+    #     self, slots: list[models.Slot]):
 
-    def ReduceAvailabilityBySlots(self, slots: List[models.Slot]) -> None:
+    def ReduceAvailabilityBySlots(self, slots: list[models.Slot]) -> None:
         """Reduces timeslots by busy/visit slots"""
         # need assure sort
         # @speed - sorted version
@@ -190,7 +190,7 @@ class Availability(BM):
             date = day.date
             timeslots = day.timeslots
 
-            new_timeslots: List[TimeSlot] = []
+            new_timeslots: list[TimeSlot] = []
             for timeslot in timeslots:
                 delta = (timeslot.dt_to - timeslot.dt_from).total_seconds() / 60
                 length_minutes = length_seconds / 60
@@ -249,7 +249,7 @@ class Availability(BM):
         return False
 
     @classmethod
-    def WorkersToClient(cls, avs: List["Availability"]):
+    def WorkersToClient(cls, avs: list["Availability"]):
         raise NotImplemented
         # """Returns availabiltiy of client, which may consist of colliding worker timeslots"""
         # days = collections.defaultdict(list)
@@ -311,9 +311,9 @@ async def _get_client_availability(
     client_id: int,
     service_length: Optional[int],
     s: Session,
-) -> Dict[int, Availability]:
+) -> dict[int, Availability]:
     workers = crud.get_workers(s, client_id)
-    worker_avs: Dict[int, Availability] = {}
+    worker_avs: dict[int, Availability] = {}
     for worker in workers:
         av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
         worker_avs[worker.worker_id] = av
@@ -321,8 +321,8 @@ async def _get_client_availability(
 
 
 class AvailabilityPerWorker(BM):
-    availability: Dict[int, Availability]
+    availability: dict[int, Availability]
 
     @classmethod
-    def FromDict(cls, availability: Dict[int, Availability]):
+    def FromDict(cls, availability: dict[int, Availability]):
         return cls(availability=availability)
