@@ -31,7 +31,7 @@ def hash_password(password: str, salt: Optional[str] = None) -> str:
 
 def validate_password(password: str, hashed_password: str) -> bool:
     salt, hashed = hashed_password.split("$")
-    return hash_password(password, salt) == hashed
+    return hash_password(password, salt) == hashed_password
 
 
 async def get_current_user_or_none(

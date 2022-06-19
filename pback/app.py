@@ -110,7 +110,7 @@ async def login_for_access_token(
     if not db_user:
         raise exceptions.BadCreds
     hashed_password = db_user.hashed_password
-    if validate_password(form_data.password, hashed_password):
+    if not (validated := validate_password(form_data.password, hashed_password)):
         raise exceptions.BadCreds
     access_token = crud.create_user_token(s, db_user.user_id)
     jwt_token = jwtfy(access_token)
