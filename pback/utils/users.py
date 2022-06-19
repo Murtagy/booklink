@@ -5,8 +5,6 @@ from typing import Optional
 
 from fastapi.security import OAuth2PasswordBearer
 
-from models import Token
-
 oauth = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 

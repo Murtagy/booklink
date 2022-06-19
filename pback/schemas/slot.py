@@ -1,6 +1,6 @@
 import datetime
 import random
-from typing import List, Literal, Optional, Tuple, Union
+from typing import Literal
 
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel as BM
@@ -11,9 +11,9 @@ from .availability import Availability, _get_client_availability
 
 class CreateSlot(BM):
     name: str
-    slot_type: Union[Literal["busy"], Literal["available"], Literal["visit"]]
+    slot_type: Literal["busy", "available", "visit"]
     client_id: int
-    worker_id: Optional[int]
+    worker_id: int | None
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
 
@@ -45,9 +45,9 @@ class CreateSlot(BM):
 
 class UpdateSlot(BM):
     # slot_id: int
-    name: Optional[str]
-    from_datetime: Optional[datetime.datetime]
-    to_datetime: Optional[datetime.datetime]
+    name: str | None
+    from_datetime: datetime.datetime | None
+    to_datetime: datetime.datetime | None
 
 
 class Slot(BM):
@@ -59,23 +59,23 @@ class Slot(BM):
 
 class WeeklySlot(BM):
     slot_id: int
-    mo: Optional[List[List[datetime.time]]]
-    tu: Optional[List[List[datetime.time]]]
-    we: Optional[List[List[datetime.time]]]
-    th: Optional[List[List[datetime.time]]]
-    fr: Optional[List[List[datetime.time]]]
-    st: Optional[List[List[datetime.time]]]
-    su: Optional[List[List[datetime.time]]]
+    mo: list[list[datetime.time]] | None
+    tu: list[list[datetime.time]] | None
+    we: list[list[datetime.time]] | None
+    th: list[list[datetime.time]] | None
+    fr: list[list[datetime.time]] | None
+    st: list[list[datetime.time]] | None
+    su: list[list[datetime.time]] | None
 
     class Config:
         orm_mode = True
 
 
 class CreateWeeklySlot(BM):
-    mo: Optional[List[Tuple[str, str]]]
-    tu: Optional[List[Tuple[str, str]]]
-    we: Optional[List[Tuple[str, str]]]
-    th: Optional[List[Tuple[str, str]]]
-    fr: Optional[List[Tuple[str, str]]]
-    st: Optional[List[Tuple[str, str]]]
-    su: Optional[List[Tuple[str, str]]]
+    mo: list[tuple[str, str]] | None
+    tu: list[tuple[str, str]] | None
+    we: list[tuple[str, str]] | None
+    th: list[tuple[str, str]] | None
+    fr: list[tuple[str, str]] | None
+    st: list[tuple[str, str]] | None
+    su: list[tuple[str, str]] | None

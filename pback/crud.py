@@ -1,8 +1,7 @@
 import datetime
-import json
 import uuid
 from datetime import timedelta
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session

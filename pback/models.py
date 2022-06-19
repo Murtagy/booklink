@@ -1,5 +1,3 @@
-import datetime
-
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -11,7 +9,6 @@ from sqlalchemy import (
     LargeBinary,
     String,
 )
-from sqlalchemy.dialects.postgresql import UUID
 
 from db import BaseModel, ModelImpl, TableCreatedAt, TableId
 

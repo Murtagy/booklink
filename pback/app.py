@@ -1,12 +1,12 @@
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Optional
 
 import structlog
 import uvicorn  # type: ignore
 from fastapi import Depends, FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # type: ignore
 from sqlalchemy.orm import Session  # type: ignore
@@ -19,13 +19,12 @@ from schemas import InVisit, OutVisit, TokenOut, UserCreate, UserOut
 from schemas.availability import (
     Availability,
     AvailabilityPerWorker,
-    TimeSlot,
     TimeSlotType,
     _get_client_availability,
 )
 from schemas.service import CreateService, OutService, OutServices
-from schemas.slot import CreateSlot, CreateWeeklySlot, Slot, WeeklySlot
-from schemas.worker import CreateWorker, OutWorker, UpdateWorker, OutWorkers
+from schemas.slot import CreateSlot, CreateWeeklySlot, Slot
+from schemas.worker import CreateWorker, OutWorker, OutWorkers, UpdateWorker
 from utils.users import oauth, validate_password
 
 SECRET_KEY = "12325e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -294,7 +293,7 @@ async def get_workers_by_client(
     # current_user: models.User = Depends(get_current_user),
 ):
     db_workers = crud.get_workers(s, client_id)
-    
+
     return OutWorkers(workers=db_workers)
 
 
@@ -304,7 +303,7 @@ async def get_workers(
     current_user: models.User = Depends(get_current_user),
 ):
     db_workers = crud.get_workers(s, current_user.client_id)
-    
+
     return OutWorkers(workers=db_workers)
 
 
@@ -336,7 +335,9 @@ async def get_file(
     return r
 
 
-@app.get("/client/{client_id}/worker/{worker_id}/availability", response_model=Availability)
+@app.get(
+    "/client/{client_id}/worker/{worker_id}/availability", response_model=Availability
+)
 async def get_worker_availability(
     worker_id: int,
     services: str = None,

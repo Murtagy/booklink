@@ -116,7 +116,6 @@ def get_me():
 
 ### Tests code
 
-
 def test_portyanka():
     global headers
 
@@ -247,7 +246,7 @@ def test_portyanka():
 
     assert date.weekday() == 0
     timeslots = day["timeslots"]
-    
+
     parse = datetime.datetime.fromisoformat
     dt_from0, dt_to0 = parse(timeslots[0]["dt_from"]), parse(timeslots[0]["dt_to"])
     dt_from1, dt_to1 = parse(timeslots[1]["dt_from"]), parse(timeslots[1]["dt_to"])
@@ -267,7 +266,7 @@ def test_portyanka():
 
     assert date.weekday() == 0
     timeslots = day["timeslots"]
-    
+
     parse = datetime.datetime.fromisoformat
     dt_from0, dt_to0 = parse(timeslots[0]["dt_from"]), parse(timeslots[0]["dt_to"])
     dt_from1, dt_to1 = parse(timeslots[1]["dt_from"]), parse(timeslots[1]["dt_to"])
