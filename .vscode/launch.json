@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "test.py",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "justMyCode": true,
+      "cwd": "${workspaceFolder}/pback",
+      "args": ["test.py"]
+    },
+
+    {
+      "name": "app.py",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app:app"],
+      "jinja": true,
+      "justMyCode": true,
+      "cwd": "${workspaceFolder}/pback"
+    }
+  ]
+}
