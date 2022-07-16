@@ -1,7 +1,7 @@
 import datetime
 import math
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from pydantic import BaseModel as BM
 
@@ -10,6 +10,9 @@ from sqlalchemy.orm import Session
 
 import crud
 import models
+
+if TYPE_CHECKING:
+    from .slot import CreateSlot
 
 
 class TimeSlotType(str, Enum):
@@ -23,14 +26,18 @@ class TimeSlot(BM):
     dt_to: datetime.datetime
     slot_type: TimeSlotType
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.dt_from) + ":::" + str(self.dt_to) + " " + str(self.slot_type)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(str(self))
 
-    def __gt__(self, other):
+    def __gt__(self, other: "TimeSlot") -> bool:
         return self.dt_from > other.dt_from
+
+    @property
+    def minutes(self) -> int:
+        return len_minutes(self.dt_from, self.dt_to)
 
 
 class Day(BM):
@@ -40,6 +47,11 @@ class Day(BM):
 
 DAYS = {0: "mo", 1: "tu", 2: "we", 3: "th", 4: "fr", 5: "st", 6: "su"}
 N_DAYS = 99
+
+
+def len_minutes(dt_from: datetime.datetime, dt_to: datetime.datetime) -> int:
+    assert dt_from > dt_to
+    return int((dt_from - dt_to).total_seconds() / 60)
 
 
 class Availability(BM):
@@ -79,7 +91,7 @@ class Availability(BM):
         return cls(days=days)
 
     @classmethod
-    def CreateFromSlots(cls, slots: list[models.Slot]):
+    def CreateFromSlots(cls, slots: list[models.Slot]) -> "Availability":
         days: dict[datetime.date, Day] = {}
         for slot in slots:
             # print(slot.slot_type)
@@ -94,7 +106,7 @@ class Availability(BM):
                 TimeSlot(
                     dt_from=slot.from_datetime,
                     dt_to=slot.to_datetime,
-                    slot_type=slot.slot_type,
+                    slot_type=TimeSlotType(slot.slot_type),
                 )
             )
             days[slot_from_date] = day
@@ -185,7 +197,7 @@ class Availability(BM):
 
         self.days = days
 
-    def SplitByLength(self, length_seconds: int):
+    def SplitByLength(self, length_seconds: int) -> None:
         for iday, day in enumerate(self.days):
             date = day.date
             timeslots = day.timeslots
@@ -214,13 +226,13 @@ class Availability(BM):
             self.days[iday] = day
         return
 
-    def CheckSlot(self, slot) -> bool:
+    def CheckSlot(self, slot: "CreateSlot") -> bool:
         assert slot.slot_type == "visit"
         for day in self.days:
-            prev_t = None
+            prev_t: Optional[TimeSlot] = None
             for t in day.timeslots:
                 if prev_t and prev_t.dt_to == t.dt_from:
-                    # extending t, building an availability 
+                    # extending t, building an availability
                     t.dt_from = prev_t.dt_from
 
                 if t.dt_from <= slot.from_datetime and slot.to_datetime <= t.dt_to:
@@ -231,7 +243,7 @@ class Availability(BM):
         return False
 
     @classmethod
-    def WorkersToClient(cls, avs: list["Availability"]):
+    def WorkersToClient(cls, avs: list["Availability"]) -> "Availability":
         raise NotImplemented
         # """Returns availabiltiy of client, which may consist of colliding worker timeslots"""
         # days = collections.defaultdict(list)
@@ -302,9 +314,12 @@ async def _get_client_availability(
     return worker_avs
 
 
+worker_id = int
+
+
 class AvailabilityPerWorker(BM):
-    availability: dict[int, Availability]
+    availability: dict[worker_id, Availability]
 
     @classmethod
-    def FromDict(cls, availability: dict[int, Availability]):
+    def FromDict(cls, availability: dict[int, Availability]) -> "AvailabilityPerWorker":
         return cls(availability=availability)

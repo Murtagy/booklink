@@ -213,25 +213,18 @@ def test_portyanka():
     r = create_client_weekly_slot(CLIENT_ID, schedule)
     assert r.status_code == 200, r.text
 
-    # r = client.get(
-    #     localhost + f"client_availability/{CLIENT_ID}",
-    #     headers=headers,
-    # )
-    # days = r.json()["days"]
-    # for day in days:
-    #     date = day["date"]
-    #     date = datetime.datetime.fromisoformat(date)
-    #     if date.weekday() == 0:
-    #         break
+    r = client.get(
+        localhost + f"client/{CLIENT_ID}/availability/",
+        headers=headers,
+    )
+    availability = r.json()["availability"]
 
-    # assert date.weekday() == 0
-    # timeslots = day["timeslots"]
-    # assert timeslots[0]["dt_from"] == "2021-11-29T13:15:00"
-    # assert timeslots[0]["dt_to"] == "2021-11-29T14:00:00"
-    # assert timeslots[1]["dt_from"] == "2021-11-29T15:00:00"
-    # assert timeslots[1]["dt_to"] == "2021-11-29T15:45:00"
-    # print(timeslots)
-    ###
+    for worker_id, days_holder in availability.items():
+        for day in days_holder["days"]:
+            date = day["date"]
+            date = datetime.datetime.fromisoformat(date)
+            if date.weekday() != 0:
+                raise ValueError("doesn't start from Monday!")
 
     ### Test worker availability
     r = get_worker_availability(CLIENT_ID, WORKER_ID, [SERVICE_ID])
@@ -242,10 +235,9 @@ def test_portyanka():
     for day in days:
         date = day["date"]
         date = datetime.datetime.fromisoformat(date)
-        if date.weekday() == 0:
-            break
+        if date.weekday() != 0:
+            raise ValueError("doesn't start from Monday!")
 
-    assert date.weekday() == 0
     timeslots = day["timeslots"]
 
     parse = datetime.datetime.fromisoformat
@@ -273,7 +265,6 @@ def test_portyanka():
     dt_from1, dt_to1 = parse(timeslots[1]["dt_from"]), parse(timeslots[1]["dt_to"])
     assert (dt_to0 - dt_from0).total_seconds() / 60 == 90
     assert (dt_to1 - dt_from1).total_seconds() / 60 == 90
-    # print(timeslots)
 
     ## WORKER_NO_SCHEDULE_ID
     slot = {
