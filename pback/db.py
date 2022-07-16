@@ -1,4 +1,5 @@
-from typing import Optional, Type, TypeVar
+import datetime
+from typing import Generator, Optional, Type, TypeVar
 
 from sqlalchemy import Column, DateTime, Integer, create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -25,15 +26,15 @@ class ModelImpl:
         return db.query(model).get(id)
 
 
-def TableId():
+def TableId() -> Column[int]:
     return Column(Integer, primary_key=True, index=True, unique=True)
 
 
-def TableCreatedAt():
+def TableCreatedAt() -> Column[datetime.datetime]:
     return Column(DateTime(timezone=True), default=func.now())
 
 
-def get_session():
+def get_session() -> Generator[Session, None, None]:
     session = SessionLocal()
     try:
         yield session
