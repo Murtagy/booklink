@@ -1,6 +1,8 @@
+import datetime
 from enum import Enum
 from io import BytesIO
-from typing import Optional
+from re import L
+from typing import Literal, Optional
 
 import structlog
 import uvicorn  # type: ignore
@@ -61,13 +63,15 @@ class StrEnum(str, Enum):
 
 
 @app.get("/ping")
-async def ping():
+async def ping() -> dict[str, str]:
     return {"message": "pong"}
 
 
 # USERS
 @app.post("/signup", response_model=TokenOut)
-async def create_user(user: UserCreate, s: Session = Depends(db.get_session)):
+async def create_user(
+    user: UserCreate, s: Session = Depends(db.get_session)
+) -> dict[str, str | int]:
     # print(user)
     # return {"access_token": 'asda', "token_type": "bearer"}
 
@@ -90,14 +94,16 @@ async def create_user(user: UserCreate, s: Session = Depends(db.get_session)):
 
 
 @app.get("/users/me/", response_model=UserOut)
-async def read_users_me(current_user: models.User = Depends(get_current_user)):
+async def read_users_me(
+    current_user: models.User = Depends(get_current_user),
+) -> models.User:
     return current_user
 
 
 @app.get("/my_user", response_model=UserOut)
 async def read_users_me2(
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
-):
+) -> Optional[models.User]:
     return current_user
 
 
@@ -105,7 +111,7 @@ async def read_users_me2(
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     s: Session = Depends(db.get_session),
-):
+) -> dict[Literal["access_token", "token_type"], str]:
     db_user = crud.get_user_by_username(s, form_data.username)
     if not db_user:
         raise exceptions.BadCreds
@@ -137,6 +143,9 @@ def public_create_visit(
     s: Session = Depends(db.get_session),
     # TODO: visitor
 ) -> models.Visit:
+    if visit.from_dt < datetime.datetime.now():
+        raise exceptions.SlotNotAvailable
+
     db_visit = crud.create_visit(s, visit)
     return db_visit
 
@@ -157,7 +166,7 @@ async def get_avaliability(
     worker_id: Optional[int] = None,
     s: Session = Depends(db.get_session),
     # TODO Visitor
-):
+) -> list[models.Visit]:
     # schedule =
     # slots    =
     visits = crud.get_visits(s, client_id, worker_id=worker_id)
@@ -171,7 +180,7 @@ async def get_visits(
     worker_id: Optional[int] = None,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> list[models.Visit]:
     client_id = current_user.client_id
 
     return crud.get_visits(s, client_id, worker_id=worker_id)
@@ -183,13 +192,13 @@ async def update_visit(
     visit: InVisit,
     s: Session = Depends(db.get_session),
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
-):
+) -> None:
     return None
 
 
 @app.delete("/visit/{visit_id}")
-async def delete_visit(visit_id: str):
-    return True
+async def delete_visit(visit_id: str) -> None:
+    return None
 
 
 # WORKERS
@@ -198,7 +207,7 @@ async def create_worker(
     worker: CreateWorker,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> models.Worker:
     # TODO notify user that he needs to add company schedule
     # if worker.use_company_schedule:
     # wl = crud.get_client_weeklyslot(s, current_user.client_id)
@@ -214,7 +223,7 @@ async def get_worker(
     worker_id: int,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> models.Worker:
     db_worker = crud.get_worker(s, worker_id)
     assert db_worker is not None
 
@@ -229,7 +238,7 @@ async def update_worker(
     worker: UpdateWorker,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> models.Worker:
     db_worker = crud.get_worker(s, worker_id)
     assert db_worker is not None
     assert current_user.client_id == db_worker.client_id
@@ -239,8 +248,8 @@ async def update_worker(
 
 
 @app.delete("/worker/{worker_id}")
-async def delete_worker(worker_id: str):
-    return True
+async def delete_worker(worker_id: str) -> None:
+    return None
 
 
 @app.get("/client/{client_id}/workers", response_model=OutWorkers)
@@ -248,7 +257,7 @@ async def get_workers_by_client(
     client_id: int,
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(get_current_user),
-):
+) -> OutWorkers:
     db_workers = crud.get_workers(s, client_id)
 
     return OutWorkers(workers=db_workers)
@@ -258,7 +267,7 @@ async def get_workers_by_client(
 async def get_workers(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> OutWorkers:
     db_workers = crud.get_workers(s, current_user.client_id)
 
     return OutWorkers(workers=db_workers)
@@ -269,7 +278,7 @@ async def create_file(
     file: UploadFile = File(...),
     s: Session = Depends(db.get_session),
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
-):
+) -> dict[Literal["file_id"], int]:
     # TODO check user
     db_file_id = crud.load_file(s, file, 5)
     return {"file_id": db_file_id}
@@ -297,7 +306,7 @@ async def get_file(
 )
 async def get_worker_availability(
     worker_id: int,
-    services: str = None,
+    services: Optional[str] = None,
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(get_current_user),
 ) -> Availability:
@@ -322,7 +331,7 @@ async def get_worker_availability(
 @app.get("/client/{client_id}/availability/", response_model=AvailabilityPerWorker)
 async def get_client_availability(
     client_id: int,
-    services: str = None,
+    services: Optional[str] = None,
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(get_current_user),
 ) -> AvailabilityPerWorker:
@@ -346,7 +355,7 @@ async def get_client_availability(
 async def public_create_slot(
     slot: CreateSlot,
     s: Session = Depends(db.get_session),
-):
+) -> dict[Literal["slot_id"], int]:
     if slot.slot_type not in [TimeSlotType.VISIT]:
         raise exceptions.SlotType
 
@@ -361,7 +370,7 @@ async def create_slot(
     slot: CreateSlot,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> dict[Literal["slot_id"], int]:
     # TODO check against availability
     if slot.slot_type == TimeSlotType.VISIT:
         slot = await slot.visit_pick_worker_and_check(
@@ -377,12 +386,13 @@ async def delete_client_slot(
     slot_id: int,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> Literal["OK"]:
     # check same client
     # check time being free
     db_slot = crud.get_slot(s, slot_id)
-    crud.delete_slot(s, slot_id)
-    return db_slot
+    if db_slot is None:
+        crud.delete_slot(s, slot_id)
+    return "OK"
 
 
 @app.post("/client_weekly_slot/{client_id}")
@@ -391,7 +401,7 @@ async def create_client_weekly_slot(
     slot: CreateWeeklySlot,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> Literal["OK"]:
     # check same client
     # check time being free
     db_slot = crud.create_weekly_slot(s, slot, client_id)
@@ -405,7 +415,7 @@ async def create_worker_weekly_slot(
     slot: CreateWeeklySlot,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> Literal["OK"]:
     # check same client
     # check time being free
     db_worker = crud.get_worker(s, worker_id)
@@ -422,7 +432,7 @@ async def create_service(
     service: CreateService,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
-):
+) -> models.Service:
     client_id = current_user.client_id
     db_service = crud.create_service(s, service, client_id)
     return db_service
@@ -432,7 +442,7 @@ async def create_service(
 async def get_service(
     service_id: int,
     s: Session = Depends(db.get_session),
-):
+) -> Optional[models.Service]:
     return crud.get_service(s, service_id)
 
 
@@ -441,7 +451,7 @@ async def get_service_by_client(
     client_id: int,
     service_id: int,
     s: Session = Depends(db.get_session),
-):
+) -> Optional[models.Service]:
     return crud.get_service(s, service_id)
 
 
@@ -451,7 +461,7 @@ async def get_services_by_client(
     worker_id: Optional[int] = None,
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(get_current_user),
-):
+) -> OutServices:
     services = crud.get_services(s, client_id, worker_id=worker_id)
     return OutServices(services=services)
 

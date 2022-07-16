@@ -57,7 +57,7 @@ async def get_current_user(
     return user
 
 
-def jwtfy(token: models.Token):
+def jwtfy(token: models.Token) -> str:
     return jwt.encode({"sub": str(token.token_id)}, SECRET_KEY, algorithm=ALGORITHM)
 
 
