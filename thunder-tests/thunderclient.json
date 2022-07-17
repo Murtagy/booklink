@@ -1,0 +1,291 @@
+[
+  {
+    "_id": "1dc28ff4-e6d0-4e17-aa3d-8c216aaa759b",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/signup",
+    "url": "http://localhost:8000/signup",
+    "method": "POST",
+    "sortNum": 10000,
+    "created": "2022-07-17T16:42:27.515Z",
+    "modified": "2022-07-17T16:42:27.515Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"company\": \"The Testing Company\",\n    \"username\": \"mttest\",\n    \"email\": \"mrabkevich@gmail.com\",\n    \"password\": \"mttest\"\n}",
+      "form": []
+    },
+    "tests": []
+  },
+  {
+    "_id": "b3eb22ba-77e2-4c0e-b1fe-af2d90f3e765",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/login",
+    "url": "http://localhost:8000/token",
+    "method": "POST",
+    "sortNum": 20000,
+    "created": "2022-07-17T16:42:27.517Z",
+    "modified": "2022-07-17T16:42:27.517Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "formdata",
+      "raw": "",
+      "form": [
+        {
+          "name": "username",
+          "value": "mttest"
+        },
+        {
+          "name": "password",
+          "value": "mttest"
+        }
+      ]
+    },
+    "auth": {
+      "type": "bearer"
+    },
+    "tests": []
+  },
+  {
+    "_id": "f749b618-47ad-4353-9190-a037bb027dbe",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/my_user",
+    "url": "http://localhost:8000/my_user",
+    "method": "GET",
+    "sortNum": 30000,
+    "created": "2022-07-17T16:42:27.518Z",
+    "modified": "2022-07-17T16:42:27.518Z",
+    "headers": [
+      {
+        "name": "jwtAuth",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxODYifQ.RgPn7FOXx231sFUhgzRlIlxLJzLY4YUAbmI7YoVYzS0"
+      }
+    ],
+    "params": [],
+    "auth": {
+      "type": "oauth2",
+      "oauth2": {
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxODcifQ.lhWiDtsU8lbf0sK2CvacQ3-ip-PVvWBA6Vu84aFG3u0",
+        "grantType": "authorization_code",
+        "tokenUrl": "",
+        "clientId": "",
+        "clientSecret": "",
+        "clientAuth": "in-header"
+      }
+    },
+    "tests": []
+  },
+  {
+    "_id": "5228f6b1-1295-4180-827a-c99fe4f3fe0e",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/workers",
+    "url": "http://localhost:8000/workers",
+    "method": "GET",
+    "sortNum": 40000,
+    "created": "2022-07-17T16:42:27.519Z",
+    "modified": "2022-07-17T16:42:27.519Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "oauth2",
+      "oauth2": {
+        "accessToken": "{{oauth}}",
+        "grantType": "authorization_code",
+        "tokenUrl": "",
+        "clientId": "",
+        "clientSecret": "",
+        "clientAuth": "in-header"
+      }
+    },
+    "tests": []
+  },
+  {
+    "_id": "d6af6de4-7433-43f1-b5c1-86efa8b85fe1",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/client/<id>/services",
+    "url": "http://localhost:8000/client/102/services",
+    "method": "GET",
+    "sortNum": 50000,
+    "created": "2022-07-17T16:42:27.520Z",
+    "modified": "2022-07-17T16:42:27.520Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "oauth2",
+      "oauth2": {
+        "accessToken": "{{oauth}}",
+        "grantType": "authorization_code",
+        "tokenUrl": "",
+        "clientId": "",
+        "clientSecret": "",
+        "clientAuth": "in-header"
+      }
+    },
+    "tests": []
+  },
+  {
+    "_id": "0325f669-614a-41c0-b297-589ee979ed3e",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/worker (add)",
+    "url": "http://localhost:8000/worker",
+    "method": "POST",
+    "sortNum": 60000,
+    "created": "2022-07-17T16:42:27.521Z",
+    "modified": "2022-07-17T16:42:27.521Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"name\": \"Worker1\",\n    \"job_title\": \"Master\"\n}",
+      "form": []
+    },
+    "auth": {
+      "type": "oauth2",
+      "oauth2": {
+        "accessToken": "{{oauth}}",
+        "grantType": "authorization_code",
+        "tokenUrl": "",
+        "clientId": "",
+        "clientSecret": "",
+        "clientAuth": "in-header"
+      }
+    },
+    "tests": []
+  },
+  {
+    "_id": "8e3e1fa1-a32a-413a-9290-e5fdc2445382",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/service (add)",
+    "url": "http://localhost:8000/service",
+    "method": "POST",
+    "sortNum": 70000,
+    "created": "2022-07-17T16:42:27.522Z",
+    "modified": "2022-07-17T16:42:27.522Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"name\": \"Мойка\",\n    \"price\": 20,\n    \"seconds\": 900,\n    \"description\": \"Automata washing machine\"    \n}",
+      "form": []
+    },
+    "auth": {
+      "type": "oauth2",
+      "oauth2": {
+        "accessToken": "{{oauth}}",
+        "grantType": "authorization_code",
+        "tokenUrl": "",
+        "clientId": "",
+        "clientSecret": "",
+        "clientAuth": "in-header"
+      }
+    },
+    "tests": []
+  },
+  {
+    "_id": "73a79e17-2930-41b5-8b7b-25b2a2497c95",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/schedule (add)",
+    "url": "localhost:8000/client/102/client_weekly_slot",
+    "method": "POST",
+    "sortNum": 75000,
+    "created": "2022-07-17T16:42:27.523Z",
+    "modified": "2022-07-17T16:42:27.523Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"mo\": [[\"8:00\", \"14:00\"], [\"15:00\", \"23:00\"]],\n    \"tu\": [[\"8:00\", \"14:00\"], [\"15:00\", \"23:00\"]],\n    \"we\": [[\"8:00\", \"14:00\"], [\"15:00\", \"23:00\"]],\n    \"th\": [[\"8:00\", \"14:00\"], [\"15:00\", \"23:00\"]],\n    \"fr\": [[\"8:00\", \"14:00\"], [\"15:00\", \"23:00\"]],\n    \"st\": null,\n    \"su\": null\n    }",
+      "form": []
+    },
+    "auth": {
+      "type": "oauth2",
+      "oauth2": {
+        "accessToken": "{{oauth}}",
+        "grantType": "authorization_code",
+        "tokenUrl": "",
+        "clientId": "",
+        "clientSecret": "",
+        "clientAuth": "in-header"
+      }
+    },
+    "tests": []
+  },
+  {
+    "_id": "efddf3a1-fd1e-4742-acb8-3d3693f1c5af",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/public_visit",
+    "url": "http://localhost:8000/public_visit",
+    "method": "POST",
+    "sortNum": 80000,
+    "created": "2022-07-17T16:42:27.524Z",
+    "modified": "2022-07-17T16:42:27.524Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"from_dt\": \"2022-08-01 10:15:00\",\n    \"phone\": \"+375293827401\",\n    \"email\": \"mail@test.by\",\n    \"client_id\": 102,\n    \"remind_me\": false,\n    \"services\": [\n        {\"service_id\": 115}\n    ]\n}",
+      "form": []
+    },
+    "auth": {
+      "type": "oauth2",
+      "oauth2": {
+        "accessToken": "{{oauth}}",
+        "grantType": "authorization_code",
+        "tokenUrl": "",
+        "clientId": "",
+        "clientSecret": "",
+        "clientAuth": "in-header"
+      }
+    },
+    "tests": []
+  },
+  {
+    "_id": "5fe9e78c-1e77-40c3-a813-04b75fef6a53",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/visits",
+    "url": "localhost:8000/visits",
+    "method": "GET",
+    "sortNum": 90000,
+    "created": "2022-07-17T16:42:27.525Z",
+    "modified": "2022-07-17T16:42:27.525Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "oauth2",
+      "oauth2": {
+        "accessToken": "{{oauth}}",
+        "grantType": "authorization_code",
+        "tokenUrl": "",
+        "clientId": "",
+        "clientSecret": "",
+        "clientAuth": "in-header"
+      }
+    },
+    "tests": []
+  },
+  {
+    "_id": "0629d181-7e7a-485b-a4c6-eedac1d1e801",
+    "colId": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "containerId": "",
+    "name": "/availability",
+    "url": "localhost:8000/client/102/availability",
+    "method": "GET",
+    "sortNum": 110000,
+    "created": "2022-07-17T16:42:27.526Z",
+    "modified": "2022-07-17T16:42:27.526Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  }
+]

@@ -33,8 +33,25 @@ def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
     return q.all()
 
 
-def create_visit(db: Session, visit: schemas.InVisit) -> Visit:
-    db_visit = Visit(client_id=visit.client_id, phone=visit.phone, email=visit.email)
+def create_visit(
+    db: Session,
+    visit: schemas.InVisit,
+    *,
+    customer_id: Optional[int] = None,
+    slot_id: Optional[int] = None,
+    worker_id: Optional[int] = None,
+) -> Visit:
+    db_visit = Visit(
+        client_id=visit.client_id,
+        customer_id=customer_id,
+        email=visit.email,
+        has_notification=visit.remind_me,
+        phone=visit.phone,
+        status='submitted',
+        services=[s.service_id for s in visit.services],
+        slot_id=slot_id,
+        worker_id=visit.worker_id or worker_id,
+    )
     db.add(db_visit)
     db.commit()
     db.refresh(db_visit)  # why refresh?

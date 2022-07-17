@@ -1,8 +1,9 @@
 import datetime
+from datetime import timedelta
 from enum import Enum
 from io import BytesIO
 from re import L
-from typing import Literal, Optional
+from typing import Literal, Optional, Iterator
 
 import structlog
 import uvicorn  # type: ignore
@@ -138,7 +139,7 @@ def get_visit(
 
 
 @app.post("/public_visit", response_model=OutVisit)
-def public_create_visit(
+async def public_create_visit(
     visit: InVisit,
     s: Session = Depends(db.get_session),
     # TODO: visitor
@@ -146,7 +147,38 @@ def public_create_visit(
     if visit.from_dt < datetime.datetime.now():
         raise exceptions.SlotNotAvailable
 
-    db_visit = crud.create_visit(s, visit)
+    def _list_services() -> Iterator[models.Service]:
+        for service_wrapped in visit.services:
+            service = crud.get_service(
+                s,
+                service_id=service_wrapped.service_id,
+                not_found=exceptions.ServiceNotFound,
+            )
+            assert service is not None
+            yield service
+
+    services = list(_list_services())
+    assert len(services) > 0
+
+    slot = CreateSlot(
+        name=f"Визит в {visit.from_dt}",
+        slot_type=TimeSlotType.VISIT,
+        client_id=visit.client_id,
+        worker_id=visit.worker_id,
+        from_datetime=visit.from_dt,
+        to_datetime=visit.from_dt + timedelta(seconds=sum([service.seconds for service in services])),
+    )
+    slot = await slot.visit_pick_worker_and_check(s, exc=exceptions.SlotNotAvailable)
+
+    db_slot = crud.create_slot(s, slot)
+
+    db_visit = crud.create_visit(
+        s,
+        visit,
+        slot_id=db_slot.slot_id,
+        worker_id=db_slot.worker_id,
+        customer_id=None,
+    )
     return db_visit
 
 
@@ -395,15 +427,16 @@ async def delete_client_slot(
     return "OK"
 
 
-@app.post("/client_weekly_slot/{client_id}")
+@app.post("/client/{client_id}/client_weekly_slot")
 async def create_client_weekly_slot(
     client_id: int,
     slot: CreateWeeklySlot,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(get_current_user),
 ) -> Literal["OK"]:
-    # check same client
-    # check time being free
+    assert client_id == current_user.client_id
+    # check time being free ?
+    # check another schedule being not present?
     db_slot = crud.create_weekly_slot(s, slot, client_id)
     # d = {"slot_id": db_slot.slot_id, **db_slot.schedule_by_day}
     return "OK"

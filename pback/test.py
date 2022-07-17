@@ -80,7 +80,7 @@ def get_client_service(client_id):
 
 def create_client_weekly_slot(client_id, schedule):
     return client.post(
-        localhost + f"client_weekly_slot/{client_id}",
+        localhost + f"client/{client_id}/client_weekly_slot",
         headers=headers,
         json=schedule,
     )

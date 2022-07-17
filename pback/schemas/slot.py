@@ -6,12 +6,12 @@ from fastapi.exceptions import HTTPException
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
-from .availability import Availability, _get_client_availability
+from .availability import Availability, TimeSlotType, _get_client_availability
 
 
 class CreateSlot(BM):
     name: str
-    slot_type: Literal["busy", "available", "visit"]
+    slot_type: TimeSlotType
     client_id: int
     worker_id: int | None
     from_datetime: datetime.datetime

@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "fb8ba928-5ddd-468f-ab0e-bccb76f1da52",
+    "name": "Booklink",
+    "default": true,
+    "sortNum": 10000,
+    "created": "2022-07-17T16:42:46.486Z",
+    "modified": "2022-07-17T16:42:46.487Z",
+    "data": [
+      {
+        "name": "oauth",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxODcifQ.lhWiDtsU8lbf0sK2CvacQ3-ip-PVvWBA6Vu84aFG3u0"
+      }
+    ]
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "3de05133-8557-44c1-8e4c-6e91250c7a88",
+    "colName": "Booklink",
+    "created": "2022-07-17T16:42:27.512Z",
+    "sortNum": 10000,
+    "folders": [],
+    "settings": {
+      "headers": [],
+      "tests": [],
+      "envId": "f4931797-3bac-4bca-bce9-86f6901c0cdf"
+    }
+  }
+]

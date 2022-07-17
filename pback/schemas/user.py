@@ -14,6 +14,7 @@ class UserCreate(BM):
 
 
 class UserOut(BM):
+    client_id: int
     user_id: int
     username: str
 

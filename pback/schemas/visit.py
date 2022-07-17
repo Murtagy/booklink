@@ -5,11 +5,7 @@ from pydantic import BaseModel as BM
 
 
 class InServiceToVisit(BM):
-    name: str
-    price: float
-    q: int
-    worker: str
-    timeslot: str
+    service_id: int
 
 
 class OutVisit(BM):
@@ -23,31 +19,28 @@ class OutVisit(BM):
         # make this inherited?
 
     @classmethod
-    def Example(cls):
+    def Example(cls) -> 'OutVisit':
         return cls(
-            status="status",
             phone="375291231123",
-            client_id=123,
-            # services=[],
         )
 
 
 class InVisit(BM):
-    version: Literal[1]
-    from_dt: datetime.datetime
-    to_dt: datetime.datetime
-    phone: str
-    email: str
     client_id: int
-    worker_id: Optional[int]
+    from_dt: datetime.datetime
+    # to_dt: datetime.datetime
+    email: str
     services: List[InServiceToVisit]
+    phone: str
     remind_me: bool
+    version: Literal[1] = 1
+    worker_id: Optional[int]
 
 
 # class VisitStatus(SEnum):
-#     SUMBITTED = 'SUBMITTED'  # -> R/A
-#     REJECTED = 'REJECTED'
-#     APPROVED = 'APPROVED'  # -> C
-#     CANCELLED = 'CANCELLED'
-#     # MISSED = 'MISSED'
-#     # FINISHED = 'FINISHED'
+#     SUMBITTED = 'submitted'  # -> R/A
+#     REJECTED = 'rejected'
+#     APPROVED = 'approved'  # -> C
+#     CANCELLED = 'cancelled'
+#     # MISSED = 'missed'
+#     # FINISHED = 'finished'
