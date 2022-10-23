@@ -121,8 +121,9 @@ def test_portyanka():
     global headers
 
     ### CREATE NEW CLIENT
-    username = str(random.randint(0, 1000)) + "test2"
+    username = str(random.randint(0, 1000)) + str(random.randint(0, 1000)) + str(random.randint(0, 1000)) + "test2"
     r = signup(username)
+    assert r.status_code == 200, r.text
     signup_json = r.json()
     # print(r.text)
     CLIENT_ID, token = signup_json["client_id"], signup_json["access_token"]
