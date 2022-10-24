@@ -1,6 +1,6 @@
-// Main page of visit booking process. // Visit page is in control of fetching
-the data and setting the props of other components // Other pages are considered
-sub-pages and are not independant
+ <!-- Main page of visit booking process.
+ Visit page is in control of fetching the data and setting the props of other components 
+ Other pages are considered sub-pages and are not independant -->
 
 <template>
   <div>

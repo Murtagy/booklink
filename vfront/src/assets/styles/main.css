@@ -1,54 +1,43 @@
 header {
   max-width: 100%;
-  width: 100%;
   background-color: rgba(188, 177, 226, 1);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 2;
+  position: sticky;
+  margin-left: 20px;
+  margin-right: 20px;
+  border-radius: 5px
 }
 
 header h1 {
   font-family: "TimesNewRoman";
   color: white;
   text-align: center;
-  padding: 30px auto;
   margin-top:40px;
   margin-bottom:15px;
-  font-size: 52px;
   text-shadow:1px 2px rgb(122, 95, 216);
 }
 
-header img {
-  position: fixed;
+header img#our_logo {
+  position: absolute;
   left: 0;
   top: 0;
-  width: 11em;
-  height: 7em;
+  width: 7em;
+  height: 3em;
 }
 
-hr.line1 {
+header hr.line1 {
   background-color:white;
   height:7px;
   margin:0;
   border:none;
-  border-top:solid rgb(200, 193, 224);
 }
 
-hr.line2 {
+header hr.line2 {
   background-color:rgb(119, 96, 205);
   height:3px;
   margin:0;
   border:none;
-  border-bottom:rgb(128, 104, 216);
 }
 
-hr.line3 {
-  background-color:rgba(188, 177, 226, 1);
-  height:9px;
-  margin:0;
-  border:none;
-}
 
 body {
   margin:0;
@@ -60,8 +49,6 @@ body {
   header h1 {
     padding: 30px auto;
     font-size: 40px;
-    margin-top:30px;
-    margin-bottom:15px;
   }
 
   header img {
@@ -72,10 +59,7 @@ body {
 
 @media screen and (max-width: 620px) {
   header h1 {
-    padding: 20px auto;
     font-size: 30px;
-    margin-top:25px;
-    margin-bottom:10px;
   }
 
   header img {
@@ -86,10 +70,7 @@ body {
 
 @media screen and (max-width: 450px) {
   header h1 {
-    padding: 20px auto;
-    font-size: 25px;
-    margin-top:25px;
-    margin-bottom:10px;
+    font-size: 2em;
   }
 
   header img {

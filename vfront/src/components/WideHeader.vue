@@ -1,6 +1,6 @@
 <template>
   <header>
-    <img src="../assets/logo.png" />
+    <!-- <img id="our_logo" src="../assets/logo.png" /> -->
     <h1>{{ title }}</h1>
     <hr class="line1" />
     <hr class="line2" />
