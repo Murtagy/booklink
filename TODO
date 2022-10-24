@@ -1,3 +1,12 @@
+Plan:
+    - make a simple online-booking
+    - start servicing with no charge
+    - make payment for notifications (integrate with rocketsms)
+    - make payment for extra usage
+Reasoning:
+    - there seems to be strong competitors in notifications and CRM space
+      yclients and online-zapis are pretty expensive, so it should be easy to gain customers through cheaper pricing
+
 Next:
     Simple logged in my-page
 
