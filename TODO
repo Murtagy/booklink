@@ -1,5 +1,8 @@
 Plan:
     - make a simple online-booking
+        - an app for online-booking
+        - an app for administration
+        - a separate SSR web page for website
     - start servicing with no charge
     - make payment for notifications (integrate with rocketsms)
     - make payment for extra usage
@@ -9,6 +12,7 @@ Reasoning:
 
 Next:
     Visit submission screen - input telephone and name
+
 
 Back:
 - CRUD schedule
