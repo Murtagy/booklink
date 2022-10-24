@@ -115,7 +115,7 @@ export default {
     },
   },
   mounted() {
-    this.client_id = this.$route.query.org || null; // setting null to avoid undefined
+    this.client_id = this.$route.query.org || import.meta.env.VITE_APP_CLIENT_ID; // setting null to avoid undefined
 
     this.getWorkers();
     this.getServices();
