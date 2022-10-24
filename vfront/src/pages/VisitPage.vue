@@ -4,12 +4,12 @@
 
 <template>
   <div>
-    <wide-header title="Онлайн-запись" />
+    <wide-header :title=current_screen_title />
 
     <form v-if="current_screen == 'start'">
       <ul>
         <li>
-          <button @click="changeCurrentScreen('visit-select-service')">
+          <button @click="changeCurrentScreen('visit-select-service', current_screen_title='Выбор услуги')">
             <img src="../assets/list-icon.jpg" />Услуга
           </button>
 
@@ -20,7 +20,7 @@
           </span>
         </li>
         <li>
-          <button @click="changeCurrentScreen('visit-select-worker')">
+          <button @click="changeCurrentScreen('visit-select-worker', 'Выбор исполнителя')">
             <img src="../assets/worker-icon.png" />Сотрудник
           </button>
 
@@ -29,7 +29,7 @@
           </span>
         </li>
         <li v-show="checked_services.length > 0">
-          <button @click="changeCurrentScreen('visit-select-datetime')">
+          <button @click="changeCurrentScreen('visit-select-datetime' , 'Выбор даты')">
             <img src="../assets/calendar-icon.png" />Дата и время
           </button>
           <span v-if="visit_time != null" class="selected">
@@ -99,6 +99,7 @@ export default {
       checked_services: [],
       client_id: null, // sets when mounted
       current_screen: "start",
+      current_screen_title: "Онлайн запись",
       services: services,
       visit_time: null,
       worker: null,
@@ -122,9 +123,10 @@ export default {
     // alert(`client_id ${this.client_id}`)
   },
   methods: {
-    changeCurrentScreen: function (x) {
-      console.log("Change screen!", x);
-      this.current_screen = x;
+    changeCurrentScreen: function (screen, screen_title) {
+      console.log("Change screen!", screen, screen_title);
+      this.current_screen = screen;
+      this.current_screen_title = screen_title;
     },
     // todo: flush selection (something has been selected, current availability might be wrong)
     applyCheckedServices: function (x) {

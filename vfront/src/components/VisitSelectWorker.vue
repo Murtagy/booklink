@@ -1,17 +1,15 @@
 <template>
-  <div id="main">
-    <button
-      v-for="worker in workers"
-      :key="worker.worker_id"
-      @click="emitWorker(worker)"
-    >
-      <img src="../assets/worker-photo.jpg" />
-      <span id="name">{{ worker.name }} </span>
-      <br /><br /><span id="job">{{ worker.job_title }}</span
-      ><br />
-      <br />{{ worker.description }}
-    </button>
-  </div>
+  <button
+    v-for="worker in workers"
+    :key="worker.worker_id"
+    @click="emitWorker(worker)"
+  >
+    <img src="../assets/worker-photo.jpg" />
+    <span id="name">{{ worker.name }} </span>
+    <br /><br /><span id="job">{{ worker.job_title }}</span
+    ><br />
+    <br />{{ worker.description }}
+  </button>
 </template>
 
 <style scoped src="@/assets/styles/worker.css"></style>
