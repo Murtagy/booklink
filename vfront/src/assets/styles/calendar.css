@@ -65,7 +65,7 @@ span.day {
 
 span.dates {
   padding: 20px;
-  border: 2px solid rgb(119, 96, 205);
+  border: 2px solid rgba(188, 177, 226, 1);
 }
 
 span.clickable {

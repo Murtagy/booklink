@@ -42,7 +42,7 @@ part // todo - copy to components
       <span class="description">- дата доступна для выбора</span>
       <br /><br />
       <!-- nonclickacle - usual cell  -->
-      <span class="square"></span>
+      <span class="square dates"></span>
       <span class="description">- дата не доступна для выбора</span>
       <!-- class="empty" for empty cells -->
     </div>
@@ -100,14 +100,14 @@ export default {
       let date = new Date(_date);
 
       date.setUTCDate(1);
-      console.debug("Here", date);
+      // console.debug("Here", date);
       for (;;) {
         if (date.getUTCDay() == 1) {
           break;
         }
         date = new Date(date.getTime() - 1000 * 60 * 60 * 24); // (miliseconds * seconds)... 24h
       }
-      console.log("Base date", date);
+      // console.log("Base date", date);
       return date;
     },
     listCalendarDatesFromBase(_date) {
@@ -119,7 +119,7 @@ export default {
         date = new Date(date.getTime() + 1000 * 60 * 60 * 24); // 24h
         dates.push(date);
       }
-      console.log("Calendar dates", dates);
+      // console.log("Calendar dates", dates);
       return dates;
     },
     updateCalendarDates() {
@@ -152,10 +152,12 @@ export default {
     isAvailable(__date) {
       // for now
       if (!this.availability_mode) {
+        console.log('Not in availability mode')
         return true;
       }
       if (this.availability == undefined) {
         // still loading?
+        console.log('No availability (undefined)')
         return false;
       }
 
