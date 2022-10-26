@@ -81,21 +81,16 @@ export default {
     Register() {
       console.log("REGISTER");
       if (this.password != this.password_confirmation) {
-        alert('Пароль не совпадает')
-      }
-      else if (this.password == "") {
-        alert('Форма не заполнена')
-      }
-      else if (this.email == "") {
-        alert('Форма не заполнена')
-      }
-      else if (this.username == "") {
-        alert('Форма не заполнена')
-      }
-      else if (this.company == "") {
-        alert('Форма не заполнена')
-      }
-      else {
+        alert("Пароль не совпадает");
+      } else if (this.password == "") {
+        alert("Форма не заполнена");
+      } else if (this.email == "") {
+        alert("Форма не заполнена");
+      } else if (this.username == "") {
+        alert("Форма не заполнена");
+      } else if (this.company == "") {
+        alert("Форма не заполнена");
+      } else {
         this.$api
           .post("/signup", {
             username: this.username,
@@ -115,22 +110,21 @@ export default {
           .catch((e) => {
             if (e.response) {
               this.DisplayErrorFromResponse(e.response);
-            }
-            else {
+            } else {
               this.DisplayError(e);
             }
           });
-      };
+      }
       // TODO catch error
     },
     DisplayError(e) {
       alert("Произошла ошибка", e);
     },
     DisplayErrorFromResponse(response) {
-      let details = response.data.detail
+      let details = response.data.detail;
       let msg;
       if (details) {
-        switch(details) {
+        switch (details) {
           case "User email already exists":
             msg = "User email already exists";
           case "User email already exists":

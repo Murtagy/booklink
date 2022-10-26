@@ -49,7 +49,6 @@ part // todo - copy to components
 </template>
 
 <script>
-
 const months_rus = {
   0: "Январь",
   1: "Февраль",
@@ -78,7 +77,7 @@ export default {
     };
   },
   props: ["availability", "availability_mode"], // todo - handle None
-  components: { },
+  components: {},
   created() {
     //   console.debug('Created Calendar page')
     //   if (this.no_backend) {
@@ -150,12 +149,12 @@ export default {
     isAvailable(__date) {
       // for now
       if (!this.availability_mode) {
-        console.log('Not in availability mode')
+        console.log("Not in availability mode");
         return true;
       }
       if (this.availability == undefined) {
         // still loading?
-        console.log('No availability (undefined)')
+        console.log("No availability (undefined)");
         return false;
       }
 

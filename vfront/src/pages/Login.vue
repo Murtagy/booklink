@@ -46,47 +46,45 @@ export default {
   },
   methods: {
     make_form() {
-        var body = new FormData();
-        body.append('username', this.username);
-        body.append('password', this.password); 
-        return body
+      var body = new FormData();
+      body.append("username", this.username);
+      body.append("password", this.password);
+      return body;
     },
     Login() {
       console.log("Login");
-      if (this.username == '') {
-        alert('Логин не указан')
-      }
-      else {
+      if (this.username == "") {
+        alert("Логин не указан");
+      } else {
         this.$api
-            .post("/token", this.make_form())
-            .then((response) => {
+          .post("/token", this.make_form())
+          .then((response) => {
             let token = response.data.access_token;
             if (token) {
-                this.$authStore.setJwt(token);
-                this.$router.push("/my_user");
+              this.$authStore.setJwt(token);
+              this.$router.push("/my_user");
             } else {
-                this.DisplayError('Ошибка');
+              this.DisplayError("Ошибка");
             }
-            })
-            .catch((e) => {
+          })
+          .catch((e) => {
             if (e.response) {
-                this.DisplayErrorFromResponse(e.response);
+              this.DisplayErrorFromResponse(e.response);
+            } else {
+              console.log(e);
+              this.DisplayError(e);
             }
-            else {
-                console.log(e);
-                this.DisplayError(e);
-            }
-            });
+          });
       }
     },
     DisplayError(e) {
       alert("Произошла ошибка", e);
     },
     DisplayErrorFromResponse(response) {
-      let details = response.data.detail
+      let details = response.data.detail;
       let msg;
       if (details) {
-        switch(details) {
+        switch (details) {
           case "User email already exists":
             msg = "User email already exists";
           case "User email already exists":

@@ -1,10 +1,10 @@
 <template>
-  <div>
-    hello
-  </div>
+  <p>{{services}}</p>
+  <p>{{visit_time}}</p>
+  <p>{{worker}}</p>
 </template>
 
-<style scoped src="@/assets/styles/worker.css"></style>
+<!-- <style scoped src="@/assets/styles/worker.css"></style> -->
 
 <script>
 export default {
