@@ -63,6 +63,13 @@
       @select-datetime="applySelectedDateTime"
       v-bind:availability="availability"
     />
+    <!-- <visit-details
+      v-if="current_screen == 'visit-details'"
+      @go-start-screen="changeCurrentScreen('start')"
+      worker="worker"
+      visit_time="visit_time"
+      services="checked_services"
+    /> -->
   </div>
 </template>
 
@@ -73,6 +80,7 @@ import WideHeader from "@/components/WideHeader.vue";
 import VisitSelectDatetime from "@/components/VisitSelectDatetime.vue";
 import VisitSelectService from "@/components/VisitSelectService.vue";
 import VisitSelectWorker from "@/components/VisitSelectWorker.vue";
+import VisitDetails from "@/components/VisitDetals.vue";
 
 import availability_mock from "@/mocks/availability_mock.js";
 import services_mock from "@/mocks/services_mock.js";
@@ -80,10 +88,11 @@ import workers_mock from "@/mocks/workers_mock.js";
 
 export default {
   components: {
-    WideHeader,
+    VisitDetails,
     VisitSelectDatetime,
     VisitSelectService,
     VisitSelectWorker,
+    WideHeader,
   },
   data() {
     var availability = null;
