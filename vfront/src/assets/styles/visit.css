@@ -1,8 +1,8 @@
 div {
-    background-color: rgba(251, 250, 254, 1);
+    background-color: var(--color6-bg);
     height:800px;
     width:100%;
-    text-shadow:1px 1px rgb(235, 228, 255);
+    text-shadow:1px 1px var(--color9-shadow);
   }
 
 ul {
@@ -20,11 +20,11 @@ li button {
     margin-bottom:30px;
     padding:2px;
     border:none;
-    border-bottom: 5px double rgb(119, 96, 205);
+    border-bottom: 5px double var(--color1);
     font-size: 27px;
     width: 50%;
-    background-color: rgba(251, 250, 254, 1);
-    color: #414141;
+    background-color: var(--color6-bg);
+    color: var(--color7);
     font-family: "TimesNewRoman";
     font-weight: bold;
     position:relative;
@@ -40,11 +40,13 @@ li button img {
 
 li button:hover {
     cursor:pointer;
-    background-image: linear-gradient(to top, rgb(150, 128, 226), rgba(251, 250, 254, 1), rgba(251, 250, 254, 1), rgba(251, 250, 254, 1), rgba(251, 250, 254, 1), rgba(251, 250, 254, 1));
+    background-image: linear-gradient(to top, var(--color2), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg));
+    /* background-image: linear-gradient(to top, var(--colorA), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg)); */
   }
 
 div.selected {
-    border: 1px solid rgb(150, 128, 226);
+    border: 1px solid var(--color2);
+    /* border: 1px solid var(--colorA); */
     border-radius:10px;
     height:10%;
     margin: 20px auto;
@@ -72,7 +74,7 @@ span.price {
     font-size: 27px;
     width: 40%;
     height:8%;
-    background-color: rgba(135, 116, 203, 1);
+    background-color: var(--color2);
     color: white;
     font-family: "TimesNewRoman";
     font-weight: bold;
@@ -80,7 +82,7 @@ span.price {
 
 #create-visit:hover {
     cursor:pointer;
-    border:5px double rgb(119, 96, 205);
+    border:5px double var(--color1);
 }
 
 @media screen and (max-width: 900px) {

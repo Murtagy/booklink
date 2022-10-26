@@ -1,6 +1,6 @@
 div.main {
   font-family: "TimesNewRoman";
-  color: #414141;
+  color: var(--color7);
 }
 
 img {
@@ -19,7 +19,7 @@ img.right {
 button {
   border: none;
   padding: 10px;
-  background-color: rgba(251, 250, 254, 1);
+  background-color: var(--color6-bg);
 }
 
 button.left {
@@ -40,7 +40,7 @@ div.month {
   font-size: 25px;
   font-weight: bolder;
   display: inline-block;
-  border-bottom: 3px solid rgb(119, 96, 205);
+  border-bottom: 3px solid var(--color1);
 }
 
 div.dates {
@@ -65,17 +65,17 @@ span.day {
 
 span.dates {
   padding: 20px;
-  border: 2px solid rgba(188, 177, 226, 1);
+  border: 2px solid var(--color3);
 }
 
 span.clickable {
-  background-color: rgba(188, 177, 226, 1);
-  border: 2px solid rgb(119, 96, 205);
+  background-color: var(--color3);
+  border: 2px solid var(--color1);
 }
 
 span.empty {
-  background-color: rgb(216, 207, 230);
-  border: 2px solid rgb(188, 181, 201);
+  background-color: var(--color4);
+  border: 2px solid var(--color5);
 }
 
 span.square {
@@ -84,7 +84,7 @@ span.square {
   padding: 0;
   padding-left: 18px;
   margin-left: 12%;
-  border: 2px solid rgb(119, 96, 205);
+  border: 2px solid var(--color1);
 }
 
 span.description {

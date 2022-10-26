@@ -11,8 +11,8 @@ div #main {
 
 button {
     grid-column:span 5;
-    border:5px double rgb(119, 96, 205);
-    background-color: rgba(251, 250, 254, 1);
+    border:5px double var(--color1);
+    background-color: var(--color6-bg);
     padding-right:10px;
     text-align: justify;
     padding-top: 10px;
@@ -33,7 +33,7 @@ button {
 
 button:hover {
     cursor:pointer;
-    border:5px solid rgb(119, 96, 205);
+    border:5px solid var(--color1);
 }
 
 button img {

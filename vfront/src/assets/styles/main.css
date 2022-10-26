@@ -1,6 +1,19 @@
+:root {
+  --color1: rgb(119, 96, 205);
+  --color2: rgba(135, 116, 203, 1);
+  --color3: rgba(188, 177, 226, 1);
+  --color4: rgb(216, 207, 230);
+  --color5: rgb(188, 181, 201);
+  --color6-bg: rgba(251, 250, 254, 1);
+  --color7: #414141;
+  /* --color8: rgb(122, 95, 216); */
+  --color9-shadow: rgb(235, 228, 255);
+  /* --colorA: rgb(150, 128, 226); */
+}
+
 header {
   max-width: 100%;
-  background-color: rgba(188, 177, 226, 1);
+  background-color: var(--color3);
   position: sticky;
   margin-left: 20px;
   margin-right: 20px;
@@ -13,7 +26,7 @@ header h1 {
   text-align: center;
   margin-top:40px;
   margin-bottom:15px;
-  text-shadow:1px 2px rgb(122, 95, 216);
+  text-shadow:1px 2px var(--color1);
 }
 
 header img#our_logo {
@@ -32,7 +45,7 @@ header hr.line1 {
 }
 
 header hr.line2 {
-  background-color:rgb(119, 96, 205);
+  background-color:var(--color1);
   height:3px;
   margin:0;
   border:none;
@@ -41,7 +54,7 @@ header hr.line2 {
 
 body {
   margin:0;
-  background-color:rgba(251, 250, 254, 1);
+  background-color:var(--color6-bg);
   font-family:"Times New Roman";
 }
 
