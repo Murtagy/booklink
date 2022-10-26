@@ -3,7 +3,6 @@ part // todo - copy to components
 
 <template>
   <div class="main">
-    <wide-header title="Выбор даты"></wide-header>
     <button class="left" @click="moveToPrevMonth">
       <img class="left" src="../assets/arrow2.png" />
     </button>

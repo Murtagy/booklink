@@ -1,6 +1,5 @@
 <template>
   <div>
-    <wide-header title="Выбор времени"></wide-header>
     <button class="left" @click="moveToPrevMonth">
       <img class="left" src="../assets/arrow2.png" />
     </button>
