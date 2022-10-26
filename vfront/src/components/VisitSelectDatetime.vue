@@ -18,8 +18,8 @@
 <style scoped src="@/assets/styles/visit.css"></style>
 
 <script>
-import Calendar from "@/pages/CalendarPicker.vue";
-import TimeSched from "@/pages/TimePicker.vue";
+import Calendar from "@/components/CalendarPicker.vue";
+import TimeSched from "@/components/TimePicker.vue";
 
 export default {
   components: { Calendar, TimeSched },

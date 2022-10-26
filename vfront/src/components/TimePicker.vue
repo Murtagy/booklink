@@ -41,9 +41,8 @@
 </template>
 
 <script>
-import WideHeader from "../components/WideHeader.vue";
 export default {
-  components: { WideHeader },
+  components: { },
   data() {
     return {};
   },

@@ -45,12 +45,12 @@ const router = createRouter({
     {
       path: "/calendar",
       name: "Calendar",
-      component: () => import("../pages/CalendarPicker.vue"),
+      component: () => import("../components/CalendarPicker.vue"),
     },
     {
       path: "/time",
       name: "Time",
-      component: () => import("../pages/TimePicker.vue"),
+      component: () => import("../components/TimePicker.vue"),
     },
   ],
 });

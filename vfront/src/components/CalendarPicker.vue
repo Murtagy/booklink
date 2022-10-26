@@ -49,7 +49,6 @@ part // todo - copy to components
 </template>
 
 <script>
-import WideHeader from "../components/WideHeader.vue";
 
 const months_rus = {
   0: "Январь",
@@ -79,7 +78,7 @@ export default {
     };
   },
   props: ["availability", "availability_mode"], // todo - handle None
-  components: { WideHeader },
+  components: { },
   created() {
     //   console.debug('Created Calendar page')
     //   if (this.no_backend) {
