@@ -1,15 +1,22 @@
- <!-- Main page of visit booking process.
+<!-- Main page of visit booking process.
  Visit page is in control of fetching the data and setting the props of other components 
  Other pages are considered sub-pages and are not independant -->
 
 <template>
   <div>
-    <wide-header :title=current_screen_title />
+    <wide-header :title="current_screen_title" />
 
     <form v-if="current_screen == 'start'">
       <ul>
         <li>
-          <button @click="changeCurrentScreen('visit-select-service', current_screen_title='Выбор услуги')">
+          <button
+            @click="
+              changeCurrentScreen(
+                'visit-select-service',
+                (current_screen_title = 'Выбор услуги')
+              )
+            "
+          >
             <img src="../assets/list-icon.jpg" />Услуга
           </button>
 
@@ -20,7 +27,11 @@
           </span>
         </li>
         <li>
-          <button @click="changeCurrentScreen('visit-select-worker', 'Выбор исполнителя')">
+          <button
+            @click="
+              changeCurrentScreen('visit-select-worker', 'Выбор исполнителя')
+            "
+          >
             <img src="../assets/worker-icon.png" />Сотрудник
           </button>
 
@@ -29,7 +40,9 @@
           </span>
         </li>
         <li v-show="checked_services.length > 0">
-          <button @click="changeCurrentScreen('visit-select-datetime' , 'Выбор даты')">
+          <button
+            @click="changeCurrentScreen('visit-select-datetime', 'Выбор даты')"
+          >
             <img src="../assets/calendar-icon.png" />Дата и время
           </button>
           <span v-if="visit_time != null" class="selected">
@@ -42,6 +55,12 @@
         value="Сформировать запись"
         name="create-visit"
         id="create-visit"
+        @click="
+          changeCurrentScreen(
+            'visit-details',
+            (current_screen_title = 'Подтверждение записи')
+          )
+        "
       />
     </form>
 
@@ -63,13 +82,13 @@
       @select-datetime="applySelectedDateTime"
       v-bind:availability="availability"
     />
-    <!-- <visit-details
+    <visit-details
       v-if="current_screen == 'visit-details'"
       @go-start-screen="changeCurrentScreen('start')"
-      worker="worker"
-      visit_time="visit_time"
-      services="checked_services"
-    /> -->
+      :worker="worker"
+      :visit_time="visit_time"
+      :services="checked_services"
+    />
   </div>
 </template>
 
@@ -80,7 +99,7 @@ import WideHeader from "@/components/WideHeader.vue";
 import VisitSelectDatetime from "@/components/VisitSelectDatetime.vue";
 import VisitSelectService from "@/components/VisitSelectService.vue";
 import VisitSelectWorker from "@/components/VisitSelectWorker.vue";
-import VisitDetails from "@/components/VisitDetals.vue";
+import VisitDetails from "@/components/VisitDetails.vue";
 
 import availability_mock from "@/mocks/availability_mock.js";
 import services_mock from "@/mocks/services_mock.js";
@@ -125,7 +144,8 @@ export default {
     },
   },
   mounted() {
-    this.client_id = this.$route.query.org || import.meta.env.VITE_APP_CLIENT_ID; // setting null to avoid undefined
+    this.client_id =
+      this.$route.query.org || import.meta.env.VITE_APP_CLIENT_ID; // setting null to avoid undefined
 
     this.getWorkers();
     this.getServices();
