@@ -1,4 +1,5 @@
 <template>
+  <div class="box">
   <button
     v-for="worker in workers"
     :key="worker.worker_id"
@@ -10,6 +11,7 @@
     ><br />
     <br />{{ worker.description }}
   </button>
+  </div>
 </template>
 
 <style scoped src="@/assets/styles/worker.css"></style>

@@ -10,6 +10,7 @@
       <ul>
         <li>
           <button
+           class="menu"
             @click="
               changeCurrentScreen(
                 'visit-select-service',
@@ -28,6 +29,7 @@
         </li>
         <li>
           <button
+           class="menu"
             @click="
               changeCurrentScreen('visit-select-worker', 'Выбор исполнителя')
             "
@@ -41,6 +43,7 @@
         </li>
         <li v-show="checked_services.length > 0">
           <button
+           class="menu"
             @click="changeCurrentScreen('visit-select-datetime', 'Выбор даты')"
           >
             <img src="../assets/calendar-icon.png" />Дата и время
@@ -50,19 +53,19 @@
           </span>
         </li>
       </ul>
-      <input
-        type="button"
-        value="Сформировать запись"
-        name="create-visit"
-        id="create-visit"
-        @click="
-          changeCurrentScreen(
-            'visit-details',
-            (current_screen_title = 'Подтверждение записи')
-          )
-        "
-      />
+    <input
+      type="button"
+      class="sticky_button"
+      value="Сформировать запись"
+      @click="
+        changeCurrentScreen(
+          'visit-details',
+          (current_screen_title = 'Подтверждение записи')
+        )
+      "
+    />
     </form>
+    
 
     <visit-select-service
       v-if="current_screen == 'visit-select-service'"
@@ -89,6 +92,7 @@
       :visit_time="visit_time"
       :services="checked_services"
     />
+
   </div>
 </template>
 

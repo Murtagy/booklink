@@ -19,7 +19,10 @@
             :value="service"
             v-model="checkedServices"
           />
-          <label :for="service.service_id">{{ service.name }}</label>
+          <label 
+            class="service_name"
+            :for="service.service_id"
+          >{{ service.name }}</label>
           <span class="price">{{ service.price }} {{ service.currency }}</span>
         </li>
       </ul>

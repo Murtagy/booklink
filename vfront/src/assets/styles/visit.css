@@ -1,131 +1,101 @@
 div {
-    background-color: var(--color6-bg);
-    height:800px;
-    width:100%;
-    text-shadow:1px 1px var(--color9-shadow);
-  }
+  background-color: var(--color6-bg);
+  height: 800px;
+  width: 100%;
+  text-shadow: 1px 1px var(--color9-shadow);
+}
 
 ul {
-    position:relative;
-    top:130px;
-    width:100%;
-    padding:0;
-    text-align:center;
-    font-family: "Times New Roman";
+  position: relative;
+  top: 130px;
+  width: 100%;
+  padding: 0;
+  text-align: center;
+  font-family: "Times New Roman";
 }
 
-li button {
-    display:block;
-    margin:40px auto;
-    margin-bottom:30px;
-    padding:2px;
-    border:none;
-    border-bottom: 5px double var(--color1);
-    font-size: 27px;
-    width: 50%;
-    background-color: var(--color6-bg);
-    color: var(--color7);
-    font-family: "TimesNewRoman";
-    font-weight: bold;
-    position:relative;
+button.menu {
+  display: block;
+  margin: 40px auto;
+  margin-bottom: 30px;
+  padding: 2px;
+  border: none;
+  border-bottom: 5px double var(--color1);
+  font-size: 27px;
+  width: 50%;
+  background-color: var(--color6-bg);
+  color: var(--color7);
+  font-family: "TimesNewRoman";
+  font-weight: bold;
+  position: relative;
 }
 
-li button img {
-    width:1em;
-    height:1.1em;
-    position:absolute;
-    right:15px;
-    top:3px;
+button.menu img {
+  width: 1em;
+  height: 1.1em;
+  position: absolute;
+  right: 15px;
+  top: 3px;
 }
 
-li button:hover {
-    cursor:pointer;
-    background-image: linear-gradient(to top, var(--color2), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg));
-    /* background-image: linear-gradient(to top, var(--colorA), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg)); */
-  }
+button.menu:hover {
+  cursor: pointer;
+  background-image: linear-gradient(
+    to top,
+    var(--color2),
+    var(--color6-bg),
+    var(--color6-bg),
+    var(--color6-bg),
+    var(--color6-bg),
+    var(--color6-bg)
+  );
+  /* background-image: linear-gradient(to top, var(--colorA), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg), var(--color6-bg)); */
+}
 
 div.selected {
-    border: 1px solid var(--color2);
-    /* border: 1px solid var(--colorA); */
-    border-radius:10px;
-    height:10%;
-    margin: 20px auto;
-    width: 80%;
-    padding: 10px;
-    font-size: 19px;
-    display: flex;
+  border: 1px solid var(--color2);
+  /* border: 1px solid var(--colorA); */
+  border-radius: 10px;
+  height: 10%;
+  margin: 20px auto;
+  width: 80%;
+  padding: 10px;
+  font-size: 19px;
+  display: flex;
 }
 
 span.service {
-    flex:4;
+  flex: 4;
 }
 
 span.price {
-    flex:1;
-    font-style: italic;
-}
-
-#create-visit {
-    position:absolute;
-    right:20px;
-    top:82%;
-    border: 5px double white;
-    border-radius: 20px;
-    font-size: 27px;
-    width: 40%;
-    height:8%;
-    background-color: var(--color2);
-    color: white;
-    font-family: "TimesNewRoman";
-    font-weight: bold;
-}
-
-#create-visit:hover {
-    cursor:pointer;
-    border:5px double var(--color1);
+  flex: 1;
+  font-style: italic;
 }
 
 @media screen and (max-width: 900px) {
-    li button {
-        font-size: 24px;
-        width: 60%;
-    }
-    #create-visit {
-        top:65%;
-        font-size: 24px;
-        width: 40%;
-        height:8%;
-    }
+  li button {
+    font-size: 24px;
+    width: 60%;
+  }
 }
 
 @media screen and (max-width: 620px) {
-    ul {
-        top:25px;
-    }
-    li button {
-        font-size: 20px;
-        width: 65%;
-    }
-    #create-visit {
-        top:77%;
-        font-size: 20px;
-        width: 50%;
-        height:8%;
-    }
+  ul {
+    top: 25px;
+  }
+  button.menu {
+    font-size: 20px;
+    width: 65%;
+  }
 }
 
 @media screen and (max-width: 450px) {
-    ul {
-        top:5px;
-    }
-    li button {
-        font-size: 20px;
-        width: 75%;
-    }
-    #create-visit {
-        top:75%;
-        font-size: 20px;
-        width: 70%;
-        height:8%;
-    }
+  ul {
+    top: 5px;
+  }
+  button.menu {
+    font-size: 20px;
+    width: 75%;
+  }
 }
