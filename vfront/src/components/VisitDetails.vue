@@ -19,9 +19,8 @@
   </div>
     <input
       type="button"
-      value="Сформировать запись"
-      name="create-visit"
-      id="create-visit"
+      value="Подтвердить запись"
+      class="sticky_button"
       @click=""
     />
 </div>
