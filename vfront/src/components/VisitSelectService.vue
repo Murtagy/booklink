@@ -2,11 +2,6 @@
   <div v-if="services">
     <form>
       <ul>
-        <li class="button">
-          <button @click="emitServices">
-            Далее <img src="../assets/arrow.png" />
-          </button>
-        </li>
         {{
           checkedServices
         }}
@@ -26,6 +21,9 @@
           <span class="price">{{ service.price }} {{ service.currency }}</span>
         </li>
       </ul>
+
+          <input type="button" class="sticky_button" @click="emitServices" value="Далее"/>
+             <!-- <img src="../assets/arrow.png" /> -->
     </form>
   </div>
 </template>

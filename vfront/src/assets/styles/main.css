@@ -66,7 +66,7 @@ body {
 .box {
   /* display: flex; */
   /* justify-content: space-between; */
-  margin: 40px;
+  padding: 1.5em;
 }
 
 .cards {
@@ -123,6 +123,10 @@ input.sticky_button {
 input.sticky_button:hover {
   cursor: pointer;
   border: 5px double var(--color1);
+}
+
+.border_main1 {
+  border: 2px solid var(--color1);
 }
 
 @media screen and (max-width: 900px) {

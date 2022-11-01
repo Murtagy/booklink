@@ -1,20 +1,20 @@
 <template>
 <div class="box">
   <!-- <p>{{services}}</p> -->
-  <p>Выбранные услуги:</p>
+  <p class="bold">Выбранные услуги:</p>
   <li v-for="service in services" :key="service.service_id">
     <label :for="service.service_id">{{ service.name }}</label>
     <span class="price">{{ service.price }} {{ service.currency }}</span>
   </li>
   
   <!-- <p>{{visit_time}}</p> -->
-  <p>Время:</p>
-  <p>{{this.parse_date(visit_time)}}</p>
+  <p class="bold">Время:</p>
+  <p class="border_main1" style="padding: 1em;">{{this.parse_date(visit_time)}}</p>
   <!-- <p>{{worker}}</p> -->
-  <p>Запись к:</p>
-  <div class="cards">
+  <p class="bold">Запись к:</p>
+  <div class="cards ">
     <div class="card">
-      <p>{{worker.name}}, {{worker.job_title}}</p>
+      <p class="border_main1" style="padding: 1em;">{{worker.name}}, {{worker.job_title}}</p>
     </div>
   </div>
     <input
@@ -25,6 +25,22 @@
     />
 </div>
 </template>
+
+<style scoped>
+li {
+  display: block;
+  margin: 0px;
+  margin-top: 1px;
+  padding: 5px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border: 2px solid var(--color1);
+  position: relative;
+}
+p.bold {
+  font-weight: bold;
+}
+</style>
 
 
 <script>

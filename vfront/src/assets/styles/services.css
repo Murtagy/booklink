@@ -17,36 +17,11 @@ li {
     padding: 5px;
     padding-top: 15px;
     padding-bottom: 15px;
-    border: 2px solid var(--color1);
     position: relative;
+    border: 2px solid var(--color1);   
+    /* for reference border_main1 */
 }
 
-li.button {
-    display: block;
-    border: none;
-    margin: 0;
-    margin-top: 90px;
-    padding: 0;
-    position: sticky;
-    top: 230px;
-    z-index: 2;
-}
-
-button {
-    position: absolute;
-    right: 20px;
-    bottom: 10px;
-    border: 5px double white;
-    border-radius: 20px;
-    font-size: 27px;
-    width: 30%;
-    height: 50px;
-    background-color: var(--color2);
-    color: white;
-    font-family: "TimesNewRoman";
-    font-weight: bold;
-    margin-bottom: 20px;
-}
 
 button img {
     height: 1em;
@@ -54,11 +29,6 @@ button img {
     position: absolute;
     top: 7px;
     right: 15px;
-}
-
-button:hover {
-    cursor: pointer;
-    border: 5px double var(--color1);
 }
 
 .checkbox {
@@ -107,15 +77,6 @@ li label::before {
 }
 
 @media screen and (max-width: 620px) {
-    button {
-        font-size: 20px;
-        width: 40%;
-    }
-
-    li.button {
-        top: 200px;
-    }
-
     button img {
         height: 0.7em;
         width: 1.2em;
@@ -138,15 +99,6 @@ li label::before {
 }
 
 @media screen and (max-width: 620px) {
-    button {
-        font-size: 18px;
-        width: 45%;
-        height: 45px;
-    }
-
-    li.button {
-        top: 200px;
-    }
 
     button img {
         height: 0.7em;

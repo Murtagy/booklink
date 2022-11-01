@@ -1,3 +1,4 @@
+<!-- TODO: in small res time is out of colored button -->
 <template>
   <div>
     <button class="left" @click="moveToPrevMonth">

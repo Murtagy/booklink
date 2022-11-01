@@ -6,7 +6,7 @@
   <div>
     <wide-header :title="current_screen_title" />
 
-    <div style="padding: 30px;">
+    <div class="box">
     <form v-if="current_screen == 'start'">
       <ul>
         <li>
