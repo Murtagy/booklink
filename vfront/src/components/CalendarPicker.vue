@@ -2,7 +2,7 @@
 part // todo - copy to components
 
 <template>
-  <div class="main">
+  <div>
     <button class="left" @click="moveToPrevMonth">
       <img class="left" src="../assets/arrow2.png" />
     </button>
@@ -47,6 +47,8 @@ part // todo - copy to components
     </div>
   </div>
 </template>
+
+<style scoped src="@/assets/styles/calendar.css"></style>
 
 <script>
 const months_rus = {
@@ -195,4 +197,3 @@ export default {
   },
 };
 </script>
-<style scoped src="@/assets/styles/calendar.css"></style>

@@ -12,6 +12,7 @@ ul {
   padding: 0;
   text-align: center;
   font-family: "Times New Roman";
+  list-style-type: none;
 }
 
 button.menu {

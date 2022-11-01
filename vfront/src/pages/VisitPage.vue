@@ -6,6 +6,7 @@
   <div>
     <wide-header :title="current_screen_title" />
 
+    <div style="padding: 30px;">
     <form v-if="current_screen == 'start'">
       <ul>
         <li>
@@ -92,7 +93,7 @@
       :visit_time="visit_time"
       :services="checked_services"
     />
-
+  </div>
   </div>
 </template>
 
