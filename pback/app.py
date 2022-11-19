@@ -15,14 +15,13 @@ import app_exceptions as exceptions
 import crud
 import db
 import models
-from features import users, workers
+from features import services, users, workers
 from schemas.availability import (
     Availability,
     AvailabilityPerWorker,
     TimeSlotType,
     _get_client_availability,
 )
-from schemas.service import CreateService, OutService, OutServices
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot
 from schemas.visit import InVisit, OutVisit
 
@@ -346,44 +345,18 @@ async def create_worker_weekly_slot(
     return "OK"
 
 
-@app.post("/service", response_model=OutService)
-async def create_service(
-    service: CreateService,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> models.Service:
-    client_id = current_user.client_id
-    db_service = crud.create_service(s, service, client_id)
-    return db_service
-
-
-@app.get("/service/{service_id}", response_model=OutService)
-async def get_service(
-    service_id: int,
-    s: Session = Depends(db.get_session),
-) -> Optional[models.Service]:
-    return crud.get_service(s, service_id)
-
-
-@app.get("/client/{client_id}/service/{service_id}", response_model=OutService)
-async def get_service_by_client(
-    client_id: int,
-    service_id: int,
-    s: Session = Depends(db.get_session),
-) -> Optional[models.Service]:
-    return crud.get_service(s, service_id)
-
-
-@app.get("/client/{client_id}/services", response_model=OutServices)
-async def get_services_by_client(
-    client_id: int,
-    worker_id: Optional[int] = None,
-    s: Session = Depends(db.get_session),
-    # current_user: models.User = Depends(users.get_current_user),
-) -> OutServices:
-    services = crud.get_services(s, client_id, worker_id=worker_id)
-    return OutServices(services=services)
-
+app.post("/service", response_model=services.OutService)(
+    services.create_service_endpoint
+)
+app.get("/service/{service_id}", response_model=services.OutService)(
+    services.get_service_endpoint
+)
+app.get("/client/{client_id}/service/{service_id}", response_model=services.OutService)(
+    services.get_service_by_client_endpoint
+)
+app.get("/client/{client_id}/services", response_model=services.OutServices)(
+    services.get_services_by_client_endpoint
+)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

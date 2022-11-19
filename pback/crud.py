@@ -7,7 +7,7 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from features import users, workers
+from features import services, users, workers
 from models import (
     Client,
     File,
@@ -250,7 +250,7 @@ def create_weekly_slot(
 
 def create_service(
     db: Session,
-    service: schemas.CreateService,
+    service: services.CreateService,
     client_id: int,
 ) -> Service:
     serv = service.dict()
