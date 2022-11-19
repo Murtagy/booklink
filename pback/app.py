@@ -2,7 +2,6 @@ import datetime
 from datetime import timedelta
 from enum import Enum
 from io import BytesIO
-from re import L
 from typing import Iterator, Literal, Optional
 
 import structlog
@@ -16,7 +15,7 @@ import app_exceptions as exceptions
 import crud
 import db
 import models
-from features import users
+from features import users, workers
 from schemas.availability import (
     Availability,
     AvailabilityPerWorker,
@@ -26,7 +25,6 @@ from schemas.availability import (
 from schemas.service import CreateService, OutService, OutServices
 from schemas.slot import CreateSlot, CreateWeeklySlot, Slot
 from schemas.visit import InVisit, OutVisit
-from schemas.worker import CreateWorker, OutWorker, OutWorkers, UpdateWorker
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -68,6 +66,21 @@ app.get("/users/me/", response_model=users.UserOut)(users.read_users_me_endpoint
 app.get("/my_user", response_model=users.UserOut)(users.read_users_me2_endpoint)
 app.post("/token")(users.login_for_access_token_endpoint)
 
+# WORKERS
+app.get("/worker/{worker_id}", response_model=workers.OutWorker)(
+    workers.get_worker_endpoint
+)
+app.put("/worker/{worker_id}", response_model=workers.OutWorker)(
+    workers.update_worker_endpoint
+)
+app.delete("/worker/{worker_id}")(workers.delete_worker_endpoint)
+app.get("/client/{client_id}/workers", response_model=workers.OutWorkers)(
+    workers.get_workers_by_client_endpoint
+)
+app.get("/workers", response_model=workers.OutWorkers)(workers.get_workers_endpoint)
+app.post("/worker", response_model=workers.OutWorker)(workers.create_worker_endpoint)
+
+
 # VISITS
 @app.get("/visit/{visit_id}", response_model=OutVisit)
 def get_visit(
@@ -103,6 +116,7 @@ async def public_create_visit(
 
     services = list(_list_services())
     assert len(services) > 0
+    len_seconds: int = sum([service.seconds for service in services])
 
     slot = CreateSlot(
         name=f"Визит в {visit.from_dt}",
@@ -110,8 +124,7 @@ async def public_create_visit(
         client_id=visit.client_id,
         worker_id=visit.worker_id,
         from_datetime=visit.from_dt,
-        to_datetime=visit.from_dt
-        + timedelta(seconds=sum([service.seconds for service in services])),
+        to_datetime=visit.from_dt + timedelta(seconds=len_seconds),
     )
     slot = await slot.visit_pick_worker_and_check(s, exc=exceptions.SlotNotAvailable)
 
@@ -176,78 +189,6 @@ async def update_visit(
 @app.delete("/visit/{visit_id}")
 async def delete_visit(visit_id: str) -> None:
     return None
-
-
-# WORKERS
-@app.post("/worker", response_model=OutWorker)
-async def create_worker(
-    worker: CreateWorker,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> models.Worker:
-    # TODO notify user that he needs to add company schedule
-    # if worker.use_company_schedule:
-    # wl = crud.get_client_weeklyslot(s, current_user.client_id)
-    # if wl is None:
-    # raise HTTPException(428, "Schedule needs to be created first")
-    client_id = current_user.client_id
-    db_worker = crud.create_worker(s, worker, client_id)
-    return db_worker
-
-
-@app.get("/worker/{worker_id}", response_model=OutWorker)
-async def get_worker(
-    worker_id: int,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> models.Worker:
-    db_worker = crud.get_worker(s, worker_id)
-    assert db_worker is not None
-
-    assert current_user.client_id == db_worker.client_id
-
-    return db_worker
-
-
-@app.put("/worker/{worker_id}", response_model=OutWorker)
-async def update_worker(
-    worker_id: int,
-    worker: UpdateWorker,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> models.Worker:
-    db_worker = crud.get_worker(s, worker_id)
-    assert db_worker is not None
-    assert current_user.client_id == db_worker.client_id
-
-    db_worker = crud.update_worker(s, worker, worker_id)
-    return db_worker
-
-
-@app.delete("/worker/{worker_id}")
-async def delete_worker(worker_id: str) -> None:
-    return None
-
-
-@app.get("/client/{client_id}/workers", response_model=OutWorkers)
-async def get_workers_by_client(
-    client_id: int,
-    s: Session = Depends(db.get_session),
-    # current_user: models.User = Depends(users.get_current_user),
-) -> OutWorkers:
-    db_workers = crud.get_workers(s, client_id)
-
-    return OutWorkers(workers=db_workers)
-
-
-@app.get("/workers", response_model=OutWorkers)
-async def get_workers(
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> OutWorkers:
-    db_workers = crud.get_workers(s, current_user.client_id)
-
-    return OutWorkers(workers=db_workers)
 
 
 @app.post("/file")

@@ -7,7 +7,7 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from features import users
+from features import users, workers
 from models import (
     Client,
     File,
@@ -139,7 +139,7 @@ def get_workers(db: Session, client_id: int) -> List[Worker]:
     return db.query(Worker).filter(Worker.client_id == client_id).all()
 
 
-def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> Worker:
+def create_worker(db: Session, worker: workers.CreateWorker, client_id: int) -> Worker:
     w = worker
     db_worker = Worker(
         name=w.name,
@@ -155,7 +155,7 @@ def create_worker(db: Session, worker: schemas.CreateWorker, client_id: int) -> 
     return db_worker
 
 
-def update_worker(db: Session, worker: schemas.UpdateWorker, worker_id: int) -> Worker:
+def update_worker(db: Session, worker: workers.UpdateWorker, worker_id: int) -> Worker:
     db_worker = get_worker(db, worker_id)
     assert db_worker is not None
     update = worker.dict()
