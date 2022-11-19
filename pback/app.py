@@ -117,19 +117,11 @@ async def public_create_visit(
     if visit.from_dt < datetime.datetime.now():
         raise exceptions.SlotNotAvailable
 
-    def _list_services() -> Iterator[models.Service]:
-        for service_wrapped in visit.services:
-            service = crud.get_service(
-                s,
-                service_id=service_wrapped.service_id,
-                not_found=exceptions.ServiceNotFound,
-            )
-            assert service is not None
-            yield service
+    service_ids = [s.service_id for s in visit.services]
 
-    services = list(_list_services())
+    services = crud.get_services_by_ids(s, service_ids)
     assert len(services) > 0
-    len_seconds: int = sum([service.seconds for service in services])
+    total_visit_length: int = sum([service.seconds for service in services])
 
     slot = CreateSlot(
         name=f"Визит в {visit.from_dt}",
@@ -137,7 +129,7 @@ async def public_create_visit(
         client_id=visit.client_id,
         worker_id=visit.worker_id,
         from_datetime=visit.from_dt,
-        to_datetime=visit.from_dt + timedelta(seconds=len_seconds),
+        to_datetime=visit.from_dt + timedelta(seconds=total_visit_length),
     )
     slot = await slot.visit_pick_worker_and_check(s, exc=exceptions.SlotNotAvailable)
 
@@ -244,18 +236,12 @@ async def get_worker_availability(
     worker = crud.get_worker(s, worker_id)
     assert worker is not None
 
-    total_service_length: Optional[int] = None
+    total_visit_length: Optional[int] = None
     if services:
-        _services = [int(s) for s in services.split(",")]
-        total_service_length = 0
-        for service_id in _services:
-            service = crud.get_service(
-                s, service_id, not_found=exceptions.ServiceNotFound
-            )
-            assert service is not None
-            assert service.seconds is not None  # this is strange, mad mypy
-            total_service_length += service.seconds
-    av = await Availability.GetWorkerAV(s, worker, service_length=total_service_length)
+        service_ids = [int(s) for s in services.split(",")]
+        db_services = crud.get_services_by_ids(s, service_ids, not_found=exceptions.ServiceNotFound)
+        total_visit_length = sum([s.seconds for s in db_services])
+    av = await Availability.GetWorkerAV(s, worker, service_length=total_visit_length)
     return av
 
 
