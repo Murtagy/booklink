@@ -1,4 +1,3 @@
-# schemas
 import datetime
 import hashlib
 import random

@@ -62,13 +62,10 @@ async def ping() -> dict[str, str]:
     return {"message": "pong"}
 
 
+# USERS
 app.post("/signup", response_model=users.TokenOut)(users.create_user_endpoint)
-
 app.get("/users/me/", response_model=users.UserOut)(users.read_users_me_endpoint)
-
 app.get("/my_user", response_model=users.UserOut)(users.read_users_me2_endpoint)
-
-
 app.post("/token")(users.login_for_access_token_endpoint)
 
 # VISITS

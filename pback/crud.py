@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 import schemas
 from features import users
-from features.users import hash_password, make_salt
 from models import (
     Client,
     File,
