@@ -7,6 +7,8 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
+from features import users
+from features.users import hash_password, make_salt
 from models import (
     Client,
     File,
@@ -19,7 +21,6 @@ from models import (
     Worker,
     WorkersServices,
 )
-from utils.users import hash_password, make_salt
 
 
 def get_visit(db: Session, visit_id: int) -> Optional[Visit]:
@@ -47,7 +48,7 @@ def create_visit(
         email=visit.email,
         has_notification=visit.remind_me,
         phone=visit.phone,
-        status='submitted',
+        status="submitted",
         services=[s.service_id for s in visit.services],
         slot_id=slot_id,
         worker_id=visit.worker_id or worker_id,
@@ -66,9 +67,9 @@ def create_client(db: Session, name: str) -> Client:
     return db_client
 
 
-def create_user(db: Session, user: schemas.UserCreate, client_id: int) -> User:
-    salt = make_salt()
-    hashed_password = hash_password(user.password, salt)
+def create_user(db: Session, user: users.UserCreate, client_id: int) -> User:
+    salt = users.make_salt()
+    hashed_password = users.hash_password(user.password, salt)
     db_user = User(
         username=user.username,
         email=user.email,
@@ -236,7 +237,7 @@ def create_weekly_slot(
     slot: schemas.CreateWeeklySlot,
     client_id: int,
     *,
-    worker_id: Optional[int] = None
+    worker_id: Optional[int] = None,
 ) -> WeeklySlot:
     schedule = slot.dict()
     db_slot = WeeklySlot(

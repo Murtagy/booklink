@@ -19,7 +19,7 @@ class OutVisit(BM):
         # make this inherited?
 
     @classmethod
-    def Example(cls) -> 'OutVisit':
+    def Example(cls) -> "OutVisit":
         return cls(
             phone="375291231123",
         )
