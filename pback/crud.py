@@ -265,10 +265,20 @@ def get_service(
     db: Session, service_id: int, *, not_found: Optional[HTTPException] = None
 ) -> Optional[Service]:
     q = db.query(Service).filter(Service.service_id == service_id)
-    slot = q.first()
-    if not slot and not_found:
+    service = q.first()
+    if not service and not_found:
         raise not_found
-    return slot
+    return service
+
+
+def get_services_by_ids(
+    db: Session, service_ids: list[int], *, not_found: Optional[HTTPException] = None
+) -> list[Service]:
+    q = db.query(Service).filter(Service.service_id.in_(service_ids))
+    services = q.all()
+    if not services and not_found:
+        raise not_found
+    return services
 
 
 def get_services(
