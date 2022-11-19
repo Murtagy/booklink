@@ -79,6 +79,20 @@ app.get("/client/{client_id}/workers", response_model=workers.OutWorkers)(
 app.get("/workers", response_model=workers.OutWorkers)(workers.get_workers_endpoint)
 app.post("/worker", response_model=workers.OutWorker)(workers.create_worker_endpoint)
 
+# SERVICES
+app.post("/service", response_model=services.OutService)(
+    services.create_service_endpoint
+)
+app.get("/service/{service_id}", response_model=services.OutService)(
+    services.get_service_endpoint
+)
+app.get("/client/{client_id}/service/{service_id}", response_model=services.OutService)(
+    services.get_service_by_client_endpoint
+)
+app.get("/client/{client_id}/services", response_model=services.OutServices)(
+    services.get_services_by_client_endpoint
+)
+
 
 # VISITS
 @app.get("/visit/{visit_id}", response_model=OutVisit)
@@ -344,19 +358,6 @@ async def create_worker_weekly_slot(
     # d = {"slot_id": db_slot.slot_id, **db_slot.schedule_by_day}
     return "OK"
 
-
-app.post("/service", response_model=services.OutService)(
-    services.create_service_endpoint
-)
-app.get("/service/{service_id}", response_model=services.OutService)(
-    services.get_service_endpoint
-)
-app.get("/client/{client_id}/service/{service_id}", response_model=services.OutService)(
-    services.get_service_by_client_endpoint
-)
-app.get("/client/{client_id}/services", response_model=services.OutServices)(
-    services.get_services_by_client_endpoint
-)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
