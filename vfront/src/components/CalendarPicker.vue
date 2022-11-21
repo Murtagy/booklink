@@ -50,7 +50,7 @@ part // todo - copy to components
 
 <style scoped src="@/assets/styles/calendar.css"></style>
 
-<script>
+<script lang="ts">
 const months_rus = {
   0: "Январь",
   1: "Февраль",

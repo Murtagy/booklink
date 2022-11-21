@@ -7,99 +7,100 @@
     <wide-header :title="current_screen_title" />
 
     <div class="box">
-    <form v-if="current_screen == 'start'">
-      <ul>
-        <li>
-          <button
-           class="menu"
-            @click="
-              changeCurrentScreen(
-                'visit-select-service',
-                (current_screen_title = 'Выбор услуги')
-              )
-            "
-          >
-            <img src="../assets/list-icon.jpg" />Услуга
-          </button>
+      <form v-if="current_screen == 'start'">
+        <ul>
+          <li>
+            <button
+              class="menu"
+              @click="
+                changeCurrentScreen(
+                  'visit-select-service',
+                  (current_screen_title = 'Выбор услуги')
+                )
+              "
+            >
+              <img src="../assets/list-icon.jpg" />Услуга
+            </button>
 
-          <span v-if="checked_services.length != 0">
-            <p v-for="service in checked_services" :key="service.id">
-              {{ service.name }} {{ service.price }} {{ service.currency }}
-            </p>
-          </span>
-        </li>
-        <li>
-          <button
-           class="menu"
-            @click="
-              changeCurrentScreen('visit-select-worker', 'Выбор исполнителя')
-            "
-          >
-            <img src="../assets/worker-icon.png" />Сотрудник
-          </button>
+            <span v-if="checked_services.length != 0">
+              <p v-for="service in checked_services" :key="service.id">
+                {{ service.name }} {{ service.price }} {{ service.currency }}
+              </p>
+            </span>
+          </li>
+          <li>
+            <button
+              class="menu"
+              @click="
+                changeCurrentScreen('visit-select-worker', 'Выбор исполнителя')
+              "
+            >
+              <img src="../assets/worker-icon.png" />Сотрудник
+            </button>
 
-          <span v-if="worker != null" class="selected">
-            {{ worker.name }}
-          </span>
-        </li>
-        <li v-show="checked_services.length > 0">
-          <button
-           class="menu"
-            @click="changeCurrentScreen('visit-select-datetime', 'Выбор даты')"
-          >
-            <img src="../assets/calendar-icon.png" />Дата и время
-          </button>
-          <span v-if="visit_time != null" class="selected">
-            Дата и время {{ visit_time }}
-          </span>
-        </li>
-      </ul>
-    <input
-      type="button"
-      class="sticky_button"
-      value="Сформировать запись"
-      @click="
-        changeCurrentScreen(
-          'visit-details',
-          (current_screen_title = 'Подтверждение записи')
-        )
-      "
-    />
-    </form>
-    
+            <span v-if="worker != null" class="selected">
+              {{ worker.name }}
+            </span>
+          </li>
+          <li v-show="checked_services.length > 0">
+            <button
+              class="menu"
+              @click="
+                changeCurrentScreen('visit-select-datetime', 'Выбор даты')
+              "
+            >
+              <img src="../assets/calendar-icon.png" />Дата и время
+            </button>
+            <span v-if="visit_time != null" class="selected">
+              Дата и время {{ visit_time }}
+            </span>
+          </li>
+        </ul>
+        <input
+          type="button"
+          class="sticky_button"
+          value="Сформировать запись"
+          @click="
+            changeCurrentScreen(
+              'visit-details',
+              (current_screen_title = 'Подтверждение записи')
+            )
+          "
+        />
+      </form>
 
-    <visit-select-service
-      v-if="current_screen == 'visit-select-service'"
-      @go-start-screen="changeCurrentScreen('start')"
-      @check-services="applyCheckedServices"
-      v-bind:services="services"
-    />
-    <visit-select-worker
-      v-if="current_screen == 'visit-select-worker'"
-      @go-start-screen="changeCurrentScreen('start')"
-      @select-worker="applySelectedWorker"
-      v-bind:workers="workers"
-    />
-    <visit-select-datetime
-      v-if="current_screen == 'visit-select-datetime'"
-      @go-start-screen="changeCurrentScreen('start')"
-      @select-datetime="applySelectedDateTime"
-      v-bind:availability="availability"
-    />
-    <visit-details
-      v-if="current_screen == 'visit-details'"
-      @go-start-screen="changeCurrentScreen('start')"
-      :worker="worker"
-      :visit_time="visit_time"
-      :services="checked_services"
-    />
-  </div>
+      <visit-select-service
+        v-if="current_screen == 'visit-select-service'"
+        @go-start-screen="changeCurrentScreen('start')"
+        @check-services="applyCheckedServices"
+        v-bind:services="services"
+      />
+      <visit-select-worker
+        v-if="current_screen == 'visit-select-worker'"
+        @go-start-screen="changeCurrentScreen('start')"
+        @select-worker="applySelectedWorker"
+        v-bind:workers="workers"
+      />
+      <visit-select-datetime
+        v-if="current_screen == 'visit-select-datetime'"
+        @go-start-screen="changeCurrentScreen('start')"
+        @select-datetime="applySelectedDateTime"
+        v-bind:availability="availability"
+      />
+      <visit-details
+        v-if="current_screen == 'visit-details'"
+        @go-start-screen="changeCurrentScreen('start')"
+        :worker="worker"
+        :visit_time="visit_time"
+        :services="checked_services"
+      />
+    </div>
   </div>
 </template>
 
 <style scoped src="@/assets/styles/visit.css"></style>
 
-<script>
+<script lang="ts">
 import WideHeader from "@/components/WideHeader.vue";
 import VisitSelectDatetime from "@/components/VisitSelectDatetime.vue";
 import VisitSelectService from "@/components/VisitSelectService.vue";

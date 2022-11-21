@@ -2,7 +2,7 @@
   <div v-if="user">My user: {{ user }}</div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   data() {
     return { user: null };

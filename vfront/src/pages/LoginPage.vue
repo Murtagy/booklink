@@ -34,7 +34,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import WideHeader from "../components/WideHeader.vue";
 export default {
   components: { WideHeader },
@@ -85,10 +85,6 @@ export default {
       let msg;
       if (details) {
         switch (details) {
-          case "User email already exists":
-            msg = "User email already exists";
-          case "User email already exists":
-            msg = "Username already exists";
           default:
             msg = details;
         }
