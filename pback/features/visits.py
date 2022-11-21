@@ -1,0 +1,129 @@
+import datetime
+from typing import List, Literal, Optional
+
+from fastapi import Depends
+from pydantic import BaseModel as BM
+from sqlalchemy.orm import Session  # type: ignore
+
+import app_exceptions
+import crud
+import db
+import models
+from features import slots, users
+
+
+class InServiceToVisit(BM):
+    service_id: int
+
+
+class OutVisit(BM):
+    version: Literal[1] = 1
+    phone: str
+    # from_dt: datetime.datetime
+    # to_dt: datetime.datetime
+
+    class Config:
+        orm_mode = True
+        # make this inherited?
+
+    @classmethod
+    def Example(cls) -> "OutVisit":
+        return cls(
+            phone="375291231123",
+        )
+
+
+class InVisit(BM):
+    client_id: int
+    from_dt: datetime.datetime
+    # to_dt: datetime.datetime
+    email: str
+    services: List[InServiceToVisit]
+    phone: str
+    remind_me: bool
+    version: Literal[1] = 1
+    worker_id: Optional[int]
+
+
+# class VisitStatus(SEnum):
+#     SUMBITTED = 'submitted'  # -> R/A
+#     REJECTED = 'rejected'
+#     APPROVED = 'approved'  # -> C
+#     CANCELLED = 'cancelled'
+#     # MISSED = 'missed'
+#     # FINISHED = 'finished'
+
+
+def create_visit_endpoint(
+    visit: InVisit,
+    s: Session = Depends(db.get_session),
+    current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
+) -> models.Visit:
+    db_visit = crud.create_visit(s, visit)
+    return db_visit
+
+
+async def get_visits_endpoint(
+    worker_id: Optional[int] = None,
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> list[models.Visit]:
+    client_id = current_user.client_id
+
+    return crud.get_visits(s, client_id, worker_id=worker_id)
+
+
+async def update_visit_endpoint(
+    visit_id: str,
+    visit: InVisit,
+    s: Session = Depends(db.get_session),
+    current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
+) -> None:
+    return None
+
+
+def get_visit_endpoint(
+    visit_id: int,
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> models.Visit:
+    visit = crud.get_visit(s, visit_id)
+    if not visit:
+        raise app_exceptions.VisitNotFound
+    return visit
+
+
+async def public_create_visit_endpoint(
+    visit: InVisit,
+    s: Session = Depends(db.get_session),
+    # TODO: visitor
+) -> models.Visit:
+    if visit.from_dt < datetime.datetime.now():
+        raise app_exceptions.SlotNotAvailable
+
+    services = crud.get_services_by_ids(s, [s.service_id for s in visit.services])
+    assert len(services) > 0
+    visit_len_seconds: int = sum([service.seconds for service in services])
+
+    slot = slots.CreateSlot(
+        name=f"Визит в {visit.from_dt}",
+        slot_type=slots.TimeSlotType.VISIT,
+        client_id=visit.client_id,
+        worker_id=visit.worker_id,
+        from_datetime=visit.from_dt,
+        to_datetime=visit.from_dt + datetime.timedelta(seconds=visit_len_seconds),
+    )
+    slot = await slot.visit_pick_worker_and_check(
+        s, exc=app_exceptions.SlotNotAvailable
+    )
+
+    db_slot = crud.create_slot(s, slot)
+
+    db_visit = crud.create_visit(
+        s,
+        visit,
+        slot_id=db_slot.slot_id,
+        worker_id=db_slot.worker_id,
+        customer_id=None,
+    )
+    return db_visit

@@ -6,8 +6,7 @@ from typing import List, Optional, Union
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
-import schemas
-from features import services, slots, users, workers
+from features import services, slots, users, visits, workers
 from models import (
     Client,
     File,
@@ -35,7 +34,7 @@ def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
 
 def create_visit(
     db: Session,
-    visit: schemas.InVisit,
+    visit: visits.InVisit,
     *,
     customer_id: Optional[int] = None,
     slot_id: Optional[int] = None,

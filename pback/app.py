@@ -1,28 +1,21 @@
-import datetime
-from datetime import timedelta
 from enum import Enum
-from io import BytesIO
-from typing import Iterator, Literal, Optional
+from typing import Optional
 
 import structlog
 import uvicorn  # type: ignore
-from fastapi import Depends, FastAPI, File, UploadFile
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session  # type: ignore
 
-import app_exceptions as exceptions
 import crud
 import db
 import models
-from features import services, slots, users, workers
+from features import files, services, slots, users, visits, workers
 from schemas.availability import (
     Availability,
     AvailabilityPerWorker,
-    TimeSlotType,
     _get_client_availability,
 )
-from schemas.visit import InVisit, OutVisit
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -93,64 +86,6 @@ app.get("/client/{client_id}/services", response_model=services.OutServices)(
 )
 
 
-# VISITS
-@app.get("/visit/{visit_id}", response_model=OutVisit)
-def get_visit(
-    visit_id: int,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> models.Visit:
-    visit = crud.get_visit(s, visit_id)
-    if not visit:
-        raise exceptions.VisitNotFound
-    return visit
-
-
-@app.post("/public_visit", response_model=OutVisit)
-async def public_create_visit(
-    visit: InVisit,
-    s: Session = Depends(db.get_session),
-    # TODO: visitor
-) -> models.Visit:
-    if visit.from_dt < datetime.datetime.now():
-        raise exceptions.SlotNotAvailable
-
-    services = crud.get_services_by_ids(s, [s.service_id for s in visit.services])
-    assert len(services) > 0
-    visit_len_seconds: int = sum([service.seconds for service in services])
-
-    slot = slots.CreateSlot(
-        name=f"Визит в {visit.from_dt}",
-        slot_type=TimeSlotType.VISIT,
-        client_id=visit.client_id,
-        worker_id=visit.worker_id,
-        from_datetime=visit.from_dt,
-        to_datetime=visit.from_dt + timedelta(seconds=visit_len_seconds),
-    )
-    slot = await slot.visit_pick_worker_and_check(s, exc=exceptions.SlotNotAvailable)
-
-    db_slot = crud.create_slot(s, slot)
-
-    db_visit = crud.create_visit(
-        s,
-        visit,
-        slot_id=db_slot.slot_id,
-        worker_id=db_slot.worker_id,
-        customer_id=None,
-    )
-    return db_visit
-
-
-@app.post("/visit", response_model=OutVisit)
-def create_visit(
-    visit: InVisit,
-    s: Session = Depends(db.get_session),
-    current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
-) -> models.Visit:
-    db_visit = crud.create_visit(s, visit)
-    return db_visit
-
-
 @app.get("/public_avaliability")
 async def get_avaliability(
     client_id: int,
@@ -166,58 +101,21 @@ async def get_avaliability(
     return visits
 
 
-@app.get("/visits")
-async def get_visits(
-    worker_id: Optional[int] = None,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> list[models.Visit]:
-    client_id = current_user.client_id
-
-    return crud.get_visits(s, client_id, worker_id=worker_id)
-
-
-@app.put("/visit/{visit_id}")
-async def update_visit(
-    visit_id: str,
-    visit: InVisit,
-    s: Session = Depends(db.get_session),
-    current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
-) -> None:
-    return None
+# VISITS
+app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit_endpoint)
+app.post("/public_visit", response_model=visits.OutVisit)(
+    visits.public_create_visit_endpoint
+)
+app.get("/visits")(visits.get_visits_endpoint)
+app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_endpoint)
+app.put("/visit/{visit_id}")(visits.update_visit_endpoint)
+# @app.delete("/visit/{visit_id}")
+# async def delete_visit(visit_id: str) -> None:
+# return None
 
 
-@app.delete("/visit/{visit_id}")
-async def delete_visit(visit_id: str) -> None:
-    return None
-
-
-@app.post("/file")
-async def create_file(
-    file: UploadFile = File(...),
-    s: Session = Depends(db.get_session),
-    current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
-) -> dict[Literal["file_id"], int]:
-    # TODO check user
-    db_file_id = crud.load_file(s, file, 5)
-    return {"file_id": db_file_id}
-
-
-@app.get("/file/{file_name}")
-async def get_file(
-    file_name: str,
-    s: Session = Depends(db.get_session),
-    # current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
-) -> StreamingResponse:
-    f = crud.read_file(s, int(file_name))
-    assert f is not None
-    # print("File id:", f.file_id)
-    b = f.file
-    bytes_io = BytesIO()
-    bytes_io.write(b)
-    bytes_io.seek(0)
-    r = StreamingResponse(bytes_io, media_type=f.content_type)
-    return r
+app.post("/file")(files.create_file_endpoint)
+app.get("/file/{file_name}")(files.get_file_endpoint)
 
 
 @app.get(
