@@ -170,12 +170,12 @@ export default {
       this.current_screen_title = "Онлайн запись";
     },
     // todo: flush selection (something has been selected, current availability might be wrong)
-    applyCheckedServices: function (x) {
+    applyCheckedServices: function (x: object) {
       this.checked_services = x;
       this.getAvailability();
       this.changeToStartScreen();
     },
-    applySelectedWorker: function (x) {
+    applySelectedWorker: function (x: object) {
       this.worker = x;
       this.changeToStartScreen();
     },
@@ -190,11 +190,9 @@ export default {
         return;
       }
 
-      function handle_gw_error(error: any | AxiosError) {
-        console.log(error);
-      }
-      function _handle_gw_response(response: AxiosResponse) {
-        // notice - this is bound to the function below
+      let path = `/client/${this.client_id}/workers`;
+      try {
+        const response = await this.$api.get(path);
         if (response.data == null) {
           console.log("Got workers", response);
           alert("Empty");
@@ -203,17 +201,9 @@ export default {
           console.log("Got workers", response);
           this.workers = this.parseWorkers(workers);
         }
+      } catch (error) {
+        console.log(error);
       }
-      const handle_gw_response = _handle_gw_response.bind(this);
-
-      let path = `/client/${this.client_id}/workers`;
-      try {
-        const response = await this.$api.get(path)
-        handle_gw_response(response)
-      }
-      catch (error) {
-        handle_gw_error(error)
-      };
     },
     parseWorkers(w: object) {
       // todo
@@ -225,12 +215,13 @@ export default {
         return;
       }
 
-      function handle_gs_error(error: any | AxiosError) {
-        console.log(error);
-      }
-
-      function _handle_gs_response(response: AxiosResponse) {
-        // notice - this is bound to the function below
+      let path = `/client/${this.client_id}/services`;
+      try {
+        const response = await this.$api.get(
+          path
+          // no need for auth here, keeping for example use
+          // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
+        );
         if (response.data == null) {
           console.log("Got services", response);
           alert("Empty");
@@ -239,19 +230,8 @@ export default {
           console.log("Got services", response);
           this.services = this.parseServices(services);
         }
-      }
-      const handle_gs_response = _handle_gs_response.bind(this);
-
-      let path = `/client/${this.client_id}/services`;
-      try {
-        const response = await this.$api.get(
-          path
-          // no need for auth here, keeping for example use
-          // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
-        );
-        handle_gs_response(response);
       } catch (error: any | AxiosError) {
-        handle_gs_error(error);
+        console.log(error);
       }
     },
     parseServices(s: object) {
