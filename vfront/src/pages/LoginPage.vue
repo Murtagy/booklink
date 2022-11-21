@@ -59,7 +59,7 @@ export default {
         this.$api
           .post("/token", this.make_form())
           .then((response) => {
-            let token = response.data.access_token;
+            let token = response.data.access_token as string;
             if (token) {
               this.$authStore.setJwt(token);
               this.$router.push("/my_user");

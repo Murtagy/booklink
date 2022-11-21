@@ -148,7 +148,7 @@ export default {
 
       return false;
     },
-    isAvailable(__date) {
+    isAvailable(__date: string) {
       // for now
       if (!this.availability_mode) {
         console.log("Not in availability mode");

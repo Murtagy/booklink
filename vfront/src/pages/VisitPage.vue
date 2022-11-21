@@ -71,25 +71,25 @@
 
       <visit-select-service
         v-if="current_screen == 'visit-select-service'"
-        @go-start-screen="changeCurrentScreen('start')"
+        @go-start-screen="changeToStartScreen()"
         @check-services="applyCheckedServices"
         v-bind:services="services"
       />
       <visit-select-worker
         v-if="current_screen == 'visit-select-worker'"
-        @go-start-screen="changeCurrentScreen('start')"
+        @go-start-screen="changeToStartScreen()"
         @select-worker="applySelectedWorker"
         v-bind:workers="workers"
       />
       <visit-select-datetime
         v-if="current_screen == 'visit-select-datetime'"
-        @go-start-screen="changeCurrentScreen('start')"
+        @go-start-screen="changeToStartScreen()"
         @select-datetime="applySelectedDateTime"
         v-bind:availability="availability"
       />
       <visit-details
         v-if="current_screen == 'visit-details'"
-        @go-start-screen="changeCurrentScreen('start')"
+        @go-start-screen="changeToStartScreen()"
         :worker="worker"
         :visit_time="visit_time"
         :services="checked_services"
@@ -110,6 +110,7 @@ import VisitDetails from "@/components/VisitDetails.vue";
 import availability_mock from "@/mocks/availability_mock.js";
 import services_mock from "@/mocks/services_mock.js";
 import workers_mock from "@/mocks/workers_mock.js";
+import type { AxiosError, AxiosResponse } from "axios";
 
 export default {
   components: {
@@ -158,36 +159,41 @@ export default {
     // alert(`client_id ${this.client_id}`)
   },
   methods: {
-    changeCurrentScreen: function (screen, screen_title) {
+    changeCurrentScreen: function (screen: string, screen_title: string) {
       console.log("Change screen!", screen, screen_title);
       this.current_screen = screen;
       this.current_screen_title = screen_title;
+    },
+    changeToStartScreen: function () {
+      console.log("Change screen!");
+      this.current_screen = "start";
+      this.current_screen_title = "Онлайн запись";
     },
     // todo: flush selection (something has been selected, current availability might be wrong)
     applyCheckedServices: function (x) {
       this.checked_services = x;
       this.getAvailability();
-      this.changeCurrentScreen("start");
+      this.changeToStartScreen();
     },
     applySelectedWorker: function (x) {
       this.worker = x;
-      this.changeCurrentScreen("start");
+      this.changeToStartScreen();
     },
-    applySelectedDateTime: function (date, slot) {
+    applySelectedDateTime: function (date: string, slot: object) {
       // todo: slots are parsed in a map atm, date: bool, not sure why did it, might be better to parse that into a simple array
       console.log(date, slot);
       this.visit_time = slot;
-      this.changeCurrentScreen("start");
+      this.changeToStartScreen();
     },
-    getWorkers() {
+    async getWorkers() {
       if (import.meta.env.VITE_APP_OFFLINE == "true") {
         return;
       }
 
-      function handle_gw_error(error) {
+      function handle_gw_error(error: any | AxiosError) {
         console.log(error);
       }
-      function _handle_gw_response(response) {
+      function _handle_gw_response(response: AxiosResponse) {
         // notice - this is bound to the function below
         if (response.data == null) {
           console.log("Got workers", response);
@@ -201,23 +207,29 @@ export default {
       const handle_gw_response = _handle_gw_response.bind(this);
 
       let path = `/client/${this.client_id}/workers`;
-      this.$api.get(path).then(handle_gw_response).catch(handle_gw_error);
+      try {
+        const response = await this.$api.get(path)
+        handle_gw_response(response)
+      }
+      catch (error) {
+        handle_gw_error(error)
+      };
     },
-    parseWorkers(w) {
+    parseWorkers(w: object) {
       // todo
       console.log(w);
       return w;
     },
-    getServices() {
+    async getServices() {
       if (import.meta.env.VITE_APP_OFFLINE == "true") {
         return;
       }
 
-      function handle_gs_error(error) {
+      function handle_gs_error(error: any | AxiosError) {
         console.log(error);
       }
 
-      function _handle_gs_response(response) {
+      function _handle_gs_response(response: AxiosResponse) {
         // notice - this is bound to the function below
         if (response.data == null) {
           console.log("Got services", response);
@@ -231,28 +243,30 @@ export default {
       const handle_gs_response = _handle_gs_response.bind(this);
 
       let path = `/client/${this.client_id}/services`;
-      this.$api
-        .get(
+      try {
+        const response = await this.$api.get(
           path
           // no need for auth here, keeping for example use
           // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
-        )
-        .then(handle_gs_response)
-        .catch(handle_gs_error);
+        );
+        handle_gs_response(response);
+      } catch (error: any | AxiosError) {
+        handle_gs_error(error);
+      }
     },
-    parseServices(s) {
+    parseServices(s: object) {
       // todo
       console.log(s);
       return s;
     },
-    getAvailability() {
+    async getAvailability() {
       // sets this.availability
 
       // todo: check if called in offline
-      function handle_av_error(error) {
+      function handle_av_error(error: any | AxiosError) {
         console.log(error);
       }
-      function _handle_av_response(response) {
+      function _handle_av_response(response: AxiosResponse) {
         if (response.data == null) {
           console.log("GOT AVAILABILITY", response);
           alert("Empty");
@@ -273,16 +287,18 @@ export default {
         path += `?services=${this.checkedServicesIds.join(",")}`;
       }
       // todo add workers
-      this.$api
-        .get(
+      try {
+        const response = await this.$api.get(
           path
           // no need for auth here, keeping for example use
           // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
-        )
-        .then(handle_av_response)
-        .catch(handle_av_error);
+        );
+        handle_av_response(response);
+      } catch (error: any | AxiosError) {
+        handle_av_error(error);
+      }
     },
-    parseAvailability(a) {
+    parseAvailability(a: object) {
       console.log("Parsing...", a);
       const av = {};
       for (const worker_av of Object.values(a)) {

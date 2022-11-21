@@ -1,0 +1,96 @@
+
+> vfront@0.1.0 type-check
+> vue-tsc --noEmit -p tsconfig.vitest.json --composite false
+
+src/components/test/TimeSlots.vue(3,32): error TS2322: Type 'unknown' is not assignable to type 'string | number | symbol | undefined'.
+src/components/TimePicker.vue(4,34): error TS2339: Property 'moveToPrevMonth' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{ readonly date?: any; readonly timeslots?: any; }> & Omit<Readonly<ExtractPropTypes<Readonly<{ date?: any; timeslots?: any; }>>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, DefaultKeys<...>>; ... 10 more ...; $watch<T extends string | ((......'.
+src/pages/DevPage.vue(7,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/MyUserPage.vue(12,48): error TS2339: Property '$authStore' does not exist on type 'CreateComponentPublicInstance<{}, {}, { user: null; }, {}, { getUser(): void; }, ComponentOptionsMixin, ComponentOptionsMixin, {}, {}, {}, false, {}, OptionTypesType<...>, ... 5 more ..., {}>'.
+src/pages/MyUserPage.vue(13,12): error TS2339: Property '$api' does not exist on type 'CreateComponentPublicInstance<{}, {}, { user: null; }, {}, { getUser(): void; }, ComponentOptionsMixin, ComponentOptionsMixin, {}, {}, {}, false, {}, OptionTypesType<...>, ... 5 more ..., {}>'.
+src/components/CalendarPicker.vue(10,10): error TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ 0: string; 1: string; 2: string; 3: string; 4: string; 5: string; 6: string; 7: string; 8: string; 9: string; 10: string; 11: string; }'.
+  No index signature with a parameter of type 'number' was found on type '{ 0: string; 1: string; 2: string; 3: string; 4: string; 5: string; 6: string; 7: string; 8: string; 9: string; 10: string; 11: string; }'.
+src/pages/DevPage.vue(10,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/components/TimePicker.vue(9,35): error TS2339: Property 'moveToNextMonth' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{ readonly date?: any; readonly timeslots?: any; }> & Omit<Readonly<ExtractPropTypes<Readonly<{ date?: any; timeslots?: any; }>>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, DefaultKeys<...>>; ... 10 more ...; $watch<T extends string | ((......'.
+src/pages/MyUserPage.vue(15,54): error TS2339: Property '$authStore' does not exist on type 'CreateComponentPublicInstance<{}, {}, { user: null; }, {}, { getUser(): void; }, ComponentOptionsMixin, ComponentOptionsMixin, {}, {}, {}, false, {}, OptionTypesType<...>, ... 5 more ..., {}>'.
+src/pages/MyUserPage.vue(17,16): error TS7006: Parameter 'response' implicitly has an 'any' type.
+src/components/VisitDetails.vue(13,10): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/pages/DevPage.vue(14,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/components/CalendarPicker.vue(16,16): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/components/VisitSelectWorker.vue(26,27): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/pages/DevPage.vue(18,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/components/TimePicker.vue(19,11): error TS2322: Type 'Date' is not assignable to type 'string | number | symbol | undefined'.
+src/components/VisitSelectDatetime.vue(36,14): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/pages/VisitPage.vue(26,68): error TS2339: Property 'id' does not exist on type 'never'.
+src/pages/VisitPage.vue(27,28): error TS2339: Property 'name' does not exist on type 'never'.
+src/pages/VisitPage.vue(27,47): error TS2339: Property 'price' does not exist on type 'never'.
+src/components/VisitSelectDatetime.vue(39,7): error TS2322: Type 'Date' is not assignable to type 'null'.
+src/pages/VisitPage.vue(27,67): error TS2339: Property 'currency' does not exist on type 'never'.
+src/pages/DevPage.vue(27,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/components/VisitSelectDatetime.vue(40,20): error TS2531: Object is possibly 'null'.
+src/components/CalendarPicker.vue(27,19): error TS2339: Property 'getTime' does not exist on type 'never'.
+src/pages/DevPage.vue(30,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/components/VisitSelectDatetime.vue(45,18): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/pages/DevPage.vue(32,39): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/components/CalendarPicker.vue(34,48): error TS2339: Property 'getUTCDate' does not exist on type 'never'.
+src/pages/LoginPage.vue(59,14): error TS2339: Property '$api' does not exist on type 'CreateComponentPublicInstance<{}, {}, { username: string; password: string; }, {}, { make_form(): FormData; Login(): void; DisplayError(e: any): void; DisplayErrorFromResponse(response: any): void; }, ... 13 more ..., {}>'.
+src/pages/VisitPage.vue(42,25): error TS2339: Property 'name' does not exist on type 'never'.
+src/pages/LoginPage.vue(61,18): error TS7006: Parameter 'response' implicitly has an 'any' type.
+src/pages/DevPage.vue(42,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/LoginPage.vue(64,20): error TS2339: Property '$authStore' does not exist on type 'CreateComponentPublicInstance<{}, {}, { username: string; password: string; }, {}, { make_form(): FormData; Login(): void; DisplayError(e: any): void; DisplayErrorFromResponse(response: any): void; }, ... 13 more ..., {}>'.
+src/pages/DevPage.vue(43,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/DevPage.vue(46,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/LoginPage.vue(70,19): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/pages/DevPage.vue(47,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/DevPage.vue(50,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/LoginPage.vue(80,18): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/components/TimePicker.vue(49,20): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/pages/LoginPage.vue(81,33): error TS2554: Expected 0-1 arguments, but got 2.
+src/pages/DevPage.vue(53,36): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/LoginPage.vue(83,30): error TS7006: Parameter 'response' implicitly has an 'any' type.
+src/pages/DevPage.vue(56,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/DevPage.vue(59,35): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/DevPage.vue(61,39): error TS2339: Property 'company' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: Partial<{}> & Omit<Readonly<ExtractPropTypes<{}>> & VNodeProps & AllowedComponentProps & ComponentCustomProps, never>; ... 10 more ...; $watch<T extends string | ((...args: any) => any)>(source: T, cb: T extends (...args: any) => infer R ? (args_0: R, args_1: R) => ...'.
+src/pages/RegistrationPage.vue(94,14): error TS2339: Property '$api' does not exist on type 'CreateComponentPublicInstance<{}, {}, { email: string; company: string; username: string; password: string; password_confirmation: string; }, {}, { Register(): void; DisplayError(e: any): void; DisplayErrorFromResponse(response: any): void; }, ... 13 more ..., {}>'.
+src/components/TimePicker.vue(62,24): error TS7006: Parameter 'hour' implicitly has an 'any' type.
+src/components/TimePicker.vue(67,18): error TS7006: Parameter 'timeslot' implicitly has an 'any' type.
+src/pages/RegistrationPage.vue(101,18): error TS7006: Parameter 'response' implicitly has an 'any' type.
+src/pages/RegistrationPage.vue(104,20): error TS2339: Property '$authStore' does not exist on type 'CreateComponentPublicInstance<{}, {}, { email: string; company: string; username: string; password: string; password_confirmation: string; }, {}, { Register(): void; DisplayError(e: any): void; DisplayErrorFromResponse(response: any): void; }, ... 13 more ..., {}>'.
+src/components/CalendarPicker.vue(92,25): error TS7006: Parameter 'day' implicitly has an 'any' type.
+src/components/CalendarPicker.vue(97,22): error TS7006: Parameter '_date' implicitly has an 'any' type.
+src/pages/RegistrationPage.vue(110,19): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/pages/RegistrationPage.vue(120,18): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/pages/RegistrationPage.vue(121,33): error TS2554: Expected 0-1 arguments, but got 2.
+src/pages/RegistrationPage.vue(123,30): error TS7006: Parameter 'response' implicitly has an 'any' type.
+src/components/CalendarPicker.vue(112,31): error TS7006: Parameter '_date' implicitly has an 'any' type.
+src/components/CalendarPicker.vue(128,7): error TS2322: Type 'Date[]' is not assignable to type 'never[]'.
+  Type 'Date' is not assignable to type 'never'.
+src/pages/VisitPage.vue(125,9): error TS7034: Variable 'services' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/components/CalendarPicker.vue(130,21): error TS7006: Parameter 'date' implicitly has an 'any' type.
+src/pages/VisitPage.vue(126,9): error TS7034: Variable 'workers' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/components/CalendarPicker.vue(137,17): error TS7006: Parameter 'date' implicitly has an 'any' type.
+src/pages/VisitPage.vue(138,17): error TS7005: Variable 'services' implicitly has an 'any[]' type.
+src/pages/VisitPage.vue(141,16): error TS7005: Variable 'workers' implicitly has an 'any[]' type.
+src/pages/VisitPage.vue(149,18): error TS2339: Property 'service_id' does not exist on type 'never'.
+src/pages/VisitPage.vue(173,37): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/pages/VisitPage.vue(178,36): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/components/CalendarPicker.vue(194,24): error TS7006: Parameter 'date' implicitly has an 'any' type.
+src/pages/VisitPage.vue(185,7): error TS2322: Type 'object' is not assignable to type 'null'.
+src/pages/VisitPage.vue(193,32): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/pages/VisitPage.vue(202,25): error TS2571: Object is of type 'unknown'.
+src/pages/VisitPage.vue(204,11): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/pages/VisitPage.vue(204,26): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/pages/VisitPage.vue(210,12): error TS2339: Property '$api' does not exist on type 'CreateComponentPublicInstance<{}, {}, { availability: { 1: { days: { date: string; timeslots: { dt_from: string; dt_to: string; slot_type: string; }[]; }[]; }; 2: { days: { date: string; timeslots: { dt_from: string; dt_to: string; slot_type: string; }[]; }[]; }; 3: { ...; }; } | null; ... 7 more ...; workers: any[]...'.
+src/pages/VisitPage.vue(232,26): error TS2571: Object is of type 'unknown'.
+src/pages/VisitPage.vue(234,11): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/pages/VisitPage.vue(234,27): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/pages/VisitPage.vue(241,37): error TS2339: Property '$api' does not exist on type 'CreateComponentPublicInstance<{}, {}, { availability: { 1: { days: { date: string; timeslots: { dt_from: string; dt_to: string; slot_type: string; }[]; }[]; }; 2: { days: { date: string; timeslots: { dt_from: string; dt_to: string; slot_type: string; }[]; }[]; }; 3: { ...; }; } | null; ... 7 more ...; workers: any[]...'.
+src/pages/VisitPage.vue(268,30): error TS2571: Object is of type 'unknown'.
+src/pages/VisitPage.vue(270,11): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/pages/VisitPage.vue(270,31): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/pages/VisitPage.vue(278,64): error TS2339: Property 'worker_id' does not exist on type 'never'.
+src/pages/VisitPage.vue(285,37): error TS2339: Property '$api' does not exist on type 'CreateComponentPublicInstance<{}, {}, { availability: { 1: { days: { date: string; timeslots: { dt_from: string; dt_to: string; slot_type: string; }[]; }[]; }; 2: { days: { date: string; timeslots: { dt_from: string; dt_to: string; slot_type: string; }[]; }[]; }; 3: { ...; }; } | null; ... 7 more ...; workers: any[]...'.
+src/pages/VisitPage.vue(305,17): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+src/pages/VisitPage.vue(306,23): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+src/pages/VisitPage.vue(312,13): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+src/main.ts(14,11): error TS7006: Parameter 'app' implicitly has an 'any' type.
+src/main.ts(23,11): error TS7006: Parameter 'app' implicitly has an 'any' type.
