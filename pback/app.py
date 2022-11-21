@@ -96,20 +96,7 @@ async def get_avaliability(
     return visits
 
 
-# VISITS
-app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit_endpoint)
-app.get("/visits")(visits.get_visits_endpoint)
-app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot_endpoint)
-app.post("/public/visit", response_model=visits.OutVisit)(
-    visits.public_book_visit_endpoint
-)
-app.put("/visit/{visit_id}")(visits.update_visit_endpoint)
-# @app.delete("/visit/{visit_id}")
-# async def delete_visit(visit_id: str) -> None:
-# return None
-
 # SLOTS
-# app.post("/public/slot")(visits.public_create_visit_endpoint)
 app.post("/slot", response_model=slots.Slot)(visits.create_slot_endpoint)
 app.delete("/slot/{slot_id}", response_model=slots.Slot)(
     slots.delete_client_slot_endpoint
@@ -120,53 +107,29 @@ app.post("/client/{client_id}/client_weekly_slot")(
 app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot_endpoint)
 
 
+# VISITS
+app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit_endpoint)
+app.get("/visits")(visits.get_visits_endpoint)
+app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot_endpoint)
+app.post("/public/visit", response_model=visits.OutVisit)(
+    visits.public_book_visit_endpoint
+)
+app.put("/visit/{visit_id}")(visits.update_visit_endpoint)
+
+# AVAILABILITY
+app.get(
+    "/client/{client_id}/worker/{worker_id}/availability",
+    response_model=availability.Availability,
+)(availability.get_worker_availability_endpoint)
+app.get(
+    "/client/{client_id}/availability/",
+    response_model=availability.AvailabilityPerWorker,
+)(availability.get_client_availability_endpoint)
+
+
 # FILES
 app.post("/file")(files.create_file_endpoint)
 app.get("/file/{file_name}")(files.get_file_endpoint)
-
-
-@app.get(
-    "/client/{client_id}/worker/{worker_id}/availability",
-    response_model=availability.Availability,
-)
-async def get_worker_availability(
-    worker_id: int,
-    services: Optional[str] = None,
-    s: Session = Depends(db.get_session),
-    # current_user: models.User = Depends(users.get_current_user),
-) -> availability.Availability:
-    worker = crud.get_worker(s, worker_id)
-    assert worker is not None
-
-    total_service_length: Optional[int] = None
-    if services:
-        service_ids = [int(s) for s in services.split(",")]
-        db_services = crud.get_services_by_ids(s, service_ids)
-        total_service_length = sum([s.seconds for s in db_services])
-    av = await availability.Availability.GetWorkerAV(
-        s, worker, service_length=total_service_length
-    )
-    return av
-
-
-@app.get(
-    "/client/{client_id}/availability/",
-    response_model=availability.AvailabilityPerWorker,
-)
-async def get_client_availability(
-    client_id: int,
-    services: Optional[str] = None,
-    s: Session = Depends(db.get_session),
-    # current_user: models.User = Depends(users.get_current_user),
-) -> availability.AvailabilityPerWorker:
-    total_service_length = None
-    if services:
-        service_ids = [int(s) for s in services.split(",")]
-        db_services = crud.get_services_by_ids(s, service_ids)
-        total_service_length = sum([s.seconds for s in db_services])
-
-    d = await availability._get_client_availability(client_id, total_service_length, s)
-    return availability.AvailabilityPerWorker.FromDict(d)
 
 
 if __name__ == "__main__":

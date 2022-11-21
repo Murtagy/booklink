@@ -274,6 +274,17 @@ class Availability(BM):
         return av
 
 
+worker_id = int
+
+
+class AvailabilityPerWorker(BM):
+    availability: dict[worker_id, Availability]
+
+    @classmethod
+    def FromDict(cls, availability: dict[int, Availability]) -> "AvailabilityPerWorker":
+        return cls(availability=availability)
+
+
 async def _get_client_availability(
     client_id: int,
     service_length: Optional[int],
@@ -285,17 +296,6 @@ async def _get_client_availability(
         av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
         worker_avs[worker.worker_id] = av
     return worker_avs
-
-
-worker_id = int
-
-
-class AvailabilityPerWorker(BM):
-    availability: dict[worker_id, Availability]
-
-    @classmethod
-    def FromDict(cls, availability: dict[int, Availability]) -> "AvailabilityPerWorker":
-        return cls(availability=availability)
 
 
 async def visit_pick_worker_and_check(
@@ -321,3 +321,37 @@ async def visit_pick_worker_and_check(
         assert av.CheckSlot(slot)
         slot.worker_id = worker_id
     return slot
+
+
+async def get_worker_availability_endpoint(
+    worker_id: int,
+    services: Optional[str] = None,
+    s: Session = Depends(db.get_session),
+    # current_user: models.User = Depends(users.get_current_user),
+) -> Availability:
+    worker = crud.get_worker(s, worker_id)
+    assert worker is not None
+
+    total_service_length: Optional[int] = None
+    if services:
+        service_ids = [int(s) for s in services.split(",")]
+        db_services = crud.get_services_by_ids(s, service_ids)
+        total_service_length = sum([s.seconds for s in db_services])
+    av = await Availability.GetWorkerAV(s, worker, service_length=total_service_length)
+    return av
+
+
+async def get_client_availability_endpoint(
+    client_id: int,
+    services: Optional[str] = None,
+    s: Session = Depends(db.get_session),
+    # current_user: models.User = Depends(users.get_current_user),
+) -> AvailabilityPerWorker:
+    total_service_length = None
+    if services:
+        service_ids = [int(s) for s in services.split(",")]
+        db_services = crud.get_services_by_ids(s, service_ids)
+        total_service_length = sum([s.seconds for s in db_services])
+
+    d = await _get_client_availability(client_id, total_service_length, s)
+    return AvailabilityPerWorker.FromDict(d)

@@ -1,3 +1,5 @@
+""" Visits sit a top of slots. So they use both slots and availability features."""
+
 import datetime
 from typing import List, Literal, Optional
 
