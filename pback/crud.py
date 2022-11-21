@@ -7,7 +7,7 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 import schemas
-from features import services, users, workers
+from features import services, slots, users, workers
 from models import (
     Client,
     File,
@@ -171,7 +171,7 @@ def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
     return Slot.get_by_id(db, slot_id)
 
 
-def create_slot(db: Session, slot: schemas.CreateSlot) -> Slot:
+def create_slot(db: Session, slot: slots.CreateSlot) -> Slot:
     d = slot.dict()
 
     db_slot = Slot(**d)
@@ -181,7 +181,7 @@ def create_slot(db: Session, slot: schemas.CreateSlot) -> Slot:
     return db_slot
 
 
-def update_slot(db: Session, slot: schemas.UpdateSlot, slot_id: int) -> Slot:
+def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
     db_slot = get_slot(db, slot_id)
     assert db_slot is not None
     update = slot.dict()
@@ -233,7 +233,7 @@ def get_worker_slots(
 
 def create_weekly_slot(
     db: Session,
-    slot: schemas.CreateWeeklySlot,
+    slot: slots.CreateWeeklySlot,
     client_id: int,
     *,
     worker_id: Optional[int] = None,
@@ -265,10 +265,20 @@ def get_service(
     db: Session, service_id: int, *, not_found: Optional[HTTPException] = None
 ) -> Optional[Service]:
     q = db.query(Service).filter(Service.service_id == service_id)
-    slot = q.first()
-    if not slot and not_found:
+    service = q.first()
+    if not service and not_found:
         raise not_found
-    return slot
+    return service
+
+
+def get_services_by_ids(
+    db: Session, service_ids: list[int], *, not_found: Optional[HTTPException] = None
+) -> list[Service]:
+    q = db.query(Service).filter(Service.service_id.in_(service_ids))
+    services = q.all()
+    if not services and not_found:
+        raise not_found
+    return services
 
 
 def get_services(

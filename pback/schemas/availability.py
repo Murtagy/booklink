@@ -12,7 +12,7 @@ import crud
 import models
 
 if TYPE_CHECKING:
-    from .slot import CreateSlot
+    from features.slots import CreateSlot
 
 
 class TimeSlotType(str, Enum):
