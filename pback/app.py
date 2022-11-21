@@ -52,6 +52,7 @@ app.get("/users/me/", response_model=users.UserOut)(users.read_users_me_endpoint
 app.get("/my_user", response_model=users.UserOut)(users.read_users_me2_endpoint)
 app.post("/token")(users.login_for_access_token_endpoint)
 
+
 # WORKERS
 app.get("/worker/{worker_id}", response_model=workers.OutWorker)(
     workers.get_worker_endpoint
@@ -66,6 +67,7 @@ app.get("/client/{client_id}/workers", response_model=workers.OutWorkers)(
 app.get("/workers", response_model=workers.OutWorkers)(workers.get_workers_endpoint)
 app.post("/worker", response_model=workers.OutWorker)(workers.create_worker_endpoint)
 
+
 # SERVICES
 app.post("/service", response_model=services.OutService)(
     services.create_service_endpoint
@@ -79,21 +81,6 @@ app.get("/client/{client_id}/service/{service_id}", response_model=services.OutS
 app.get("/client/{client_id}/services", response_model=services.OutServices)(
     services.get_services_by_client_endpoint
 )
-
-
-@app.get("/public_avaliability")
-async def get_avaliability(
-    client_id: int,
-    worker_id: Optional[int] = None,
-    s: Session = Depends(db.get_session),
-    # TODO Visitor
-) -> list[models.Visit]:
-    # schedule =
-    # slots    =
-    visits = crud.get_visits(s, client_id, worker_id=worker_id)
-
-    # schedule - slots - visits = avalibility : List[Slots]
-    return visits
 
 
 # SLOTS
@@ -115,6 +102,7 @@ app.post("/public/visit", response_model=visits.OutVisit)(
     visits.public_book_visit_endpoint
 )
 app.put("/visit/{visit_id}")(visits.update_visit_endpoint)
+
 
 # AVAILABILITY
 app.get(
