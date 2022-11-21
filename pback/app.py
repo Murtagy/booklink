@@ -1,15 +1,11 @@
 from enum import Enum
-from typing import Optional
 
 import structlog
 import uvicorn  # type: ignore
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session  # type: ignore
 
-import crud
 import db
-import models
 from features import availability, files, services, slots, users, visits, workers
 
 # docs_kwargs = {}
