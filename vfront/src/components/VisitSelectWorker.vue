@@ -16,7 +16,7 @@
 
 <style scoped src="@/assets/styles/worker.css"></style>
 
-<script ts="lang">
+<script lang="ts">
 export default {
   components: {},
   data() {
