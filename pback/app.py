@@ -10,12 +10,7 @@ from sqlalchemy.orm import Session  # type: ignore
 import crud
 import db
 import models
-from features import files, services, slots, users, visits, workers
-from schemas.availability import (
-    Availability,
-    AvailabilityPerWorker,
-    _get_client_availability,
-)
+from features import availability, files, services, slots, users, visits, workers
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -103,30 +98,43 @@ async def get_avaliability(
 
 # VISITS
 app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit_endpoint)
-app.post("/public_visit", response_model=visits.OutVisit)(
-    visits.public_create_visit_endpoint
-)
 app.get("/visits")(visits.get_visits_endpoint)
-app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_endpoint)
+app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot_endpoint)
+app.post("/public/visit", response_model=visits.OutVisit)(
+    visits.public_book_visit_endpoint
+)
 app.put("/visit/{visit_id}")(visits.update_visit_endpoint)
 # @app.delete("/visit/{visit_id}")
 # async def delete_visit(visit_id: str) -> None:
 # return None
 
+# SLOTS
+# app.post("/public/slot")(visits.public_create_visit_endpoint)
+app.post("/slot", response_model=slots.Slot)(visits.create_slot_endpoint)
+app.delete("/slot/{slot_id}", response_model=slots.Slot)(
+    slots.delete_client_slot_endpoint
+)
+app.post("/client/{client_id}/client_weekly_slot")(
+    slots.create_client_weekly_slot_endpoint
+)
+app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot_endpoint)
 
+
+# FILES
 app.post("/file")(files.create_file_endpoint)
 app.get("/file/{file_name}")(files.get_file_endpoint)
 
 
 @app.get(
-    "/client/{client_id}/worker/{worker_id}/availability", response_model=Availability
+    "/client/{client_id}/worker/{worker_id}/availability",
+    response_model=availability.Availability,
 )
 async def get_worker_availability(
     worker_id: int,
     services: Optional[str] = None,
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
-) -> Availability:
+) -> availability.Availability:
     worker = crud.get_worker(s, worker_id)
     assert worker is not None
 
@@ -135,36 +143,31 @@ async def get_worker_availability(
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
         total_service_length = sum([s.seconds for s in db_services])
-    av = await Availability.GetWorkerAV(s, worker, service_length=total_service_length)
+    av = await availability.Availability.GetWorkerAV(
+        s, worker, service_length=total_service_length
+    )
     return av
 
 
-@app.get("/client/{client_id}/availability/", response_model=AvailabilityPerWorker)
+@app.get(
+    "/client/{client_id}/availability/",
+    response_model=availability.AvailabilityPerWorker,
+)
 async def get_client_availability(
     client_id: int,
     services: Optional[str] = None,
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
-) -> AvailabilityPerWorker:
+) -> availability.AvailabilityPerWorker:
     total_service_length = None
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
         total_service_length = sum([s.seconds for s in db_services])
 
-    d = await _get_client_availability(client_id, total_service_length, s)
-    return AvailabilityPerWorker.FromDict(d)
+    d = await availability._get_client_availability(client_id, total_service_length, s)
+    return availability.AvailabilityPerWorker.FromDict(d)
 
-
-app.post("/public_slot")(slots.public_create_slot_endpoint)
-app.post("/slot")(slots.create_slot_endpoint)
-app.delete("/slot/{slot_id}", response_model=slots.Slot)(
-    slots.delete_client_slot_endpoint
-)
-app.post("/client/{client_id}/client_weekly_slot")(
-    slots.create_client_weekly_slot_endpoint
-)
-app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot_endpoint)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

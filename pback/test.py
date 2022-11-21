@@ -98,10 +98,28 @@ def get_worker_availability(client_id, worker_id, services=None):
     )
 
 
-def create_slot(slot, *, public):
+def create_slot(slot):
     url = localhost + f"slot"
-    if public:
-        url = localhost + f"public_slot"
+
+    return client.post(
+        url,
+        headers=headers,
+        json=slot,
+    )
+
+
+def create_visit_as_a_client(slot):
+    url = localhost + f"visit"
+
+    return client.post(
+        url,
+        headers=headers,
+        json=slot,
+    )
+
+
+def create_visit_as_a_customer(slot):
+    url = localhost + f"public/visit"
 
     return client.post(
         url,
@@ -235,7 +253,7 @@ def test_portyanka():
     ### Test worker availability
     r = get_worker_availability(CLIENT_ID, WORKER_ID, [SERVICE_ID])
     assert r.status_code == 200, r.text
-    print(r.text)
+    # print(r.text)
 
     days = r.json()["days"]
     for day in days:
@@ -254,7 +272,7 @@ def test_portyanka():
     # availability for 2 services
     r = get_worker_availability(CLIENT_ID, WORKER_ID, [SERVICE_ID, SERVICE_ID2])
     assert r.status_code == 200, r.text
-    print(r.text)
+    # print(r.text)
 
     days = r.json()["days"]
     for day in days:
@@ -281,11 +299,11 @@ def test_portyanka():
         "from_datetime": "2022-01-01T08:00:00",
         "to_datetime": "2022-01-01T18:00:00",
     }
-    r = create_slot(slot, public=False)
+    r = create_slot(slot)
 
     assert r.status_code == 200, r.text
 
-    slot = {
+    visit = {
         "name": "Визит клиент",
         "slot_type": "visit",
         "client_id": CLIENT_ID,
@@ -293,7 +311,7 @@ def test_portyanka():
         "from_datetime": "2022-01-01T09:00:00",
         "to_datetime": "2022-01-01T10:00:00",
     }
-    r = create_slot(slot, public=True)
+    r = create_visit_as_a_client(visit)
 
     assert r.status_code == 200, r.text
 
@@ -316,7 +334,7 @@ def test_portyanka():
         "to_datetime": "2022-01-01T10:00:00",
     }
 
-    r = create_slot(visit, public=False)
+    r = create_visit_as_a_client(visit)
     assert r.status_code == 409, r.text
 
     ##

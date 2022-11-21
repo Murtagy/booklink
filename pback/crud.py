@@ -34,6 +34,29 @@ def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
 
 def create_visit(
     db: Session,
+    *,
+    client_id: Optional[int] = None,
+    customer_id: Optional[int] = None,
+    slot_id: Optional[int] = None,
+    worker_id: Optional[int] = None,
+) -> Visit:
+    db_visit = Visit(
+        client_id=client_id,
+        customer_id=customer_id,
+        has_notification=False,
+        status="submitted",
+        # services=[s.service_id for s in visit.services],
+        slot_id=slot_id,
+        worker_id=worker_id,
+    )
+    db.add(db_visit)
+    db.commit()
+    db.refresh(db_visit)
+    return db_visit
+
+
+def create_customer_visit(
+    db: Session,
     visit: visits.InVisit,
     *,
     customer_id: Optional[int] = None,

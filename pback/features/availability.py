@@ -1,43 +1,21 @@
 import datetime
 import math
-from enum import Enum
-from typing import TYPE_CHECKING, Any, Optional, Union
+import random
+from typing import Any, Literal, Optional, Union
 
+from fastapi import Depends
+from fastapi.exceptions import HTTPException
 from pydantic import BaseModel as BM
 
 # from .slot import CreateSlot
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session  # type: ignore
 
+import app_exceptions
 import crud
+import db
 import models
-
-if TYPE_CHECKING:
-    from features.slots import CreateSlot
-
-
-class TimeSlotType(str, Enum):
-    BUSY = "busy"
-    AVAILABLE = "available"
-    VISIT = "visit"
-
-
-class TimeSlot(BM):
-    dt_from: datetime.datetime
-    dt_to: datetime.datetime
-    slot_type: TimeSlotType
-
-    def __str__(self) -> str:
-        return str(self.dt_from) + ":::" + str(self.dt_to) + " " + str(self.slot_type)
-
-    def __hash__(self) -> int:
-        return hash(str(self))
-
-    def __gt__(self, other: "TimeSlot") -> bool:
-        return self.dt_from > other.dt_from
-
-    @property
-    def minutes(self) -> int:
-        return len_minutes(self.dt_from, self.dt_to)
+from features import users
+from features.slots import CreateSlot, TimeSlot, TimeSlotType
 
 
 class Day(BM):
@@ -47,11 +25,6 @@ class Day(BM):
 
 DAYS = {0: "mo", 1: "tu", 2: "we", 3: "th", 4: "fr", 5: "st", 6: "su"}
 N_DAYS = 99
-
-
-def len_minutes(dt_from: datetime.datetime, dt_to: datetime.datetime) -> int:
-    assert dt_from > dt_to
-    return int((dt_from - dt_to).total_seconds() / 60)
 
 
 class Availability(BM):
@@ -323,3 +296,28 @@ class AvailabilityPerWorker(BM):
     @classmethod
     def FromDict(cls, availability: dict[int, Availability]) -> "AvailabilityPerWorker":
         return cls(availability=availability)
+
+
+async def visit_pick_worker_and_check(
+    s: Session, slot: CreateSlot, *, exc: HTTPException
+) -> CreateSlot:
+    _worker_id = slot.worker_id
+    if _worker_id:
+        worker_id = _worker_id
+        av = await Availability.GetWorkerAV(s, worker_id)
+        if not av.CheckSlot(slot):
+            raise exc
+
+    else:
+        client_av = await _get_client_availability(slot.client_id, None, s)
+        workers_av = [
+            worker_id for (worker_id, av) in client_av.items() if av.CheckSlot(slot)
+        ]
+        if len(workers_av) == 0:
+            raise exc
+
+        worker_id = random.choice(workers_av)
+        av = await Availability.GetWorkerAV(s, worker_id)
+        assert av.CheckSlot(slot)
+        slot.worker_id = worker_id
+    return slot
