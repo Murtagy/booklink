@@ -310,9 +310,8 @@ def get_services(
         return _get_services_for_worker(db, client_id, worker_id)
     return _get_services_for_client(db, client_id)
 
-def create_worker_service(
-    db: Session, worker_id: int, service_id: int
-) -> None:
+
+def create_worker_service(db: Session, worker_id: int, service_id: int) -> None:
     db.add(WorkersServices(worker_id=worker_id, service_id=service_id))
     db.commit()
     return

@@ -6,7 +6,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import db
-from features import availability, files, services, slots, users, visits, workers, worker_services
+from features import (
+    availability,
+    files,
+    services,
+    slots,
+    users,
+    visits,
+    worker_services,
+    workers,
+)
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':

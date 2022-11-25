@@ -2,11 +2,11 @@ from fastapi import Depends
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
+import app_exceptions
 import crud
 import db
 import models
 from features import users
-import app_exceptions
 
 
 class WorkerServiceIn(BM):
@@ -15,7 +15,7 @@ class WorkerServiceIn(BM):
 
 
 class Received(BM):
-    msg: str = 'Received'
+    msg: str = "Received"
 
 
 async def add_worker_service(
@@ -38,6 +38,7 @@ async def add_worker_service(
     assert db_service.client_id == db_worker.client_id
     crud.create_worker_service(s, worker_id, service_id)
     return Received()
+
 
 async def my_add_worker_service(
     worker_service: WorkerServiceIn,
