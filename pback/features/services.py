@@ -19,6 +19,10 @@ class CreateService(BM):
     description: Optional[str]
 
 
+class CreateServiceWithClientId(CreateService):
+    client_id: int
+
+
 class OutService(BM):
     service_id: int
     name: str
@@ -26,7 +30,7 @@ class OutService(BM):
     price_lower_bound: Optional[float]
     price_higher_bound: Optional[float]
     seconds: int
-    description: str
+    description: str | None
 
     class Config:
         orm_mode = True
@@ -43,6 +47,15 @@ async def create_service_endpoint(
 ) -> models.Service:
     client_id = current_user.client_id
     db_service = crud.create_service(s, service, client_id)
+    return db_service
+
+
+async def my_create_service_endpoint(
+    service: CreateServiceWithClientId,
+    s: Session = Depends(db.get_session),
+) -> models.Service:
+    client_id = service.client_id
+    db_service = crud.create_service(s, CreateService(**service.dict()), client_id)
     return db_service
 
 

@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import db
-from features import availability, files, services, slots, users, visits, workers
+from features import availability, files, services, slots, users, visits, workers, worker_services
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -17,6 +17,7 @@ from features import availability, files, services, slots, users, visits, worker
 ORIGINS = [
     "http://localhost",
     "http://localhost:8080",
+    "http://localhost:5173",
     "http://localhost:3333",
     "http://localhost:3000",
 ]
@@ -68,6 +69,9 @@ app.post("/worker", response_model=workers.OutWorker)(workers.create_worker_endp
 app.post("/service", response_model=services.OutService)(
     services.create_service_endpoint
 )
+app.post("/my_service", response_model=services.OutService)(
+    services.my_create_service_endpoint
+)
 app.get("/service/{service_id}", response_model=services.OutService)(
     services.get_service_endpoint
 )
@@ -78,8 +82,15 @@ app.get("/client/{client_id}/services", response_model=services.OutServices)(
     services.get_services_by_client_endpoint
 )
 
+# WORKER-SERVICE
+app.post("/worker_services", response_model=worker_services.Received)(
+    worker_services.add_worker_service
+)
 
-# SLOTS
+app.post("/my_worker_services", response_model=worker_services.Received)(
+    worker_services.my_add_worker_service
+)
+
 app.post("/slot", response_model=slots.Slot)(visits.create_slot_endpoint)
 app.delete("/slot/{slot_id}", response_model=slots.Slot)(
     slots.delete_client_slot_endpoint
