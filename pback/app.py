@@ -93,13 +93,18 @@ app.get("/client/{client_id}/services", response_model=services.OutServices)(
 
 # WORKER-SERVICE
 app.post("/worker_services", response_model=worker_services.Received)(
-    worker_services.add_worker_service
+    worker_services.add_worker_service_endpoint
 )
 
 app.post("/my_worker_services", response_model=worker_services.Received)(
     worker_services.my_add_worker_service
 )
+app.get(
+    "/client/{client_id}/picker/services", response_model=worker_services.OutServices
+)(worker_services.get_services_by_worker_endpoint)
 
+
+# SLOTS
 app.post("/slot", response_model=slots.Slot)(visits.create_slot_endpoint)
 app.delete("/slot/{slot_id}", response_model=slots.Slot)(
     slots.delete_client_slot_endpoint

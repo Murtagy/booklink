@@ -6,7 +6,8 @@ from typing import List, Optional, Union
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
-from features import services, slots, users, visits, workers
+from db import BaseModel
+from features import services, slots, users, visits, worker_services, workers
 from models import (
     Client,
     File,
@@ -17,7 +18,7 @@ from models import (
     Visit,
     WeeklySlot,
     Worker,
-    WorkersServices,
+    WorkerService,
 )
 
 
@@ -293,6 +294,12 @@ def get_service(
     return service
 
 
+def persist_model(db: Session, model: BaseModel) -> None:
+    db.add(model)
+    db.commit()
+    db.refresh(model)
+
+
 def get_services_by_ids(
     db: Session, service_ids: list[int], *, not_found: Optional[HTTPException] = None
 ) -> list[Service]:
@@ -307,14 +314,31 @@ def get_services(
     db: Session, client_id: int, *, worker_id: Optional[int] = None
 ) -> List[Service]:
     if worker_id:
-        return _get_services_for_worker(db, client_id, worker_id)
+        return _get_services_for_worker(db, worker_id)
     return _get_services_for_client(db, client_id)
 
 
 def create_worker_service(db: Session, worker_id: int, service_id: int) -> None:
-    db.add(WorkersServices(worker_id=worker_id, service_id=service_id))
+    db.add(WorkerService(worker_id=worker_id, service_id=service_id))
     db.commit()
     return
+
+
+def delete_worker_service(db: Session, worker_id: int, service_id: int) -> None:
+    db.query(WorkerService).filter(
+        WorkerService.worker_id == worker_id, WorkerService.service_id == service_id
+    ).delete()
+
+
+def get_worker_service(
+    db: Session, worker_id: int, service_id: int
+) -> WorkerService | None:
+    q = db.query(WorkerService).filter(
+        WorkerService.worker_id == worker_id, WorkerService.service_id == service_id
+    )
+    r = q.all()
+    assert len(r) < 2
+    return r[0] if r else None
 
 
 def _get_services_for_client(db: Session, client_id: int) -> List[Service]:
@@ -322,11 +346,11 @@ def _get_services_for_client(db: Session, client_id: int) -> List[Service]:
     return q.all()
 
 
-def _get_services_for_worker(
-    db: Session, client_id: int, worker_id: int
-) -> List[Service]:
-    worker_services = db.query(WorkersServices).filter(
-        WorkersServices.worker_id == worker_id
+def _get_services_for_worker(db: Session, worker_id: int) -> List[Service]:
+    worker_services_ids = db.query(WorkerService.service_id).filter(
+        WorkerService.worker_id == worker_id
     )
-    q = db.query(Service).filter(Service.service_id.in_(worker_services))  # todo: test
+    q = db.query(Service).filter(
+        Service.service_id.in_(worker_services_ids)
+    )  # todo: test
     return q.all()

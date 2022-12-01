@@ -103,7 +103,7 @@ class Service(BaseModel, ModelImpl):
     # worker_inheritance = Column(String)  # give all
 
 
-class WorkersServices(BaseModel, ModelImpl):
+class WorkerService(BaseModel, ModelImpl):
     # abilities of worker
     # idea is that an owner will manually check what services each worker should have
     __tablename__ = "workers_services"
