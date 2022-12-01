@@ -1,7 +1,11 @@
 <template>
   <div>
+    <h3>ID клиента, сотрудника</h3>
     <input type="text" v-model="client_id" id="client_id" required />
+    <input type="text" v-model="worker_id" id="worker_id" required />
+    <hr/>
 
+    <h3>Создать сервис</h3>
     <form @submit="create_service">
       <span>Услуга</span>
       <br /><br />
@@ -21,7 +25,8 @@
       <br /><br />
       <button >Создать</button>
     </form>
-    <br /><br /><br />
+    <hr/>
+    <h3>Создать сотрудника</h3>
     <form>
       <span>Сотрудник</span>
       <br /><br />
@@ -36,7 +41,16 @@
       <br /><br />
       <button>Создать</button>
     </form>
-    <br /><br /><br />
+    <hr/>
+    <h3>Добавить сервис сотруднику</h3>
+      <button @click="get_worker_services()">Обновить</button>
+      <li v-for="service in services" :key="service.service_id">
+        <!-- {{service}} -->
+       <input type="checkbox" value={{service.service_id}}>
+        <label :for="service.service_id">{{ service.name }}</label>
+      </li>
+    <hr/>
+    <h3>Создать визит</h3>
     <form>
       <span>Визит</span>
       <br /><br />
@@ -72,6 +86,7 @@
 export default {
   data() {
     return {
+      services: [],
       worker: {
         name: '',
         job_title: '',
@@ -86,6 +101,7 @@ export default {
         description: null,
       },
       client_id: 1,
+      worker_id: 1,
     };
   },
   methods: {
@@ -96,6 +112,15 @@ export default {
       const service = {...this.service, client_id: this.client_id}
       try {
         const response = await this.$api.post(path, service)
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async get_worker_services() {
+      let path = `/client/${this.client_id}/picker/services?worker_id=${this.worker_id}`;
+      try {
+        const response = await this.$api.get(path)
+        this.services = response.data.services
       } catch (err) {
         console.log(err)
       }
