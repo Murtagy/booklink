@@ -1,20 +1,18 @@
 import datetime
 import math
 import random
-from typing import Any, Literal, Optional, Union
+from typing import Any, Optional, Union
 
-from fastapi import Depends
+from fastapi import Depends, Query
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel as BM
 
 # from .slot import CreateSlot
 from sqlalchemy.orm import Session  # type: ignore
 
-import app_exceptions
 import crud
 import db
 import models
-from features import users
 from features.slots import CreateSlot, TimeSlot, TimeSlotType
 
 
@@ -325,7 +323,7 @@ async def visit_pick_worker_and_check(
 
 async def get_worker_availability_endpoint(
     worker_id: int,
-    services: Optional[str] = None,
+    services: Optional[str] = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
 ) -> Availability:
