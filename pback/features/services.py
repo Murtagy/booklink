@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import Depends
+from fastapi import Depends, Query
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
@@ -76,7 +76,7 @@ async def get_service_by_client_endpoint(
 
 async def get_services_by_client_endpoint(
     client_id: int,
-    worker_id: Optional[int] = None,
+    worker_id: Optional[int] = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
 ) -> OutServices:
