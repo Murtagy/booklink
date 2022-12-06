@@ -10,11 +10,11 @@ from pydantic import BaseModel as BM
 # from .slot import CreateSlot
 from sqlalchemy.orm import Session  # type: ignore
 
+import app_exceptions
 import crud
 import db
 import models
 from features.slots import CreateSlot, TimeSlot, TimeSlotType
-import app_exceptions
 
 
 class Day(BM):
@@ -335,7 +335,9 @@ async def get_worker_availability_endpoint(
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
-        db_worker_services = crud.get_services(s, client_id=worker.client_id, worker_id=worker_id)
+        db_worker_services = crud.get_services(
+            s, client_id=worker.client_id, worker_id=worker_id
+        )
         for service in db_services:
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled

@@ -75,8 +75,12 @@ def get_service(service_id):
 def add_worker_skill(worker_id, service_ids):
     selected_services = []
     for s in service_ids:
-        selected_services.append({"worker_id": worker_id, "service_id": s, "picked": True})
-    return client.post(localhost + "worker_services", json={"services": selected_services},
+        selected_services.append(
+            {"worker_id": worker_id, "service_id": s, "picked": True}
+        )
+    return client.post(
+        localhost + "worker_services",
+        json={"services": selected_services},
         headers=headers,
     )
 
@@ -261,14 +265,13 @@ def test_portyanka():
 
     ### Test worker availability
     r = get_worker_availability(CLIENT_ID, WORKER_ID, [SERVICE_ID])
-    assert r.json() == {"detail":"Worker not skilled of a service"}
+    assert r.json() == {"detail": "Worker not skilled of a service"}
 
     r = add_worker_skill(WORKER_ID, [SERVICE_ID, SERVICE_ID2])
     assert r.status_code == 200, r.text
 
     r = get_worker_availability(CLIENT_ID, WORKER_ID, [SERVICE_ID])
     assert r.status_code == 200, r.text
-    
 
     days = r.json()["days"]
     for day in days:
