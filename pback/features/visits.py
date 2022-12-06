@@ -61,7 +61,7 @@ class InVisit(BM):
 #     # FINISHED = 'finished'
 
 
-async def get_visits_endpoint(
+def get_visits_endpoint(
     worker_id: Optional[int] = None,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -71,7 +71,7 @@ async def get_visits_endpoint(
     return crud.get_visits(s, client_id, worker_id=worker_id)
 
 
-async def update_visit_endpoint(
+def update_visit_endpoint(
     visit_id: str,
     visit: InVisit,
     s: Session = Depends(db.get_session),
@@ -91,14 +91,14 @@ def get_visit_endpoint(
     return visit
 
 
-async def create_slot_endpoint(
+def create_slot_endpoint(
     slot: slots.CreateSlot,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> models.Slot:
     if slot.slot_type == TimeSlotType.VISIT:
         # in case slot is a visit - check for collision
-        slot = await availability.visit_pick_worker_and_check(
+        slot = availability.visit_pick_worker_and_check(
             s, slot, exc=app_exceptions.SlotNotAvailable
         )
     # others we let to duplicate
@@ -116,14 +116,14 @@ async def create_slot_endpoint(
 #     return db_visit
 
 
-async def create_visit_slot_endpoint(
+def create_visit_slot_endpoint(
     slot: slots.CreateSlot,
     s: Session = Depends(db.get_session),
 ) -> models.Visit:
     if slot.slot_type not in [TimeSlotType.VISIT]:
         raise app_exceptions.SlotType
 
-    slot = await availability.visit_pick_worker_and_check(
+    slot = availability.visit_pick_worker_and_check(
         s, slot, exc=app_exceptions.SlotNotAvailable
     )
     db_slot = crud.create_slot(s, slot)
@@ -136,7 +136,7 @@ async def create_visit_slot_endpoint(
     return db_visit
 
 
-async def public_book_visit_endpoint(
+def public_book_visit_endpoint(
     visit: InVisit,
     s: Session = Depends(db.get_session),
     # TODO: visitor
@@ -156,7 +156,7 @@ async def public_book_visit_endpoint(
         from_datetime=visit.from_dt,
         to_datetime=visit.from_dt + datetime.timedelta(seconds=visit_len_seconds),
     )
-    slot = await availability.visit_pick_worker_and_check(
+    slot = availability.visit_pick_worker_and_check(
         s, slot, exc=app_exceptions.SlotNotAvailable
     )
 

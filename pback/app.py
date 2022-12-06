@@ -48,7 +48,7 @@ class StrEnum(str, Enum):
 
 
 @app.get("/ping")
-async def ping() -> dict[str, str]:
+def ping() -> dict[str, str]:
     return {"message": "pong"}
 
 

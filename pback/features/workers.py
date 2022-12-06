@@ -46,7 +46,7 @@ class OutWorkers(BM):
     workers: list[OutWorker]
 
 
-async def get_worker_endpoint(
+def get_worker_endpoint(
     worker_id: int,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -59,7 +59,7 @@ async def get_worker_endpoint(
     return db_worker
 
 
-async def update_worker_endpoint(
+def update_worker_endpoint(
     worker_id: int,
     worker: UpdateWorker,
     s: Session = Depends(db.get_session),
@@ -73,11 +73,11 @@ async def update_worker_endpoint(
     return db_worker
 
 
-async def delete_worker_endpoint(worker_id: str) -> None:
+def delete_worker_endpoint(worker_id: str) -> None:
     return None
 
 
-async def get_workers_by_client_endpoint(
+def get_workers_by_client_endpoint(
     client_id: int,
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
@@ -87,7 +87,7 @@ async def get_workers_by_client_endpoint(
     return OutWorkers(workers=db_workers)
 
 
-async def get_workers_endpoint(
+def get_workers_endpoint(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> OutWorkers:
@@ -96,7 +96,7 @@ async def get_workers_endpoint(
     return OutWorkers(workers=db_workers)
 
 
-async def create_worker_endpoint(
+def create_worker_endpoint(
     worker: CreateWorker,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),

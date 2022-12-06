@@ -89,7 +89,7 @@ class CreateWeeklySlot(BM):
     su: list[tuple[str, str]] | None
 
 
-async def delete_client_slot_endpoint(
+def delete_client_slot_endpoint(
     slot_id: int,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -102,7 +102,7 @@ async def delete_client_slot_endpoint(
     return "OK"
 
 
-async def create_client_weekly_slot_endpoint(
+def create_client_weekly_slot_endpoint(
     client_id: int,
     slot: CreateWeeklySlot,
     s: Session = Depends(db.get_session),
@@ -116,7 +116,7 @@ async def create_client_weekly_slot_endpoint(
     return "OK"
 
 
-async def create_worker_weekly_slot_endpoint(
+def create_worker_weekly_slot_endpoint(
     worker_id: int,
     slot: CreateWeeklySlot,
     s: Session = Depends(db.get_session),

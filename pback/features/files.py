@@ -11,7 +11,7 @@ import models
 from features import users
 
 
-async def get_file_endpoint(
+def get_file_endpoint(
     file_name: str,
     s: Session = Depends(db.get_session),
     # current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
@@ -27,7 +27,7 @@ async def get_file_endpoint(
     return r
 
 
-async def create_file_endpoint(
+def create_file_endpoint(
     file: UploadFile = File(...),
     s: Session = Depends(db.get_session),
     current_user: Optional[models.User] = Depends(users.get_current_user_or_none),

@@ -234,7 +234,7 @@ class Availability(BM):
         # return cls(days=days_l)
 
     @classmethod
-    async def GetWorkerAV(
+    def GetWorkerAV(
         cls,
         s: Session,
         worker_u: Union[int, models.Worker],
@@ -284,7 +284,7 @@ class AvailabilityPerWorker(BM):
         return cls(availability=availability)
 
 
-async def _get_client_availability(
+def _get_client_availability(
     client_id: int,
     service_length: Optional[int],
     s: Session,
@@ -292,23 +292,23 @@ async def _get_client_availability(
     workers = crud.get_workers(s, client_id)
     worker_avs: dict[int, Availability] = {}
     for worker in workers:
-        av = await Availability.GetWorkerAV(s, worker, service_length=service_length)
+        av = Availability.GetWorkerAV(s, worker, service_length=service_length)
         worker_avs[worker.worker_id] = av
     return worker_avs
 
 
-async def visit_pick_worker_and_check(
+def visit_pick_worker_and_check(
     s: Session, slot: CreateSlot, *, exc: HTTPException
 ) -> CreateSlot:
     _worker_id = slot.worker_id
     if _worker_id:
         worker_id = _worker_id
-        av = await Availability.GetWorkerAV(s, worker_id)
+        av = Availability.GetWorkerAV(s, worker_id)
         if not av.CheckSlot(slot):
             raise exc
 
     else:
-        client_av = await _get_client_availability(slot.client_id, None, s)
+        client_av = _get_client_availability(slot.client_id, None, s)
         workers_av = [
             worker_id for (worker_id, av) in client_av.items() if av.CheckSlot(slot)
         ]
@@ -316,13 +316,13 @@ async def visit_pick_worker_and_check(
             raise exc
 
         worker_id = random.choice(workers_av)
-        av = await Availability.GetWorkerAV(s, worker_id)
+        av = Availability.GetWorkerAV(s, worker_id)
         assert av.CheckSlot(slot)
         slot.worker_id = worker_id
     return slot
 
 
-async def get_worker_availability_endpoint(
+def get_worker_availability_endpoint(
     worker_id: int,
     services: Optional[str] = Query(None),
     s: Session = Depends(db.get_session),
@@ -342,11 +342,11 @@ async def get_worker_availability_endpoint(
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled
         total_service_length = sum([s.seconds for s in db_services])
-    av = await Availability.GetWorkerAV(s, worker, service_length=total_service_length)
+    av = Availability.GetWorkerAV(s, worker, service_length=total_service_length)
     return av
 
 
-async def get_client_availability_endpoint(
+def get_client_availability_endpoint(
     client_id: int,
     services: Optional[str] = None,
     s: Session = Depends(db.get_session),
@@ -358,5 +358,5 @@ async def get_client_availability_endpoint(
         db_services = crud.get_services_by_ids(s, service_ids)
         total_service_length = sum([s.seconds for s in db_services])
 
-    d = await _get_client_availability(client_id, total_service_length, s)
+    d = _get_client_availability(client_id, total_service_length, s)
     return AvailabilityPerWorker.FromDict(d)

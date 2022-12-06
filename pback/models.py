@@ -129,7 +129,7 @@ class User(BaseModel, ModelImpl):
     username = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     blocked_datetime = Column(DateTime(timezone=True))
-    # is_active = Column(Boolean, default=True)
+    # is_active = Column(Boolean,default=True)
 
 
 class Token(BaseModel, ModelImpl):

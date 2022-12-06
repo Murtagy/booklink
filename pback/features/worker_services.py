@@ -23,7 +23,7 @@ class Received(BM):
     msg: str = "Received"
 
 
-async def add_worker_service_endpoint(
+def add_worker_service_endpoint(
     worker_service: WorkerServiceIn,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -45,7 +45,7 @@ async def add_worker_service_endpoint(
     return Received()
 
 
-async def add_worker_services_endpoint(
+def add_worker_services_endpoint(
     worker_services: WorkerServicesIn,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -82,7 +82,7 @@ def worker_service_picked(s: Session, worker_id: int, service_id: int) -> bool:
         return True
 
 
-async def my_add_worker_service(
+def my_add_worker_service(
     worker_service: WorkerServiceIn,
     s: Session = Depends(db.get_session),
 ) -> Received:
@@ -109,7 +109,7 @@ class OutServices(BM):
     services: list[OutWorkerService]
 
 
-async def get_services_by_worker_endpoint(
+def get_services_by_worker_endpoint(
     client_id: int,
     worker_id: int | None = Query(None),
     s: Session = Depends(db.get_session),

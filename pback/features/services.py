@@ -40,7 +40,7 @@ class OutServices(BM):
     services: list[OutService]
 
 
-async def create_service_endpoint(
+def create_service_endpoint(
     service: CreateService,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -50,7 +50,7 @@ async def create_service_endpoint(
     return db_service
 
 
-async def my_create_service_endpoint(
+def my_create_service_endpoint(
     service: CreateServiceWithClientId,
     s: Session = Depends(db.get_session),
 ) -> models.Service:
@@ -59,14 +59,14 @@ async def my_create_service_endpoint(
     return db_service
 
 
-async def get_service_endpoint(
+def get_service_endpoint(
     service_id: int,
     s: Session = Depends(db.get_session),
 ) -> Optional[models.Service]:
     return crud.get_service(s, service_id)
 
 
-async def get_service_by_client_endpoint(
+def get_service_by_client_endpoint(
     client_id: int,
     service_id: int,
     s: Session = Depends(db.get_session),
@@ -74,7 +74,7 @@ async def get_service_by_client_endpoint(
     return crud.get_service(s, service_id)
 
 
-async def get_services_by_client_endpoint(
+def get_services_by_client_endpoint(
     client_id: int,
     worker_id: Optional[int] = Query(None),
     s: Session = Depends(db.get_session),
