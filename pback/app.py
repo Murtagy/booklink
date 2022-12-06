@@ -93,6 +93,9 @@ app.get("/client/{client_id}/services", response_model=services.OutServices)(
 
 # WORKER-SERVICE
 app.post("/worker_services", response_model=worker_services.Received)(
+    worker_services.add_worker_services_endpoint
+)
+app.post("/worker_service", response_model=worker_services.Received)(
     worker_services.add_worker_service_endpoint
 )
 
