@@ -3,10 +3,10 @@ import { defineStore } from "pinia";
 
 // Vue.use(Vuex);
 
-function getCookie(cname) {
-  let name = cname + "=";
-  let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(";");
+function getCookie(cname: string) {
+  const name = cname + "=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(";");
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i];
     while (c.charAt(0) == " ") {
@@ -19,10 +19,10 @@ function getCookie(cname) {
   return "";
 }
 
-function setCookie(cname, cvalue, exdays) {
+function setCookie(cname: string, cvalue: string, exdays: number) {
   const d = new Date();
   d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-  let expires = "expires=" + d.toUTCString();
+  const expires = "expires=" + d.toUTCString();
   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
@@ -35,7 +35,7 @@ const authStore = defineStore("auth", {
     jwt_auth: checkAuthCookie(),
   }),
   actions: {
-    setJwt(jwt) {
+    setJwt(jwt: string) {
       console.log("Setting token");
       setCookie("jwtAuth", jwt, 14);
       this.jwt_auth = jwt;

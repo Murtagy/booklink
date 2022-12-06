@@ -95,7 +95,7 @@ class Service(BaseModel, ModelImpl):
     price = Column(Float)
     price_lower_bound = Column(Float)
     price_higher_bound = Column(Float)
-    seconds = Column(Integer)  # length
+    seconds = Column(Integer, nullable=False)  # length
     display_description = Column(String)
     description = Column(String)
     blocked_datetime = Column(DateTime(timezone=True))
@@ -103,7 +103,7 @@ class Service(BaseModel, ModelImpl):
     # worker_inheritance = Column(String)  # give all
 
 
-class WorkersServices(BaseModel, ModelImpl):
+class WorkerService(BaseModel, ModelImpl):
     # abilities of worker
     # idea is that an owner will manually check what services each worker should have
     __tablename__ = "workers_services"

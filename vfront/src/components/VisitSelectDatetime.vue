@@ -17,7 +17,7 @@
 
 <style scoped src="@/assets/styles/visit.css"></style>
 
-<script>
+<script lang="ts">
 import Calendar from "@/components/CalendarPicker.vue";
 import TimeSched from "@/components/TimePicker.vue";
 

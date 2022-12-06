@@ -20,7 +20,7 @@ const router = createRouter({
     {
       path: "/login",
       name: "Login",
-      component: () => import("../pages/Login.vue"),
+      component: () => import("../pages/LoginPage.vue"),
     },
     {
       path: "/visit",
@@ -30,7 +30,7 @@ const router = createRouter({
     {
       path: "/my_user",
       name: "User",
-      component: () => import("../pages/MyUser.vue"),
+      component: () => import("../pages/MyUserPage.vue"),
     },
     {
       path: "/dev",

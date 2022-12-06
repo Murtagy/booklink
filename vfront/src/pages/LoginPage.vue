@@ -34,7 +34,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import WideHeader from "../components/WideHeader.vue";
 export default {
   components: { WideHeader },
@@ -59,7 +59,7 @@ export default {
         this.$api
           .post("/token", this.make_form())
           .then((response) => {
-            let token = response.data.access_token;
+            let token = response.data.access_token as string;
             if (token) {
               this.$authStore.setJwt(token);
               this.$router.push("/my_user");
@@ -85,10 +85,6 @@ export default {
       let msg;
       if (details) {
         switch (details) {
-          case "User email already exists":
-            msg = "User email already exists";
-          case "User email already exists":
-            msg = "Username already exists";
           default:
             msg = details;
         }

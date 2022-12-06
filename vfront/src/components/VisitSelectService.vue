@@ -14,23 +14,27 @@
             :value="service"
             v-model="checkedServices"
           />
-          <label 
-            class="service_name"
-            :for="service.service_id"
-          >{{ service.name }}</label>
+          <label class="service_name" :for="service.service_id">{{
+            service.name
+          }}</label>
           <span class="price">{{ service.price }} {{ service.currency }}</span>
         </li>
       </ul>
 
-          <input type="button" class="sticky_button" @click="emitServices" value="Далее"/>
-             <!-- <img src="../assets/arrow.png" /> -->
+      <input
+        type="button"
+        class="sticky_button"
+        @click="emitServices"
+        value="Далее"
+      />
+      <!-- <img src="../assets/arrow.png" /> -->
     </form>
   </div>
 </template>
 
 <style scoped src="@/assets/styles/services.css"></style>
 
-<script>
+<script lang="ts">
 export default {
   components: {},
   data() {

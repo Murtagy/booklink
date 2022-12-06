@@ -50,7 +50,7 @@ part // todo - copy to components
 
 <style scoped src="@/assets/styles/calendar.css"></style>
 
-<script>
+<script lang="ts">
 const months_rus = {
   0: "Январь",
   1: "Февраль",
@@ -148,7 +148,7 @@ export default {
 
       return false;
     },
-    isAvailable(__date) {
+    isAvailable(__date: string) {
       // for now
       if (!this.availability_mode) {
         console.log("Not in availability mode");

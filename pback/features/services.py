@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import Depends
+from fastapi import Depends, Query
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
@@ -19,6 +19,10 @@ class CreateService(BM):
     description: Optional[str]
 
 
+class CreateServiceWithClientId(CreateService):
+    client_id: int
+
+
 class OutService(BM):
     service_id: int
     name: str
@@ -26,7 +30,7 @@ class OutService(BM):
     price_lower_bound: Optional[float]
     price_higher_bound: Optional[float]
     seconds: int
-    description: str
+    description: str | None
 
     class Config:
         orm_mode = True
@@ -43,6 +47,15 @@ async def create_service_endpoint(
 ) -> models.Service:
     client_id = current_user.client_id
     db_service = crud.create_service(s, service, client_id)
+    return db_service
+
+
+async def my_create_service_endpoint(
+    service: CreateServiceWithClientId,
+    s: Session = Depends(db.get_session),
+) -> models.Service:
+    client_id = service.client_id
+    db_service = crud.create_service(s, CreateService(**service.dict()), client_id)
     return db_service
 
 
@@ -63,7 +76,7 @@ async def get_service_by_client_endpoint(
 
 async def get_services_by_client_endpoint(
     client_id: int,
-    worker_id: Optional[int] = None,
+    worker_id: Optional[int] = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
 ) -> OutServices:

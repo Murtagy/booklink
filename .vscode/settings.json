@@ -1,3 +1,8 @@
 {
-	"git.ignoreLimitWarning": true
+	"git.ignoreLimitWarning": true,
+	"thunder-client.customLocation": "",
+	"thunder-client.saveToWorkspace": true,
+	"thunder-client.workspaceRelativePath": ".",
+	"python.formatting.provider": "black",
+	"python.analysis.typeCheckingMode": "basic"
 }
