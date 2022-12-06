@@ -103,6 +103,7 @@ class Service(BaseModel, ModelImpl):
     # worker_inheritance = Column(String)  # give all
 
 
+# TODO: rename to Skills
 class WorkerService(BaseModel, ModelImpl):
     # abilities of worker
     # idea is that an owner will manually check what services each worker should have
