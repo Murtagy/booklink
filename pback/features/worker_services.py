@@ -67,9 +67,9 @@ async def add_worker_services_endpoint(
 
         picked_in_db = worker_service_picked(s, worker_id, service_id)
         if picked_in_db and not updated_service.picked:
-            crud.create_worker_service(s, worker_id, service_id)
-        if not picked_in_db and updated_service.picked:
             crud.delete_worker_service(s, worker_id, service_id)
+        if not picked_in_db and updated_service.picked:
+            crud.create_worker_service(s, worker_id, service_id)
 
     return Received()
 

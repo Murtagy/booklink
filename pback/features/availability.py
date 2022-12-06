@@ -14,6 +14,7 @@ import crud
 import db
 import models
 from features.slots import CreateSlot, TimeSlot, TimeSlotType
+import app_exceptions
 
 
 class Day(BM):
@@ -334,6 +335,10 @@ async def get_worker_availability_endpoint(
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
+        db_worker_services = crud.get_services(s, client_id=worker.client_id, worker_id=worker_id)
+        for service in db_services:
+            if service not in db_worker_services:
+                raise app_exceptions.WorkerNotSkilled
         total_service_length = sum([s.seconds for s in db_services])
     av = await Availability.GetWorkerAV(s, worker, service_length=total_service_length)
     return av
