@@ -23,7 +23,7 @@ class ModelImpl:
     @classmethod
     def get_by_id(cls: Type[T], db: Session, id: int) -> Optional[T]:  # type: ignore[misc]
         model = cls
-        return db.query(model).get(id)
+        return db.get(model, id)
 
 
 def TableId() -> Column[int]:

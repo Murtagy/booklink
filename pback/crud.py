@@ -4,6 +4,7 @@ from datetime import timedelta
 from typing import List, Optional, Union
 
 from fastapi import HTTPException, UploadFile
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from db import BaseModel
@@ -27,10 +28,10 @@ def get_visit(db: Session, visit_id: int) -> Optional[Visit]:
 
 
 def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
-    q = db.query(Visit).filter(Visit.client_id == client_id)
+    q = select(Visit).where(Visit.client_id == client_id)
     if worker_id:
-        q = q.filter(Visit.worker_id)
-    return q.all()
+        q = q.where(Visit.worker_id)
+    return db.execute(q).scalars().all()
 
 
 def create_visit(
@@ -106,19 +107,23 @@ def create_user(db: Session, user: users.UserCreate, client_id: int) -> User:
 
 def get_user_by_user_id(db: Session, user_id: Union[int, str]) -> Optional[User]:
     user_id = int(user_id)
-    return db.query(User).filter(User.user_id == user_id).first()
+    stmt = select(User).where(User.user_id == user_id)
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def get_user_by_username(db: Session, username: str) -> Optional[User]:
-    return db.query(User).filter(User.username == username).first()
+    stmt = select(User).where(User.username == username)
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    return db.query(User).filter(User.email == email).first()
+    stmt = select(User).where(User.email == email)
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def get_user_by_token_id(db: Session, token_id: str) -> Optional[User]:
-    t = db.query(Token).filter(Token.token_id == int(token_id)).first()
+    stmt = select(Token).where(Token.token_id == int(token_id))
+    t = db.execute(stmt).scalar_one_or_none()
     if t is None or t.expires < datetime.datetime.now():
         return None
 
@@ -159,7 +164,8 @@ def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
 
 
 def get_workers(db: Session, client_id: int) -> List[Worker]:
-    return db.query(Worker).filter(Worker.client_id == client_id).all()
+    stmt = select(Worker).where(Worker.client_id == client_id)
+    return db.execute(stmt).scalars().all()
 
 
 def create_worker(db: Session, worker: workers.CreateWorker, client_id: int) -> Worker:
@@ -217,41 +223,45 @@ def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
 
 
 def delete_slot(db: Session, slot_id: int) -> None:
-    db.query(Slot).filter(Slot.slot_id == slot_id).delete()
+    stmt = delete(Slot).where(Slot.slot_id == slot_id)
+    db.execute(stmt)
+    return
 
 
 def get_client_slots(
     db: Session, client_id: int, *, slot_types: Optional[List[str]]
 ) -> List[Slot]:
     # add filtering
-    q = db.query(Slot).filter(Slot.client_id == client_id)
+    q = select(Slot).where(Slot.client_id == client_id)
     if slot_types:
-        q = q.filter(Slot.slot_type.in_(slot_types))
-    return q.all()
+        q = q.where(Slot.slot_type.in_(slot_types))
+    return db.execute(q).scalars().all()
 
 
 def get_client_weeklyslot(db: Session, client_id: int) -> Optional[WeeklySlot]:
     # add filtering
-    return (
-        db.query(WeeklySlot)
-        .filter(WeeklySlot.client_id == client_id, WeeklySlot.worker_id == None)
-        .first()
+    stmt = (
+        select(WeeklySlot)
+        .where(WeeklySlot.client_id == client_id)
+        .where(WeeklySlot.worker_id == None)
     )
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def get_worker_weeklyslot(db: Session, worker_id: int) -> Optional[WeeklySlot]:
     # add filtering
-    return db.query(WeeklySlot).filter(WeeklySlot.worker_id == worker_id).first()
+    stmt = select(WeeklySlot).where(WeeklySlot.worker_id == worker_id)
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def get_worker_slots(
     db: Session, worker_id: int, *, slot_types: Optional[List[str]]
 ) -> List[Slot]:
     # add filtering
-    q = db.query(Slot).filter(Slot.worker_id == worker_id)
+    q = select(Slot).where(Slot.worker_id == worker_id)
     if slot_types:
-        q = q.filter(Slot.slot_type.in_(slot_types))
-    return q.all()
+        q = q.where(Slot.slot_type.in_(slot_types))
+    return db.execute(q).scalars().all()
 
 
 def create_weekly_slot(
@@ -287,8 +297,8 @@ def create_service(
 def get_service(
     db: Session, service_id: int, *, not_found: Optional[HTTPException] = None
 ) -> Optional[Service]:
-    q = db.query(Service).filter(Service.service_id == service_id)
-    service = q.first()
+    q = select(Service).where(Service.service_id == service_id)
+    service = db.execute(q).scalar_one_or_none()
     if not service and not_found:
         raise not_found
     return service
@@ -303,8 +313,8 @@ def persist_model(db: Session, model: BaseModel) -> None:
 def get_services_by_ids(
     db: Session, service_ids: list[int], *, not_found: Optional[HTTPException] = None
 ) -> list[Service]:
-    q = db.query(Service).filter(Service.service_id.in_(service_ids))
-    services = q.all()
+    q = select(Service).where(Service.service_id.in_(service_ids))
+    services = db.execute(q).scalars().all()
     if not services and not_found:
         raise not_found
     return services
@@ -325,32 +335,34 @@ def create_worker_service(db: Session, worker_id: int, service_id: int) -> None:
 
 
 def delete_worker_service(db: Session, worker_id: int, service_id: int) -> None:
-    db.query(WorkerService).filter(
-        WorkerService.worker_id == worker_id, WorkerService.service_id == service_id
-    ).delete()
+    db.execute(
+        delete(WorkerService)
+        .where(WorkerService.worker_id == worker_id)
+        .where(WorkerService.service_id == service_id)
+    )
 
 
 def get_worker_service(
     db: Session, worker_id: int, service_id: int
 ) -> WorkerService | None:
-    q = db.query(WorkerService).filter(
-        WorkerService.worker_id == worker_id, WorkerService.service_id == service_id
+    q = (
+        select(WorkerService)
+        .where(WorkerService.worker_id == worker_id)
+        .where(WorkerService.service_id == service_id)
     )
-    r = q.all()
+    r = db.execute(q).scalars().all()
     assert len(r) < 2
     return r[0] if r else None
 
 
 def _get_services_for_client(db: Session, client_id: int) -> List[Service]:
-    q = db.query(Service).filter(Service.client_id == client_id)
-    return q.all()
+    q = select(Service).where(Service.client_id == client_id)
+    return db.execute(q).scalars().all()
 
 
 def _get_services_for_worker(db: Session, worker_id: int) -> List[Service]:
-    worker_services_ids = db.query(WorkerService.service_id).filter(
+    worker_services_ids = select(WorkerService.service_id).where(
         WorkerService.worker_id == worker_id
     )
-    q = db.query(Service).filter(
-        Service.service_id.in_(worker_services_ids)
-    )  # todo: test
-    return q.all()
+    q = select(Service).where(Service.service_id.in_(worker_services_ids))  # todo: test
+    return db.execute(q).scalars().all()
