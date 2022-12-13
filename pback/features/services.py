@@ -31,6 +31,7 @@ class OutService(BM):
     price_higher_bound: Optional[float]
     seconds: int
     description: str | None
+    currency: str = "рублей"
 
     class Config:
         orm_mode = True

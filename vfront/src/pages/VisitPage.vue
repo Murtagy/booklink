@@ -112,6 +112,9 @@ import services_mock from "@/mocks/services_mock.js";
 import workers_mock from "@/mocks/workers_mock.js";
 import type { AxiosError, AxiosResponse } from "axios";
 
+import {Services} from "@/models/Services"
+
+
 export default {
   components: {
     VisitDetails,
@@ -122,7 +125,7 @@ export default {
   },
   data() {
     var availability = null;
-    var services = [];
+    var services = new Services([]);
     var workers = [];
     if (import.meta.env.VITE_APP_OFFLINE == "true") {
       availability = availability_mock["mock"];
@@ -217,7 +220,7 @@ export default {
 
       let path = `/client/${this.client_id}/services`;
       try {
-        const response = await this.$api.get(
+        const response: AxiosResponse<Services> = await this.$api.get<Services>(
           path
           // no need for auth here, keeping for example use
           // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
@@ -226,18 +229,17 @@ export default {
           console.log("Got services", response);
           alert("Empty");
         } else {
-          let services = response.data.services;
-          console.log("Got services", response);
-          this.services = this.parseServices(services);
+          console.log("Got services", response.data);
+          this.services = this.parseResponse(response);
         }
       } catch (error: any | AxiosError) {
         console.log(error);
       }
     },
-    parseServices(s: object) {
+    parseResponse(r: AxiosResponse<Services>): Services {
       // todo
-      console.log(s);
-      return s;
+      console.log(r);
+      return new Services(r.data.services);
     },
     async getAvailability() {
       // sets this.availability

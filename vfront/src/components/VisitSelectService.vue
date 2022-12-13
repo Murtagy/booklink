@@ -5,7 +5,7 @@
         {{
           checkedServices
         }}
-        <li v-for="service in services" :key="service.service_id">
+        <li v-for="service in services.services" :key="service.service_id">
           <input
             type="checkbox"
             class="checkbox"
@@ -35,6 +35,8 @@
 <style scoped src="@/assets/styles/services.css"></style>
 
 <script lang="ts">
+import { Services } from "@/models/Services"
+
 export default {
   components: {},
   data() {
@@ -49,6 +51,8 @@ export default {
       console.log(this.checkedServices);
     },
   },
-  props: ["services"],
+  props: {
+    "services": Services,
+  },
 };
 </script>
