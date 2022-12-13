@@ -103,18 +103,16 @@ class Service(BaseModel, ModelImpl):
     # worker_inheritance = Column(String)  # give all
 
 
-# TODO: rename to Skills
-class WorkerService(BaseModel, ModelImpl):
+class Skill(BaseModel, ModelImpl):
     # abilities of worker
     # idea is that an owner will manually check what services each worker should have
-    __tablename__ = "workers_services"
+    __tablename__ = "skills"
 
     rel_id = TableId()
     created_at = TableCreatedAt()
 
     worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
     service_id = Column(Integer, ForeignKey("services.service_id"), nullable=False)
-    # rel_type = Column(String)  # include
 
 
 class User(BaseModel, ModelImpl):

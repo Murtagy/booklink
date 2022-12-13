@@ -8,18 +8,18 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from db import BaseModel
-from features import services, slots, users, visits, worker_services, workers
+from features import services, slots, users, visits, workers
 from models import (
     Client,
     File,
     Service,
+    Skill,
     Slot,
     Token,
     User,
     Visit,
     WeeklySlot,
     Worker,
-    WorkerService,
 )
 
 
@@ -324,31 +324,29 @@ def get_services(
     db: Session, client_id: int, *, worker_id: Optional[int] = None
 ) -> List[Service]:
     if worker_id:
-        return _get_services_for_worker(db, worker_id)
+        return _get_worker_skills(db, worker_id)
     return _get_services_for_client(db, client_id)
 
 
-def create_worker_service(db: Session, worker_id: int, service_id: int) -> None:
-    db.add(WorkerService(worker_id=worker_id, service_id=service_id))
+def create_skill(db: Session, worker_id: int, service_id: int) -> None:
+    db.add(Skill(worker_id=worker_id, service_id=service_id))
     db.commit()
     return
 
 
-def delete_worker_service(db: Session, worker_id: int, service_id: int) -> None:
+def delete_skill(db: Session, worker_id: int, service_id: int) -> None:
     db.execute(
-        delete(WorkerService)
-        .where(WorkerService.worker_id == worker_id)
-        .where(WorkerService.service_id == service_id)
+        delete(Skill)
+        .where(Skill.worker_id == worker_id)
+        .where(Skill.service_id == service_id)
     )
 
 
-def get_worker_service(
-    db: Session, worker_id: int, service_id: int
-) -> WorkerService | None:
+def get_skill(db: Session, worker_id: int, service_id: int) -> Skill | None:
     q = (
-        select(WorkerService)
-        .where(WorkerService.worker_id == worker_id)
-        .where(WorkerService.service_id == service_id)
+        select(Skill)
+        .where(Skill.worker_id == worker_id)
+        .where(Skill.service_id == service_id)
     )
     r = db.execute(q).scalars().all()
     assert len(r) < 2
@@ -360,9 +358,7 @@ def _get_services_for_client(db: Session, client_id: int) -> List[Service]:
     return db.execute(q).scalars().all()
 
 
-def _get_services_for_worker(db: Session, worker_id: int) -> List[Service]:
-    worker_services_ids = select(WorkerService.service_id).where(
-        WorkerService.worker_id == worker_id
-    )
-    q = select(Service).where(Service.service_id.in_(worker_services_ids))  # todo: test
+def _get_worker_skills(db: Session, worker_id: int) -> List[Service]:
+    skills_ids = select(Skill.service_id).where(Skill.worker_id == worker_id)
+    q = select(Service).where(Service.service_id.in_(skills_ids))  # todo: test
     return db.execute(q).scalars().all()

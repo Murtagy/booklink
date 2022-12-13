@@ -10,10 +10,10 @@ from features import (
     availability,
     files,
     services,
+    skills,
     slots,
     users,
     visits,
-    worker_services,
     workers,
 )
 
@@ -92,19 +92,13 @@ app.get("/client/{client_id}/services", response_model=services.OutServices)(
 )
 
 # WORKER-SERVICE
-app.post("/worker_services", response_model=worker_services.Received)(
-    worker_services.add_worker_services_endpoint
-)
-app.post("/worker_service", response_model=worker_services.Received)(
-    worker_services.add_worker_service_endpoint
-)
+app.post("/worker_services", response_model=skills.Received)(skills.add_skills_endpoint)
+app.post("/worker_service", response_model=skills.Received)(skills.add_skill_endpoint)
 
-app.post("/my_worker_services", response_model=worker_services.Received)(
-    worker_services.my_add_worker_service
+app.post("/my_worker_services", response_model=skills.Received)(skills.my_add_skill)
+app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
+    skills.get_skills_endpoint
 )
-app.get(
-    "/client/{client_id}/picker/services", response_model=worker_services.OutServices
-)(worker_services.get_services_by_worker_endpoint)
 
 
 # SLOTS

@@ -9,27 +9,27 @@ import models
 from features import services, users
 
 
-class WorkerServiceIn(BM):
+class SkillIn(BM):
     worker_id: int
     service_id: int
     picked: bool = True
 
 
-class WorkerServicesIn(BM):
-    services: list[WorkerServiceIn]
+class SkillsIn(BM):
+    services: list[SkillIn]
 
 
 class Received(BM):
     msg: str = "Received"
 
 
-def add_worker_service_endpoint(
-    worker_service: WorkerServiceIn,
+def add_skill_endpoint(
+    skill: SkillIn,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> Received:
-    worker_id = worker_service.worker_id
-    service_id = worker_service.service_id
+    worker_id = skill.worker_id
+    service_id = skill.service_id
 
     db_worker = crud.get_worker(s, worker_id)
     db_service = crud.get_service(s, service_id)
@@ -41,12 +41,12 @@ def add_worker_service_endpoint(
 
     assert current_user.client_id == db_worker.client_id
     assert db_service.client_id == db_worker.client_id
-    crud.create_worker_service(s, worker_id, service_id)
+    crud.create_skill(s, worker_id, service_id)
     return Received()
 
 
-def add_worker_services_endpoint(
-    worker_services: WorkerServicesIn,
+def add_skills_endpoint(
+    worker_services: SkillsIn,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> Received:
@@ -65,25 +65,25 @@ def add_worker_services_endpoint(
         assert service.client_id == current_user.client_id
         assert current_user.client_id == db_worker.client_id
 
-        picked_in_db = worker_service_picked(s, worker_id, service_id)
+        picked_in_db = skill_picked(s, worker_id, service_id)
         if picked_in_db and not updated_service.picked:
-            crud.delete_worker_service(s, worker_id, service_id)
+            crud.delete_skill(s, worker_id, service_id)
         if not picked_in_db and updated_service.picked:
-            crud.create_worker_service(s, worker_id, service_id)
+            crud.create_skill(s, worker_id, service_id)
 
     return Received()
 
 
-def worker_service_picked(s: Session, worker_id: int, service_id: int) -> bool:
-    ws = crud.get_worker_service(s, worker_id, service_id)
+def skill_picked(s: Session, worker_id: int, service_id: int) -> bool:
+    ws = crud.get_skill(s, worker_id, service_id)
     if ws is None:
         return False
     else:
         return True
 
 
-def my_add_worker_service(
-    worker_service: WorkerServiceIn,
+def my_add_skill(
+    worker_service: SkillIn,
     s: Session = Depends(db.get_session),
 ) -> Received:
     worker_id = worker_service.worker_id
@@ -97,25 +97,25 @@ def my_add_worker_service(
     if db_service is None:
         raise app_exceptions.ServiceNotFound
 
-    crud.create_worker_service(s, worker_id, service_id)
+    crud.create_skill(s, worker_id, service_id)
     return Received()
 
 
-class OutWorkerService(services.OutService):
+class SkillOut(services.OutService):
     picked: bool
 
 
-class OutServices(BM):
-    services: list[OutWorkerService]
+class SkillsOut(BM):
+    services: list[SkillOut]
 
 
-def get_services_by_worker_endpoint(
+def get_skills_endpoint(
     client_id: int,
     worker_id: int | None = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
-) -> OutServices:
-    out_services: list[OutWorkerService] = []
+) -> SkillsOut:
+    skills_out: list[SkillOut] = []
 
     client_services = crud.get_services(s, client_id)
     worker_services = crud.get_services(s, client_id, worker_id=worker_id)
@@ -123,9 +123,7 @@ def get_services_by_worker_endpoint(
     for cs in client_services:
         worker_picked_service = cs in worker_services
         pre_service = services.OutService.from_orm(cs)
-        service_out = OutWorkerService(
-            picked=worker_picked_service, **pre_service.dict()
-        )
-        out_services.append(service_out)
+        service_out = SkillOut(picked=worker_picked_service, **pre_service.dict())
+        skills_out.append(service_out)
 
-    return OutServices(services=out_services)
+    return SkillsOut(services=skills_out)
