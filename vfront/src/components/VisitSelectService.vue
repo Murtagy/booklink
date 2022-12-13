@@ -5,20 +5,12 @@
         {{
           checkedServices
         }}
-        <li v-for="service in services.services" :key="service.service_id">
-          <input
-            type="checkbox"
-            class="checkbox"
-            name="service"
-            :id="service.service_id"
-            :value="service"
-            v-model="checkedServices"
-          />
-          <label class="service_name" :for="service.service_id">{{
-            service.name
-          }}</label>
-          <span class="price">{{ service.price }} {{ service.currency }}</span>
-        </li>
+        <PickServiceInput 
+          v-for="service in services.services"
+          v-model="checkedServices"
+          :key="service.service_id"
+          :service="service"
+        />
       </ul>
 
       <input
@@ -36,9 +28,10 @@
 
 <script lang="ts">
 import { Services } from "@/models/Services"
+import PickServiceInput from "@/components/PickServiceInput.vue"
 
 export default {
-  components: {},
+  components: {PickServiceInput},
   data() {
     return {
       checkedServices: [],
