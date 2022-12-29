@@ -10,18 +10,18 @@
       <span>Услуга</span>
       <br /><br />
       <label for="service_name">Наименование услуги</label>
-      <input type="text" v-model="service.name" id="service_name" required />
+      <input type="text" v-model="created_service.name" id="service_name" required />
       <br /><br />
       <label for="price">Цена</label>
-      <input type="number" v-model="service.price" id="price" required />
+      <input type="number" v-model="created_service.price" id="price" required />
       <label for="price">бел.руб.</label>
       <br /><br />
       <label for="duration">Длительность</label>
-      <input type="number" v-model="service.seconds" id="duration" required />
+      <input type="number" v-model="created_service.seconds" id="duration" required />
       <label for="description">сек.</label>
       <br /><br />
       <label for="description">Описание</label>
-      <input type="text" v-model="service.description" id="description" />
+      <input type="text" v-model="created_service.description" id="description" />
       <br /><br />
       <button >Создать</button>
     </form>
@@ -44,10 +44,10 @@
     <hr/>
     <h3>Добавить сервис сотруднику</h3>
       <button @click="get_worker_services()">Обновить</button>
-      <li v-for="service in services" :key="service.service_id">
+      <li v-for="service in services.services" :key="service.service_id">
         <!-- {{service}} -->
        <input type="checkbox" value={{service.service_id}}>
-        <label :for="service.service_id">{{ service.name }}</label>
+        <label :for="String(service.service_id)">{{ service.name }}</label>
       </li>
     <hr/>
     <h3>Создать визит</h3>
@@ -83,16 +83,21 @@
 </template>
 
 <script lang="ts">
+
+import {Services} from "@/models/Services"
+import type { AxiosError, AxiosResponse } from "axios";
+
+
 export default {
   data() {
     return {
-      services: [],
+      services: new Services([]),
       worker: {
         name: '',
         job_title: '',
         use_company_schedule: false,
       },
-      service: {
+      created_service: {
         name: '',
         price: null,
         price_lower_bound: null,
@@ -109,7 +114,7 @@ export default {
       console.log(event)
       event.preventDefault();
       let path = `/my_service`;
-      const service = {...this.service, client_id: this.client_id}
+      const service = {...this.created_service, client_id: this.client_id}
       try {
         const response = await this.$api.post(path, service)
       } catch (err) {
@@ -119,8 +124,8 @@ export default {
     async get_worker_services() {
       let path = `/client/${this.client_id}/picker/services?worker_id=${this.worker_id}`;
       try {
-        const response = await this.$api.get(path)
-        this.services = response.data.services
+        const response: AxiosResponse<Services> = await this.$api.get(path)
+        this.services = new Services(response.data.services);
       } catch (err) {
         console.log(err)
       }
