@@ -8,18 +8,21 @@ export default {
       price: 25,
       currency: "бел.руб",
       service_id: 1,
+      seconds: 600,
     },
     {
       name: "Услуга Y",
       price: 25,
       currency: "бел.руб",
       service_id: 2,
+      seconds: 600,
     },
     {
       name: "Услуга Z",
       price: 25,
       currency: "бел.руб",
       service_id: 3,
+      seconds: 600,
     },
     {
       name: "Услуга A",

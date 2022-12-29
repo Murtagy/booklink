@@ -5,16 +5,24 @@
     <input type="text" v-model="worker_id" id="worker_id" required />
     <hr/>
 
-    <h3>Создать сервис</h3>
     <form @submit="create_service">
+      <h3>Создать сервис</h3>
       <span>Услуга</span>
       <br /><br />
       <label for="service_name">Наименование услуги</label>
       <input type="text" v-model="created_service.name" id="service_name" required />
       <br /><br />
       <label for="price">Цена</label>
-      <input type="number" v-model="created_service.price" id="price" required />
+      <input type="number" v-model="created_service.price" id="price"/>
       <label for="price">бел.руб.</label>
+      <br /><br />
+      <label for="price_lower_bound">Цена от</label>
+      <input type="number" v-model="created_service.price_lower_bound" id="price_lower_bound"/>
+      <label for="price_lower_bound">бел.руб.</label>
+      <br /><br />
+      <label for="price_higher_bound">Цена до</label>
+      <input type="number" v-model="created_service.price_higher_bound" id="price_higher_bound"/>
+      <label for="price_higher_bound">бел.руб.</label>
       <br /><br />
       <label for="duration">Длительность</label>
       <input type="number" v-model="created_service.seconds" id="duration" required />
@@ -26,8 +34,8 @@
       <button >Создать</button>
     </form>
     <hr/>
-    <h3>Создать сотрудника</h3>
-    <form>
+    <form @submit="create_worker">
+      <h3>Создать сотрудника</h3>
       <span>Сотрудник</span>
       <br /><br />
       <label for="worker_name">Имя сотрудника</label>
@@ -84,7 +92,9 @@
 
 <script lang="ts">
 
+import {CreateWorker} from "@/models/CreateWorker"
 import {Services} from "@/models/Services"
+import {CreateService} from "@/models/CreateService"
 import type { AxiosError, AxiosResponse } from "axios";
 
 
@@ -92,19 +102,18 @@ export default {
   data() {
     return {
       services: new Services([]),
-      worker: {
-        name: '',
-        job_title: '',
-        use_company_schedule: false,
-      },
-      created_service: {
-        name: '',
-        price: null,
-        price_lower_bound: null,
-        price_higher_bound: null,
-        seconds: 300,
-        description: null,
-      },
+      worker: new CreateWorker(
+        '',        // name
+        '',        // title
+      ),
+      created_service: new CreateService(
+        '',        // name
+        0,         // seconds 
+        undefined,  // price
+        undefined,
+        undefined,
+        undefined,
+      ),
       client_id: 1,
       worker_id: 1,
     };

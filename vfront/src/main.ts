@@ -31,4 +31,12 @@ app.use(apiPlugin);
 app.use(authPlugin);
 app.use(router);
 
+
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $api: typeof axios,
+    $authStore: typeof authStore,
+  }
+}
+
 app.mount("#app");
