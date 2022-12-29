@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <button
-      v-for="worker in workers"
+      v-for="worker in workers.workers"
       :key="worker.worker_id"
       @click="emitWorker(worker)"
     >

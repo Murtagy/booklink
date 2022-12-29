@@ -113,6 +113,7 @@ import workers_mock from "@/mocks/workers_mock.js";
 import type { AxiosError, AxiosResponse } from "axios";
 
 import {Services} from "@/models/Services"
+import {Workers} from "@/models/Workers"
 
 
 export default {
@@ -126,7 +127,7 @@ export default {
   data() {
     var availability = null;
     var services = new Services([]);
-    var workers = [];
+    var workers = new Workers([]);
     if (import.meta.env.VITE_APP_OFFLINE == "true") {
       availability = availability_mock["mock"];
       services = services_mock["mock"];
@@ -195,23 +196,17 @@ export default {
 
       let path = `/client/${this.client_id}/workers`;
       try {
-        const response = await this.$api.get(path);
+        const response: AxiosResponse<Workers> = await this.$api.get(path);
         if (response.data == null) {
           console.log("Got workers", response);
           alert("Empty");
         } else {
-          let workers = response.data.workers;
+          this.workers = new Workers(response.data.workers);
           console.log("Got workers", response);
-          this.workers = this.parseWorkers(workers);
         }
       } catch (error) {
         console.log(error);
       }
-    },
-    parseWorkers(w: object) {
-      // todo
-      console.log(w);
-      return w;
     },
     async getServices() {
       if (import.meta.env.VITE_APP_OFFLINE == "true") {
