@@ -11,7 +11,7 @@ const app = createApp(App);
 // Vue.config.productionTip = false;
 
 const apiPlugin = {
-  install(app) {
+  install(app: any) {
     // configure the app
     app.config.globalProperties.$api = axios.create({
       baseURL: "http://localhost:8000/",
@@ -20,7 +20,7 @@ const apiPlugin = {
 };
 
 const authPlugin = {
-  install(app) {
+  install(app: any) {
     // configure the app
     app.config.globalProperties.$authStore = authStore();
   },

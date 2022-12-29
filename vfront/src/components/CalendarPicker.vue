@@ -89,12 +89,12 @@ export default {
     this.updateCalendarDates();
   },
   methods: {
-    emitDateIfClickable(day) {
+    emitDateIfClickable(day: Date) {
       if (this.isClickable(day)) {
         this.$emit("pick-date", day);
       }
     },
-    findCalendarBase(_date) {
+    findCalendarBase(_date: Date) {
       // finds a cell to begin calendar with (Monday which is 1st in current month or prior to that)
       let date = new Date(_date);
 
@@ -109,7 +109,7 @@ export default {
       // console.log("Base date", date);
       return date;
     },
-    listCalendarDatesFromBase(_date) {
+    listCalendarDatesFromBase(_date: Date) {
       // returns 5 weeks of days
       let date = new Date(_date);
 
@@ -127,14 +127,14 @@ export default {
       const calendar_dates = this.listCalendarDatesFromBase(base);
       this.calendar_dates = calendar_dates;
     },
-    IsLessThenToday(date) {
+    IsLessThenToday(date: Date) {
       // @bug
       // here might be a bug in comparison, e.g. date with current timestamp compared with almost the same date
       // triggered when updating the page fast enough
       const today = new Date();
       return date < today;
     },
-    isClickable(date) {
+    isClickable(date: Date) {
       // validates date against calendar and availability
       if (this.IsLessThenToday(date)) {
         return false;
@@ -148,7 +148,7 @@ export default {
 
       return false;
     },
-    isAvailable(__date: string) {
+    isAvailable(__date: Date) {
       // for now
       if (!this.availability_mode) {
         console.log("Not in availability mode");
@@ -191,7 +191,7 @@ export default {
 
       this.updateCalendarDates();
     },
-    isNotSelectedMonth(date) {
+    isNotSelectedMonth(date: Date) {
       return date.getUTCMonth() != this.calendar_start_date.getUTCMonth();
     },
   },
