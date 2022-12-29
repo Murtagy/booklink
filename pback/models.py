@@ -82,7 +82,6 @@ class Customer(BaseModel, ModelImpl):
     created_at = TableCreatedAt()
 
 
-# how Workers get their services
 class Service(BaseModel, ModelImpl):
     __tablename__ = "services"
 
