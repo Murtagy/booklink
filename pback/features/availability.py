@@ -37,16 +37,17 @@ class Availability(BM):
         """creates TimeSlots from Schedule"""
         days = []
         today = datetime.date.today()
+
         for day_delta in range(n_days):
+
             target_day = today + datetime.timedelta(days=day_delta)
             weekday = DAYS[target_day.weekday()]
             list_from_to = schedule[weekday] if schedule else []
-            # print(list_from_to)
             if not list_from_to:
                 continue
+
             timeslots = []
             for l in list_from_to:
-                # print(l)
                 time_from = datetime.datetime.strptime(l[0], "%H:%M")
                 time_to = datetime.datetime.strptime(l[1], "%H:%M")
                 dt_from = datetime.datetime.combine(target_day, time_from.time())
@@ -66,8 +67,8 @@ class Availability(BM):
     def CreateFromSlots(cls, slots: list[models.Slot]) -> "Availability":
         days: dict[datetime.date, Day] = {}
         for slot in slots:
-            # print(slot.slot_type)
             assert slot.slot_type == TimeSlotType.AVAILABLE
+
             slot_from_date = slot.from_datetime.date()
             if slot_from_date in days:
                 day = days[slot_from_date]
@@ -93,20 +94,16 @@ class Availability(BM):
         """Reduces timeslots by busy/visit slots"""
         # need assure sort
         # @speed - sorted version
-        # print("Reducing")
         days = self.days
-        # print(slots)
         for slot in slots:
-            # print("Slot", slot.from_datetime, slot.to_datetime)
             assert slot.slot_type in [TimeSlotType.BUSY, TimeSlotType.VISIT]
+
             for iday, day in enumerate(days):
-                # print(day.date)
                 new_ts = []
                 date = day.date
                 if not slot.from_datetime.date() <= date <= slot.to_datetime.date():
                     continue
 
-                # print("Not skipped")
                 for its, ts in enumerate(day.timeslots):
                     f = ts.dt_from
                     t = ts.dt_to
@@ -150,7 +147,6 @@ class Availability(BM):
                     # f_  _t
                     #   FT
                     if F > f and T < t:
-                        # print("SLOT IN")
                         # we create 2 slots for that
                         new_ts.append(
                             TimeSlot(
