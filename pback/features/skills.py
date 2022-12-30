@@ -46,18 +46,18 @@ def add_skill_endpoint(
 
 
 def add_skills_endpoint(
-    worker_services: SkillsIn,
+    skills: SkillsIn,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> Received:
-    assert len(set((w.worker_id for w in worker_services.services)))
-    worker_id = worker_services.services[0].worker_id
+    assert len(set((w.worker_id for w in skills.services)))
+    worker_id = skills.services[0].worker_id
 
     db_worker = crud.get_worker(s, worker_id)
     if db_worker is None:
         raise app_exceptions.WorkerNotFound
 
-    for updated_service in worker_services.services:
+    for updated_service in skills.services:
         service_id = updated_service.service_id
         service = crud.get_service(s, service_id)
 
@@ -83,11 +83,11 @@ def skill_picked(s: Session, worker_id: int, service_id: int) -> bool:
 
 
 def my_add_skill(
-    worker_service: SkillIn,
+    skill: SkillIn,
     s: Session = Depends(db.get_session),
 ) -> Received:
-    worker_id = worker_service.worker_id
-    service_id = worker_service.service_id
+    worker_id = skill.worker_id
+    service_id = skill.service_id
 
     db_worker = crud.get_worker(s, worker_id)
     db_service = crud.get_service(s, service_id)
