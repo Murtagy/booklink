@@ -6,6 +6,7 @@ from typing import List, Optional, Union
 from fastapi import HTTPException, UploadFile
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
+from sqlmodel import col
 
 from features import services, slots, users, visits, workers
 from models import (
@@ -23,7 +24,8 @@ from models import (
 
 
 def get_visit(db: Session, visit_id: int) -> Optional[Visit]:
-    return Visit.get_by_id(db, visit_id)
+    stmt = select(Visit).where(Visit.visit_id == visit_id)
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
@@ -155,11 +157,11 @@ def load_file(db: Session, file: UploadFile, client_id: int) -> int:
 
 
 def read_file(db: Session, file_id: int) -> Optional[File]:
-    return File.get_by_id(db, file_id)
+    stmt = select(File).where(File.file_id == file_id)
+    return db.execute(stmt).scalars().one_or_none()
 
 
 def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
-
     stmt = select(Worker).where(Worker.worker_id == worker_id)
     return db.execute(stmt).scalars().one_or_none()
 
@@ -198,7 +200,8 @@ def update_worker(db: Session, worker: workers.UpdateWorker, worker_id: int) -> 
 
 
 def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
-    return Slot.get_by_id(db, slot_id)
+    stmt = select(Slot).where(Slot.slot_id == slot_id)
+    return db.execute(stmt).scalars().one_or_none()
 
 
 def create_slot(db: Session, slot: slots.CreateSlot) -> Slot:
@@ -235,7 +238,7 @@ def get_client_slots(
     # add filtering
     q = select(Slot).where(Slot.client_id == client_id)
     if slot_types:
-        q = q.where(Slot.slot_type.in_(slot_types))
+        q = q.where(col(Slot.slot_type).in_(slot_types))
     return db.execute(q).scalars().all()
 
 
@@ -261,7 +264,7 @@ def get_worker_slots(
     # add filtering
     q = select(Slot).where(Slot.worker_id == worker_id)
     if slot_types:
-        q = q.where(Slot.slot_type.in_(slot_types))
+        q = q.where(col(Slot.slot_type).in_(slot_types))
     return db.execute(q).scalars().all()
 
 
@@ -308,7 +311,7 @@ def get_service(
 def get_services_by_ids(
     db: Session, service_ids: list[int], *, not_found: Optional[HTTPException] = None
 ) -> list[Service]:
-    q = select(Service).where(Service.service_id.in_(service_ids))
+    q = select(Service).where(col(Service.service_id).in_(service_ids))
     services = db.execute(q).scalars().all()
     if not services and not_found:
         raise not_found
@@ -355,5 +358,5 @@ def _get_services_for_client(db: Session, client_id: int) -> List[Service]:
 
 def _get_worker_skills(db: Session, worker_id: int) -> List[Service]:
     skills_ids = select(Skill.service_id).where(Skill.worker_id == worker_id)
-    q = select(Service).where(Service.service_id.in_(skills_ids))  # todo: test
+    q = select(Service).where(col(Service.service_id).in_(skills_ids))  # todo: test
     return db.execute(q).scalars().all()
