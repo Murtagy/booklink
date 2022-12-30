@@ -38,7 +38,6 @@ class Slot(BM):
     slot_id: int
 
 
-
 class TimeSlot(BM):
     dt_from: datetime.datetime
     dt_to: datetime.datetime
@@ -72,7 +71,6 @@ class WeeklySlot(BM):
     fr: list[list[datetime.time]] | None
     st: list[list[datetime.time]] | None
     su: list[list[datetime.time]] | None
-
 
 
 class CreateWeeklySlot(BM):

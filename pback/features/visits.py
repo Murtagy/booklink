@@ -25,7 +25,6 @@ class OutVisit(BM):
     # from_dt: datetime.datetime
     # to_dt: datetime.datetime
 
-
     @classmethod
     def Example(cls) -> "OutVisit":
         return cls(
