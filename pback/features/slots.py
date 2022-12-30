@@ -37,8 +37,6 @@ class UpdateSlot(BM):
 class Slot(BM):
     slot_id: int
 
-    class Config:
-        orm_mode = True
 
 
 class TimeSlot(BM):
@@ -75,8 +73,6 @@ class WeeklySlot(BM):
     st: list[list[datetime.time]] | None
     su: list[list[datetime.time]] | None
 
-    class Config:
-        orm_mode = True
 
 
 class CreateWeeklySlot(BM):

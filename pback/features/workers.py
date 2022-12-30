@@ -38,9 +38,6 @@ class OutWorker(BM):
     use_company_schedule: bool
     photo_id: Optional[int]
 
-    class Config:
-        orm_mode = True
-
 
 class OutWorkers(BM):
     workers: list[OutWorker]

@@ -25,9 +25,6 @@ class OutVisit(BM):
     # from_dt: datetime.datetime
     # to_dt: datetime.datetime
 
-    class Config:
-        orm_mode = True
-        # make this inherited?
 
     @classmethod
     def Example(cls) -> "OutVisit":

@@ -33,9 +33,6 @@ class OutService(BM):
     description: str | None
     currency: str = "рублей"
 
-    class Config:
-        orm_mode = True
-
 
 class OutServices(BM):
     services: list[OutService]

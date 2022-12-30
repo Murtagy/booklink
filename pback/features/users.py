@@ -50,18 +50,12 @@ class UserOut(BM):
     user_id: int
     username: str
 
-    class Config:
-        orm_mode = True
-
 
 class Token(BM):
     access_token: UUID4 = Field(...)
     expires: datetime.datetime
     user_id: int
     token_type: Optional[str] = "bearer"
-
-    class Config:
-        orm_mode = True
 
     @validator("access_token")
     def hexlify_token(cls, value):
@@ -74,9 +68,6 @@ class TokenOut(BM):
     token_type: str
     # +
     client_id: int
-
-    class Config:
-        orm_mode = True
 
 
 async def get_current_user_or_none(
