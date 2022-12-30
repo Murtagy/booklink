@@ -65,7 +65,11 @@
 </template>
 
 <script lang="ts">
+import type { AxiosError, AxiosResponse } from "axios";
+
 import WideHeader from "../components/WideHeader.vue";
+
+
 export default {
   components: { WideHeader },
   data() {
@@ -92,7 +96,7 @@ export default {
         alert("Форма не заполнена");
       } else {
         try {
-          const response = await this.$api.post("/signup", {
+          const response: AxiosResponse<any> = await this.$api.post("/signup", {
             username: this.username,
             email: this.email,
             company: this.company,
@@ -105,7 +109,7 @@ export default {
           } else {
             this.DisplayError("Произошла ошибка");
           }
-        } catch (e) {
+        } catch (e: any) {
           if (e.response) {
             this.DisplayErrorFromResponse(e.response);
           } else {
@@ -115,10 +119,10 @@ export default {
       }
       // TODO catch error
     },
-    DisplayError(e) {
-      alert("Произошла ошибка", e);
+    DisplayError(e: any) {
+      alert("Произошла ошибка" + e);
     },
-    DisplayErrorFromResponse(response) {
+    DisplayErrorFromResponse(response: AxiosResponse<any>) {
       let details = response.data.detail;
       let msg;
       if (details) {
