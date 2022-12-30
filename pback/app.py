@@ -4,6 +4,7 @@ import structlog
 import uvicorn  # type: ignore
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import SQLModel
 
 import db
 from features import (
@@ -39,7 +40,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-db.BaseModel.metadata.create_all(bind=db.engine)
+SQLModel.metadata.create_all(db.engine)
 logger = structlog.get_logger()
 
 

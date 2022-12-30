@@ -1,168 +1,162 @@
-from sqlalchemy import (
-    JSON,
-    Boolean,
-    Column,
-    DateTime,
-    Float,
-    ForeignKey,
-    Integer,
-    LargeBinary,
-    String,
-)
+import datetime
+from typing import Any
 
-from db import BaseModel, ModelImpl, TableCreatedAt, TableId
+from sqlalchemy import JSON, Column, LargeBinary
+from sqlalchemy.sql import func
+from sqlmodel import JSON, Field, SQLModel
 
 
-class Visit(BaseModel, ModelImpl):
+class Visit(SQLModel, table=True):
     __tablename__ = "visits"
 
-    visit_id = TableId()
-    display_id = Column(String, index=True)
-    created_at = TableCreatedAt()
+    visit_id: int = Field(primary_key=True, index=True, unique=True)
+    display_id: str | None
+    created_at: datetime.datetime = Field(default=func.now())
 
-    customer_id = Column(Integer, ForeignKey("customers.customer_id"))
-    client_id = Column(Integer, ForeignKey("clients.client_id"))
-    worker_id = Column(Integer, ForeignKey("workers.worker_id"))
-    phone = Column(String, index=True)
-    email = Column(String, index=True)
-    status = Column(String)
-    customer_description = Column(String)
-    has_notification = Column(Boolean)
-    services = Column(JSON)  # [ServiceId + Q + Price, ...]
-    slot_id = Column(Integer, ForeignKey("slots.slot_id"))
+    customer_id: int | None = Field(foreign_key="customers.customer_id")
+    client_id: int = Field(foreign_key="clients.client_id")
+    worker_id: int | None = Field(foreign_key="workers.worker_id")
+    phone: str | None
+    email: str | None
+    status: str
+    customer_description: str | None
+    has_notification: bool
+    services: list[Any] = Field(sa_column=Column(JSON))  # [ServiceId + Q + Price, ...]
+    schedule_by_day: list[dict[str, Any]] = Field(
+        sa_column=Column(JSON), nullable=False
+    )
+    slot_id: int = Field(foreign_key="slots.slot_id")
 
 
-class Client(BaseModel, ModelImpl):
+class Client(SQLModel, table=True):
     __tablename__ = "clients"
 
-    client_id = TableId()
-    display_id = Column(String, index=True)
-    created_at = TableCreatedAt
+    client_id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+    display_id: str | None
 
-    blocked_datetime = Column(DateTime(timezone=True))
-    name = Column(String, index=True)
+    blocked_datetime: datetime.datetime | None
+    name: str
 
 
-class Worker(BaseModel, ModelImpl):
+class Worker(SQLModel, table=True):
     __tablename__ = "workers"
 
-    worker_id = TableId()
-    created_at = TableCreatedAt()
-    display_id = Column(String, index=True)
+    worker_id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+    display_id: str | None = None
 
-    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
-    name = Column(String, nullable=False)
-    job_title = Column(String, nullable=False)
-    display_name = Column(String)
-    display_job_title = Column(String)
-    display_description = Column(String)
-    photo_id = Column(Integer, ForeignKey("files.file_id"))
-    use_company_schedule = Column(Boolean, nullable=False)
+    client_id: int = Field(foreign_key="clients.client_id")
+    name: str
+    job_title: str
+    display_name: str | None
+    display_job_title: str | None
+    display_description: str | None
+    photo_id: int | None = Field(foreign_key="files.file_id")
+    use_company_schedule: bool
     # use_company_services = Column(Boolean, nullable=False)
 
 
-class File(BaseModel, ModelImpl):
+class File(SQLModel, table=True):
     __tablename__ = "files"
 
-    file_id = TableId()
-    created_at = TableCreatedAt()
-    display_id = Column(String, index=True)
-    file = Column(LargeBinary, nullable=False)
-    content_type = Column(String, nullable=False)
+    file_id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+    display_id: str
+
+    file: bytes = Field(sa_column=Column(LargeBinary, nullable=False))
+    content_type: str
     # owner
-    client_id = Column(Integer, ForeignKey("clients.client_id"))
-    worker_id = Column(Integer, ForeignKey("workers.worker_id"))
+    client_id: int = Field(foreign_key="clients.client_id")
+    worker_id: int | None = Field(foreign_key="workers.worker_id")
 
 
-class Customer(BaseModel, ModelImpl):
+class Customer(SQLModel, table=True):
     __tablename__ = "customers"
 
-    customer_id = TableId()
-    display_id = Column(String, index=True)
-    created_at = TableCreatedAt()
+    customer_id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+    display_id: str
 
 
-class Service(BaseModel, ModelImpl):
+class Service(SQLModel, table=True):
     __tablename__ = "services"
 
-    service_id = TableId()
-    display_id = Column(String, index=True)
-    created_at = TableCreatedAt()
+    service_id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+    display_id: str | None = None
     # created_by
 
-    name = Column(String, nullable=False)
-    price = Column(Float)
-    price_lower_bound = Column(Float)
-    price_higher_bound = Column(Float)
-    seconds = Column(Integer, nullable=False)  # length
-    display_description = Column(String)
-    description = Column(String)
-    blocked_datetime = Column(DateTime(timezone=True))
-    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
+    name: str
+    price: float | None
+    price_lower_bound: float | None
+    price_higher_bound: float | None
+    seconds: int
+    display_description: str | None
+    description: str | None
+    blocked_datetime: datetime.datetime | None
+    client_id: int = Field(foreign_key="clients.client_id")
     # worker_inheritance = Column(String)  # give all
 
 
-class Skill(BaseModel, ModelImpl):
+class Skill(SQLModel, table=True):
     # abilities of worker
     # idea is that an owner will manually check what services each worker should have
     __tablename__ = "skills"
 
-    rel_id = TableId()
-    created_at = TableCreatedAt()
+    rel_id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
 
-    worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
-    service_id = Column(Integer, ForeignKey("services.service_id"), nullable=False)
+    worker_id: int = Field(foreign_key="workers.worker_id")
+    service_id: int = Field(foreign_key="services.service_id")
 
 
-class User(BaseModel, ModelImpl):
+class User(SQLModel, table=True):
     __tablename__ = "users"
 
-    user_id = TableId()
-    display_id = Column(String, index=True)
-    client_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    created_at = TableCreatedAt()
+    user_id: int = Field(primary_key=True, index=True, unique=True)
+    display_id: str | None = None
+    client_id: int = Field(foreign_key="clients.client_id")
+    created_at: datetime.datetime = Field(default=func.now())
 
-    email = Column(String, index=True, unique=True, nullable=False)
-    username = Column(String, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    blocked_datetime = Column(DateTime(timezone=True))
+    email: str  # = Column(String, index=True, unique=True, nullable=False)
+    username: str  # Column(String, nullable=False)
+    hashed_password: str  #  = Column(String, nullable=False)
+    # blocked_datetime = Column(DateTime(timezone=True))
     # is_active = Column(Boolean,default=True)
 
 
-class Token(BaseModel, ModelImpl):
+class Token(SQLModel, table=True):
     __tablename__ = "tokens"
 
-    token_id = TableId()
-    access_token = Column(String, unique=True, index=True, nullable=False)
-    expires = Column(DateTime(timezone=True), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    token_id: int = Field(primary_key=True, index=True, unique=True)
+    access_token: str = Field(unique=True, index=True, nullable=False)
+    expires: datetime.datetime
+    user_id: int = Field(foreign_key="users.user_id", nullable=False)
 
 
-class WeeklySlot(BaseModel, ModelImpl):
+class WeeklySlot(SQLModel, table=True):
     __tablename__ = "weekly_slots"
 
-    active_from = Column(DateTime(timezone=True))
-    slot_id = TableId()
-    created_at = TableCreatedAt()
-
-    worker_id = Column(
-        Integer, ForeignKey("workers.worker_id")
-    )  # when worker_id is null then it is client owned
-    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
-    schedule_by_day = Column(JSON, nullable=False)
+    active_from: datetime.datetime | None = None
+    slot_id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+    worker_id: int | None = Field(foreign_key="workers.worker_id")
+    client_id: int = Field(foreign_key="clients.client_id")
+    schedule_by_day: dict[str, Any] = Field(sa_column=Column(JSON), nullable=False)
 
 
-class Slot(BaseModel, ModelImpl):
+class Slot(SQLModel, table=True):
     __tablename__ = "slots"
 
-    slot_id = TableId()
-    created_at = TableCreatedAt()
-    name = Column(String)
-    slot_type = Column(String, nullable=False)  # busy/visit/available
-    active = Column(Boolean, default=True, nullable=False)
+    slot_id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+    name: str
+    slot_type: str  # busy/visit/available
+    active: bool = True
 
-    from_datetime = Column(DateTime(timezone=True), nullable=False)
-    to_datetime = Column(DateTime(timezone=True), nullable=False)
+    from_datetime: datetime.datetime
+    to_datetime: datetime.datetime
 
-    worker_id = Column(Integer, ForeignKey("workers.worker_id"), nullable=False)
-    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
+    worker_id: int = Field(foreign_key="workers.worker_id")
+    client_id: int = Field(foreign_key="clients.client_id")

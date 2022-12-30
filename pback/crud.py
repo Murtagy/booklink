@@ -7,7 +7,6 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from db import BaseModel
 from features import services, slots, users, visits, workers
 from models import (
     Client,
@@ -160,7 +159,9 @@ def read_file(db: Session, file_id: int) -> Optional[File]:
 
 
 def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
-    return Worker.get_by_id(db, worker_id)
+
+    stmt = select(Worker).where(Worker.worker_id == worker_id)
+    return db.execute(stmt).scalars().one_or_none()
 
 
 def get_workers(db: Session, client_id: int) -> List[Worker]:
@@ -302,12 +303,6 @@ def get_service(
     if not service and not_found:
         raise not_found
     return service
-
-
-def persist_model(db: Session, model: BaseModel) -> None:
-    db.add(model)
-    db.commit()
-    db.refresh(model)
 
 
 def get_services_by_ids(
