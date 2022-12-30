@@ -123,9 +123,7 @@ def create_visit_slot_endpoint(
     if slot.slot_type not in [TimeSlotType.VISIT]:
         raise app_exceptions.SlotType
 
-    slot = availability.visit_pick_worker_and_check(
-        s, slot, exc=app_exceptions.SlotNotAvailable
-    )
+    slot = availability.visit_pick_worker_and_check(s, slot, exc=app_exceptions.SlotNotAvailable)
     db_slot = crud.create_slot(s, slot)
     db_visit = crud.create_visit(
         s,
@@ -156,9 +154,7 @@ def public_book_visit_endpoint(
         from_datetime=visit.from_dt,
         to_datetime=visit.from_dt + datetime.timedelta(seconds=visit_len_seconds),
     )
-    slot = availability.visit_pick_worker_and_check(
-        s, slot, exc=app_exceptions.SlotNotAvailable
-    )
+    slot = availability.visit_pick_worker_and_check(s, slot, exc=app_exceptions.SlotNotAvailable)
 
     db_slot = crud.create_slot(s, slot)
 

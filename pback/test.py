@@ -75,9 +75,7 @@ def get_service(service_id):
 def add_worker_skill(worker_id, service_ids):
     selected_services = []
     for s in service_ids:
-        selected_services.append(
-            {"worker_id": worker_id, "service_id": s, "picked": True}
-        )
+        selected_services.append({"worker_id": worker_id, "service_id": s, "picked": True})
     return client.post(
         localhost + "worker_services",
         json={"services": selected_services},

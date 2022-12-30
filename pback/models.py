@@ -22,9 +22,7 @@ class Visit(SQLModel, table=True):
     customer_description: str | None
     has_notification: bool
     services: list[Any] = Field(sa_column=Column(JSON))  # [ServiceId + Q + Price, ...]
-    schedule_by_day: list[dict[str, Any]] = Field(
-        sa_column=Column(JSON), nullable=False
-    )
+    schedule_by_day: list[dict[str, Any]] = Field(sa_column=Column(JSON), nullable=False)
     slot_id: int = Field(foreign_key="slots.slot_id")
 
 

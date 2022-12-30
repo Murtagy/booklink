@@ -128,9 +128,7 @@ class Availability(BM):
                     # F   T
                     if F < f and T < t:
                         new_ts.append(
-                            TimeSlot(
-                                dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE
-                            )
+                            TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE)
                         )
 
                     # right is bigger, left is in
@@ -138,9 +136,7 @@ class Availability(BM):
                     #    F   T
                     if F > f and T > t:
                         new_ts.append(
-                            TimeSlot(
-                                dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE
-                            )
+                            TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE)
                         )
 
                     # slot is in
@@ -149,14 +145,10 @@ class Availability(BM):
                     if F > f and T < t:
                         # we create 2 slots for that
                         new_ts.append(
-                            TimeSlot(
-                                dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE
-                            )
+                            TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE)
                         )
                         new_ts.append(
-                            TimeSlot(
-                                dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE
-                            )
+                            TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE)
                         )
                         # above copies left-right checks, can make it simplier
 
@@ -293,9 +285,7 @@ def _get_client_availability(
     return worker_avs
 
 
-def visit_pick_worker_and_check(
-    s: Session, slot: CreateSlot, *, exc: HTTPException
-) -> CreateSlot:
+def visit_pick_worker_and_check(s: Session, slot: CreateSlot, *, exc: HTTPException) -> CreateSlot:
     _worker_id = slot.worker_id
     if _worker_id:
         worker_id = _worker_id
@@ -305,9 +295,7 @@ def visit_pick_worker_and_check(
 
     else:
         client_av = _get_client_availability(slot.client_id, None, s)
-        workers_av = [
-            worker_id for (worker_id, av) in client_av.items() if av.CheckSlot(slot)
-        ]
+        workers_av = [worker_id for (worker_id, av) in client_av.items() if av.CheckSlot(slot)]
         if len(workers_av) == 0:
             raise exc
 
@@ -331,9 +319,7 @@ def get_worker_availability_endpoint(
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
-        db_worker_services = crud.get_services(
-            s, client_id=worker.client_id, worker_id=worker_id
-        )
+        db_worker_services = crud.get_services(s, client_id=worker.client_id, worker_id=worker_id)
         for service in db_services:
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled

@@ -147,9 +147,7 @@ def create_user_token(db: Session, user_id: int) -> Token:
 
 
 def load_file(db: Session, file: UploadFile, client_id: int) -> int:
-    db_file = File(
-        client_id=client_id, file=file.file.read(), content_type=file.content_type
-    )
+    db_file = File(client_id=client_id, file=file.file.read(), content_type=file.content_type)
     db.add(db_file)
     db.commit()
     db.refresh(db_file)
@@ -177,9 +175,7 @@ def create_worker(db: Session, worker: workers.CreateWorker, client_id: int) -> 
         name=w.name,
         job_title=w.job_title,
         client_id=client_id,
-        use_company_schedule=w.use_company_schedule
-        if w.use_company_schedule is not None
-        else True,
+        use_company_schedule=w.use_company_schedule if w.use_company_schedule is not None else True,
     )
     db.add(db_worker)
     db.commit()
@@ -232,9 +228,7 @@ def delete_slot(db: Session, slot_id: int) -> None:
     return
 
 
-def get_client_slots(
-    db: Session, client_id: int, *, slot_types: Optional[List[str]]
-) -> List[Slot]:
+def get_client_slots(db: Session, client_id: int, *, slot_types: Optional[List[str]]) -> List[Slot]:
     # add filtering
     q = select(Slot).where(Slot.client_id == client_id)
     if slot_types:
@@ -258,9 +252,7 @@ def get_worker_weeklyslot(db: Session, worker_id: int) -> Optional[WeeklySlot]:
     return db.execute(stmt).scalar_one_or_none()
 
 
-def get_worker_slots(
-    db: Session, worker_id: int, *, slot_types: Optional[List[str]]
-) -> List[Slot]:
+def get_worker_slots(db: Session, worker_id: int, *, slot_types: Optional[List[str]]) -> List[Slot]:
     # add filtering
     q = select(Slot).where(Slot.worker_id == worker_id)
     if slot_types:
@@ -276,9 +268,7 @@ def create_weekly_slot(
     worker_id: Optional[int] = None,
 ) -> WeeklySlot:
     schedule = slot.dict()
-    db_slot = WeeklySlot(
-        client_id=client_id, schedule_by_day=schedule, worker_id=worker_id
-    )
+    db_slot = WeeklySlot(client_id=client_id, schedule_by_day=schedule, worker_id=worker_id)
     db.add(db_slot)
     db.commit()
     db.refresh(db_slot)
@@ -318,9 +308,7 @@ def get_services_by_ids(
     return services
 
 
-def get_services(
-    db: Session, client_id: int, *, worker_id: Optional[int] = None
-) -> List[Service]:
+def get_services(db: Session, client_id: int, *, worker_id: Optional[int] = None) -> List[Service]:
     if worker_id:
         return _get_worker_skills(db, worker_id)
     return _get_services_for_client(db, client_id)
@@ -334,18 +322,12 @@ def create_skill(db: Session, worker_id: int, service_id: int) -> None:
 
 def delete_skill(db: Session, worker_id: int, service_id: int) -> None:
     db.execute(
-        delete(Skill)
-        .where(Skill.worker_id == worker_id)
-        .where(Skill.service_id == service_id)
+        delete(Skill).where(Skill.worker_id == worker_id).where(Skill.service_id == service_id)
     )
 
 
 def get_skill(db: Session, worker_id: int, service_id: int) -> Skill | None:
-    q = (
-        select(Skill)
-        .where(Skill.worker_id == worker_id)
-        .where(Skill.service_id == service_id)
-    )
+    q = select(Skill).where(Skill.worker_id == worker_id).where(Skill.service_id == service_id)
     r = db.execute(q).scalars().all()
     assert len(r) < 2
     return r[0] if r else None

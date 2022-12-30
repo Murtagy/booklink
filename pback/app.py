@@ -61,12 +61,8 @@ app.post("/token")(users.login_for_access_token_endpoint)
 
 
 # WORKERS
-app.get("/worker/{worker_id}", response_model=workers.OutWorker)(
-    workers.get_worker_endpoint
-)
-app.put("/worker/{worker_id}", response_model=workers.OutWorker)(
-    workers.update_worker_endpoint
-)
+app.get("/worker/{worker_id}", response_model=workers.OutWorker)(workers.get_worker_endpoint)
+app.put("/worker/{worker_id}", response_model=workers.OutWorker)(workers.update_worker_endpoint)
 app.delete("/worker/{worker_id}")(workers.delete_worker_endpoint)
 app.get("/client/{client_id}/workers", response_model=workers.OutWorkers)(
     workers.get_workers_by_client_endpoint
@@ -76,15 +72,9 @@ app.post("/worker", response_model=workers.OutWorker)(workers.create_worker_endp
 
 
 # SERVICES
-app.post("/service", response_model=services.OutService)(
-    services.create_service_endpoint
-)
-app.post("/my_service", response_model=services.OutService)(
-    services.my_create_service_endpoint
-)
-app.get("/service/{service_id}", response_model=services.OutService)(
-    services.get_service_endpoint
-)
+app.post("/service", response_model=services.OutService)(services.create_service_endpoint)
+app.post("/my_service", response_model=services.OutService)(services.my_create_service_endpoint)
+app.get("/service/{service_id}", response_model=services.OutService)(services.get_service_endpoint)
 app.get("/client/{client_id}/service/{service_id}", response_model=services.OutService)(
     services.get_service_by_client_endpoint
 )
@@ -104,12 +94,8 @@ app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
 
 # SLOTS
 app.post("/slot", response_model=slots.Slot)(visits.create_slot_endpoint)
-app.delete("/slot/{slot_id}", response_model=slots.Slot)(
-    slots.delete_client_slot_endpoint
-)
-app.post("/client/{client_id}/client_weekly_slot")(
-    slots.create_client_weekly_slot_endpoint
-)
+app.delete("/slot/{slot_id}", response_model=slots.Slot)(slots.delete_client_slot_endpoint)
+app.post("/client/{client_id}/client_weekly_slot")(slots.create_client_weekly_slot_endpoint)
 app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot_endpoint)
 
 
@@ -117,9 +103,7 @@ app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot_endp
 app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit_endpoint)
 app.get("/visits")(visits.get_visits_endpoint)
 app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot_endpoint)
-app.post("/public/visit", response_model=visits.OutVisit)(
-    visits.public_book_visit_endpoint
-)
+app.post("/public/visit", response_model=visits.OutVisit)(visits.public_book_visit_endpoint)
 app.put("/visit/{visit_id}")(visits.update_visit_endpoint)
 
 
