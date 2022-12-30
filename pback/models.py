@@ -10,7 +10,6 @@ class Visit(SQLModel, table=True):
     __tablename__ = "visits"
 
     visit_id: int = Field(primary_key=True, index=True, unique=True)
-    display_id: str | None
     created_at: datetime.datetime = Field(default=func.now())
 
     customer_id: int | None = Field(foreign_key="customers.customer_id")
@@ -31,7 +30,6 @@ class Client(SQLModel, table=True):
 
     client_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
-    display_id: str | None
 
     blocked_datetime: datetime.datetime | None
     name: str
@@ -42,7 +40,6 @@ class Worker(SQLModel, table=True):
 
     worker_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
-    display_id: str | None = None
 
     client_id: int = Field(foreign_key="clients.client_id")
     name: str
@@ -60,7 +57,6 @@ class File(SQLModel, table=True):
 
     file_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
-    display_id: str
 
     file: bytes = Field(sa_column=Column(LargeBinary, nullable=False))
     content_type: str
@@ -74,7 +70,6 @@ class Customer(SQLModel, table=True):
 
     customer_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
-    display_id: str
 
 
 class Service(SQLModel, table=True):
@@ -82,8 +77,6 @@ class Service(SQLModel, table=True):
 
     service_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
-    display_id: str | None = None
-    # created_by
 
     name: str
     price: float | None
@@ -113,7 +106,6 @@ class User(SQLModel, table=True):
     __tablename__ = "users"
 
     user_id: int = Field(primary_key=True, index=True, unique=True)
-    display_id: str | None = None
     client_id: int = Field(foreign_key="clients.client_id")
     created_at: datetime.datetime = Field(default=func.now())
 
