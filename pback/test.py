@@ -254,7 +254,7 @@ def test_portyanka():
     )
     availability = r.json()["availability"]
 
-    for worker_id, days_holder in availability.items():
+    for days_holder in availability:
         for day in days_holder["days"]:
             date = day["date"]
             date = datetime.datetime.fromisoformat(date)

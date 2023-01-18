@@ -4,9 +4,8 @@ from datetime import timedelta
 from typing import List, Optional, Union
 
 from fastapi import HTTPException, UploadFile
-from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
-from sqlmodel import col
+from sqlmodel import col, delete, select
 
 from features import services, slots, users, visits, workers
 from models import (
@@ -31,7 +30,7 @@ def get_visit(db: Session, visit_id: int) -> Optional[Visit]:
 def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
     q = select(Visit).where(Visit.client_id == client_id)
     if worker_id:
-        q = q.where(Visit.worker_id)
+        q = q.where(Visit.worker_id == worker_id)
     return db.execute(q).scalars().all()
 
 
@@ -223,7 +222,7 @@ def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
 
 
 def delete_slot(db: Session, slot_id: int) -> None:
-    stmt = delete(Slot).where(Slot.slot_id == slot_id)
+    stmt = delete(Slot.__tablename__).where(Slot.slot_id == slot_id)
     db.execute(stmt)
     return
 
@@ -322,7 +321,9 @@ def create_skill(db: Session, worker_id: int, service_id: int) -> None:
 
 def delete_skill(db: Session, worker_id: int, service_id: int) -> None:
     db.execute(
-        delete(Skill).where(Skill.worker_id == worker_id).where(Skill.service_id == service_id)
+        delete(Skill.__tablename__)
+        .where(Skill.worker_id == worker_id)
+        .where(Skill.service_id == service_id)
     )
 
 

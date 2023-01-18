@@ -228,8 +228,7 @@ class Availability(BM):
         worker_u: Union[int, models.Worker],
         *,
         service_length: Optional[int] = None,
-    ) -> "Availability":
-        Availability = cls
+    ) -> "WorkerAvailability":
         if isinstance(worker_u, int):
             worker = crud.get_worker(s, worker_u)
             assert worker is not None
@@ -240,17 +239,17 @@ class Availability(BM):
             wl = crud.get_client_weeklyslot(s, worker.client_id)
             assert wl
             assert isinstance(wl.schedule_by_day, dict)
-            av = Availability.CreateFromSchedule(wl.schedule_by_day)
+            av = cls.CreateFromSchedule(wl.schedule_by_day)
         else:
             wl = crud.get_worker_weeklyslot(s, worker.worker_id)
             if wl is not None:
                 assert isinstance(wl.schedule_by_day, dict)
-                av = Availability.CreateFromSchedule(wl.schedule_by_day)
+                av = cls.CreateFromSchedule(wl.schedule_by_day)
             else:
                 slots = crud.get_worker_slots(
                     s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
                 )
-                av = Availability.CreateFromSlots(slots)
+                av = cls.CreateFromSlots(slots)
 
         busy_slots = crud.get_worker_slots(
             s, worker.worker_id, slot_types=[TimeSlotType.BUSY, TimeSlotType.VISIT]
@@ -258,30 +257,27 @@ class Availability(BM):
         av.ReduceAvailabilityBySlots(busy_slots)
         if service_length:
             av.SplitByLength(length_seconds=service_length)
-        return av
+        return WorkerAvailability(days=av.days, worker_id=worker.worker_id)
 
 
-worker_id = int
+class WorkerAvailability(Availability):
+    worker_id: int
 
 
 class AvailabilityPerWorker(BM):
-    availability: dict[worker_id, Availability]
-
-    @classmethod
-    def FromDict(cls, availability: dict[int, Availability]) -> "AvailabilityPerWorker":
-        return cls(availability=availability)
+    availability: list[WorkerAvailability]
 
 
 def _get_client_availability(
     client_id: int,
     service_length: Optional[int],
     s: Session,
-) -> dict[int, Availability]:
+) -> list[WorkerAvailability]:
     workers = crud.get_workers(s, client_id)
-    worker_avs: dict[int, Availability] = {}
+    worker_avs = []
     for worker in workers:
         av = Availability.GetWorkerAV(s, worker, service_length=service_length)
-        worker_avs[worker.worker_id] = av
+        worker_avs.append(av)
     return worker_avs
 
 
@@ -295,14 +291,12 @@ def visit_pick_worker_and_check(s: Session, slot: CreateSlot, *, exc: HTTPExcept
 
     else:
         client_av = _get_client_availability(slot.client_id, None, s)
-        workers_av = [worker_id for (worker_id, av) in client_av.items() if av.CheckSlot(slot)]
-        if len(workers_av) == 0:
+        available_workers_av = [av for av in client_av if av.CheckSlot(slot)]
+        if len(available_workers_av) == 0:
             raise exc
 
-        worker_id = random.choice(workers_av)
-        av = Availability.GetWorkerAV(s, worker_id)
-        assert av.CheckSlot(slot)
-        slot.worker_id = worker_id
+        worker_av = random.choice(available_workers_av)
+        slot.worker_id = worker_av.worker_id
     return slot
 
 
@@ -341,4 +335,4 @@ def get_client_availability_endpoint(
         total_service_length = sum([s.seconds for s in db_services])
 
     d = _get_client_availability(client_id, total_service_length, s)
-    return AvailabilityPerWorker.FromDict(d)
+    return AvailabilityPerWorker(availability=d)

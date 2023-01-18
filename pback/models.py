@@ -1,7 +1,7 @@
 import datetime
 from typing import Any
 
-from sqlalchemy import JSON, Column, LargeBinary
+from sqlalchemy import Column, LargeBinary
 from sqlalchemy.sql import func
 from sqlmodel import JSON, Field, SQLModel
 
