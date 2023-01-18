@@ -1,8 +1,5 @@
-import type {Service} from "./Service"
-
+import type { Service } from "./Service";
 
 export class Services {
-    constructor(
-        public services: Service[],
-    ){}
+  constructor(public services: Service[]) {}
 }

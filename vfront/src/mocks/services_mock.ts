@@ -1,4 +1,4 @@
-import {Services} from "@/models/Services"
+import { Services } from "@/models/Services";
 
 export default {
   mock: new Services([

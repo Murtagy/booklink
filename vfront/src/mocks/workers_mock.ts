@@ -1,4 +1,4 @@
-import {Workers} from "@/models/Workers"
+import { Workers } from "@/models/Workers";
 
 let id = 0;
 

@@ -1,8 +1,5 @@
-import type {Worker} from "./Worker"
-
+import type { Worker } from "./Worker";
 
 export class Workers {
-    constructor(
-        public workers: Worker[],
-    ){}
+  constructor(public workers: Worker[]) {}
 }

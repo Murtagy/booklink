@@ -1,6 +1,9 @@
+import { ClientAvailability } from "@/models/availability/ClientAvailability";
+
 export default {
-  mock: {
-    1: {
+  mock: new ClientAvailability([
+    {
+      worker_id: 1,
       days: [
         {
           date: "2022-02-21",
@@ -844,7 +847,8 @@ export default {
         },
       ],
     },
-    2: {
+    {
+      worker_id: 2,
       days: [
         {
           date: "2022-02-21",
@@ -1688,7 +1692,8 @@ export default {
         },
       ],
     },
-    3: {
+    {
+      worker_id: 3,
       days: [
         {
           date: "2022-01-01",
@@ -1752,5 +1757,5 @@ export default {
         },
       ],
     },
-  },
+  ]),
 };

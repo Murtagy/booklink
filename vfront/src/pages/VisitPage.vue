@@ -112,9 +112,24 @@ import services_mock from "@/mocks/services_mock.js";
 import workers_mock from "@/mocks/workers_mock.js";
 import type { AxiosError, AxiosResponse } from "axios";
 
-import {Services} from "@/models/Services"
-import {Workers} from "@/models/Workers"
+import type { Service } from "@/models/Service";
+import { Services } from "@/models/Services";
+import { Workers } from "@/models/Workers";
+import type { Worker } from "@/models/Worker";
+import type { ClientAvailability } from "@/models/availability/ClientAvailability";
+import type { WorkerAvailability } from "@/models/availability/WorkerAvailability";
 
+declare interface ComponentData {
+  availability: Record<string, Record<string, boolean>> | null;
+  checked_services: Service[];
+  client_id: number | null;
+  current_screen: string;
+  current_screen_title: string;
+  services: Services;
+  visit_time: string | null;
+  worker: Worker | null;
+  workers: Workers;
+}
 
 export default {
   components: {
@@ -124,15 +139,16 @@ export default {
     VisitSelectWorker,
     WideHeader,
   },
-  data() {
-    var availability = null;
+  data(): ComponentData {
+    var availability: Record<string, Record<string, boolean>> = {}; // trying out {} instead of null for ts compat
     var services = new Services([]);
     var workers = new Workers([]);
     if (import.meta.env.VITE_APP_OFFLINE == "true") {
-      availability = availability_mock["mock"];
+      // availability is mocked at get av
       services = services_mock["mock"];
       workers = workers_mock["mock"];
     }
+    const worker: Worker | null = null;
     return {
       availability: availability,
       checked_services: [],
@@ -141,7 +157,7 @@ export default {
       current_screen_title: "Онлайн запись",
       services: services,
       visit_time: null,
-      worker: null,
+      worker: worker,
       workers: workers,
       // todo: add loading (passed to child components and renders loading screen while something is loaded)
       // todo: expose selection in the path; https://forum.vuejs.org/t/how-to-restore-the-exact-state-of-a-route-when-clicking-the-back-button/109105/6
@@ -174,16 +190,16 @@ export default {
       this.current_screen_title = "Онлайн запись";
     },
     // todo: flush selection (something has been selected, current availability might be wrong)
-    applyCheckedServices: function (x: object) {
+    applyCheckedServices: function (x: Service[]) {
       this.checked_services = x;
       this.getAvailability();
       this.changeToStartScreen();
     },
-    applySelectedWorker: function (x: object) {
+    applySelectedWorker: function (x: Worker) {
       this.worker = x;
       this.changeToStartScreen();
     },
-    applySelectedDateTime: function (date: string, slot: object) {
+    applySelectedDateTime: function (date: string, slot: string) {
       // todo: slots are parsed in a map atm, date: bool, not sure why did it, might be better to parse that into a simple array
       console.log(date, slot);
       this.visit_time = slot;
@@ -238,23 +254,14 @@ export default {
     },
     async getAvailability() {
       // sets this.availability
+      if (import.meta.env.VITE_APP_OFFLINE == "true") {
+        this.availability = this.parseAvailability(availability_mock["mock"]);
+      }
 
       // todo: check if called in offline
       function handle_av_error(error: any | AxiosError) {
         console.log(error);
       }
-      function _handle_av_response(response: AxiosResponse) {
-        if (response.data == null) {
-          console.log("GOT AVAILABILITY", response);
-          alert("Empty");
-        } else {
-          let availability = response.data.availability;
-          console.log("GOT AVAILABILITY", response);
-          this.availability = this.parseAvailability(availability);
-        }
-      }
-      const handle_av_response = _handle_av_response.bind(this);
-
       console.log("Getting availability");
       let path = `/client/${this.client_id}/availability`;
       if (this.worker != null) {
@@ -263,27 +270,35 @@ export default {
       if (this.checked_services.length > 0) {
         path += `?services=${this.checkedServicesIds.join(",")}`;
       }
-      // todo add workers
       try {
-        const response = await this.$api.get(
-          path
-          // no need for auth here, keeping for example use
-          // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
-        );
-        handle_av_response(response);
+        const response: AxiosResponse<ClientAvailability | WorkerAvailability> =
+          await this.$api.get(
+            path
+            // no need for auth here, keeping for example use
+            // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
+          );
+        if (response.data == null) {
+          console.log("GOT AVAILABILITY", response);
+          alert("Empty");
+        } else {
+          console.log("GOT AVAILABILITY", response);
+          this.availability = this.parseAvailability(response.data);
+        }
       } catch (error: any | AxiosError) {
         handle_av_error(error);
       }
     },
-    parseAvailability(a: object) {
+    parseAvailability(a: WorkerAvailability | ClientAvailability) {
       console.log("Parsing...", a);
-      const av = {};
-      for (const worker_av of Object.values(a)) {
-        // console.log('worker_av', worker_av)
-        for (const row of worker_av["days"]) {
-          // console.log('row', row)
-          const dt = row["date"];
-          for (const ts of row["timeslots"]) {
+      if ("worker_id" in a) {
+        // TODO
+        throw Error("not implemented");
+      }
+      const av: Record<string, Record<string, boolean>> = {};
+      for (const worker_av of a.availability) {
+        for (const calendar_day of worker_av.days) {
+          const dt = calendar_day.date;
+          for (const ts of calendar_day["timeslots"]) {
             let _date;
             if (av[dt] != null) {
               _date = av[dt];

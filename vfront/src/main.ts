@@ -31,11 +31,10 @@ app.use(apiPlugin);
 app.use(authPlugin);
 app.use(router);
 
-
-declare module 'vue' {
+declare module "vue" {
   interface ComponentCustomProperties {
-    $api: typeof axios,
-    $authStore: typeof authStore,
+    $api: typeof axios;
+    $authStore: typeof authStore;
   }
 }
 

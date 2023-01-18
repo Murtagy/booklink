@@ -35,7 +35,7 @@
 <style scoped src="@/assets/styles/services.css"></style>
 
 <script lang="ts">
-import { Services } from "@/models/Services"
+import { Services } from "@/models/Services";
 
 export default {
   components: {},
@@ -52,7 +52,7 @@ export default {
     },
   },
   props: {
-    "services": Services,
+    services: Services,
   },
 };
 </script>

@@ -69,7 +69,6 @@ import type { AxiosError, AxiosResponse } from "axios";
 
 import WideHeader from "../components/WideHeader.vue";
 
-
 export default {
   components: { WideHeader },
   data() {
