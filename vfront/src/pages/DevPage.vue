@@ -66,13 +66,13 @@
       <label for="job_title">Должность</label>
       <input type="text" v-model="worker.job_title" id="price" required />
       <br /><br />
-      <input
+      <!-- <input
         type="checkbox"
         v-model="worker.use_company_schedule"
         id="use_company_schedule"
       />
       <label for="use_company_schedule">Использовать расписание компании</label>
-      <br /><br />
+      <br /><br /> -->
       <button>Создать</button>
     </form>
     <hr />
@@ -140,6 +140,10 @@ export default {
       ),
       client_id: 1,
       worker_id: 1,
+      // visit: {
+        // client_id: 1,
+        // from_
+      // }
     };
   },
   methods: {

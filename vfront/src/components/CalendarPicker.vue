@@ -66,8 +66,15 @@ const months_rus = {
   11: "Декабрь",
 };
 
+declare interface ComponentData {
+  calendar_dates:  Date[],
+  calendar_start_date: Date,
+  months_rus: Record<number, string>,
+  no_backend: boolean
+}
+
 export default {
-  data() {
+  data(): ComponentData {
     const today = new Date();
     return {
       // 'availability': this.INavailability,
@@ -109,7 +116,7 @@ export default {
       // console.log("Base date", date);
       return date;
     },
-    listCalendarDatesFromBase(_date: Date) {
+    listCalendarDatesFromBase(_date: Date): Date[] {
       // returns 5 weeks of days
       let date = new Date(_date);
 

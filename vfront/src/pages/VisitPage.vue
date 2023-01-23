@@ -120,7 +120,7 @@ import type { ClientAvailability } from "@/models/availability/ClientAvailabilit
 import type { WorkerAvailability } from "@/models/availability/WorkerAvailability";
 
 declare interface ComponentData {
-  availability: Record<string, Record<string, boolean>> | null;
+  availability: Record<string, Record<string, boolean>>;
   checked_services: Service[];
   client_id: number | null;
   current_screen: string;

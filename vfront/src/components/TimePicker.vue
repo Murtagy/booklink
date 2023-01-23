@@ -1,10 +1,10 @@
 <!-- TODO: in small res time is out of colored button -->
 <template>
+  <!-- TODO: remove hard code and make arrows work (moveToPrevMonth/moveToNextMonth does not exist)-->
   <div>
     <button class="left" @click="moveToPrevMonth">
       <img class="left" src="../assets/arrow2.png" />
     </button>
-    <!-- TODO: remove hard code and make arrows work -->
     <div class="chosen_date">22 сентября 2022</div>
     <button class="right" @click="moveToNextMonth">
       <img class="right" src="../assets/arrow2.png" />
@@ -46,7 +46,7 @@ export default {
     return {};
   },
   methods: {
-    formatTimeSlot(x) {
+    formatTimeSlot(x: Date) {
       // hour + padded with leading zero minute
       return x.getHours() + ":" + ("0" + x.getMinutes()).slice(-2);
     },
@@ -59,12 +59,12 @@ export default {
       const _hours_no_duplicated = new Set(hours);
       return Array.from(_hours_no_duplicated);
     },
-    filterRowTimeslots(hour) {
+    filterRowTimeslots(hour: number) {
       const ts = Object.keys(this.timeslots);
       const hours = ts.map((_ts) => new Date(_ts));
       return hours.filter((_ts) => _ts.getHours() == hour);
     },
-    emitTimeSlot(timeslot) {
+    emitTimeSlot(timeslot: Date) {
       console.log("Emit ts", timeslot);
       this.$emit("pick-timeslot", timeslot);
     },

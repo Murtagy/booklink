@@ -17,16 +17,25 @@
 <style scoped src="@/assets/styles/worker.css"></style>
 
 <script lang="ts">
+import {Workers} from "@/models/Workers"
+import type {Worker} from "@/models/Worker"
+
 export default {
   components: {},
   data() {
     return {};
   },
   methods: {
-    emitWorker: function (x) {
+    emitWorker: function (x: Worker) {
       this.$emit("select-worker", x);
     },
   },
-  props: ["workers"],
+  props: {
+      workers: {
+        type: Workers,
+        required: true
+      }
+    },
 };
+
 </script>
