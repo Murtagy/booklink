@@ -10,11 +10,11 @@
             type="checkbox"
             class="checkbox"
             name="service"
-            :id="service.service_id"
+            :id="String(service.service_id)"
             :value="service"
             v-model="checkedServices"
           />
-          <label class="service_name" :for="service.service_id">{{
+          <label class="service_name" :for="String(service.service_id)">{{
             service.name
           }}</label>
           <span class="price">{{ service.price }} {{ service.currency }}</span>

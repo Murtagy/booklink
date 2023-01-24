@@ -58,7 +58,7 @@ export default {
       } else {
         this.$api
           .post("/token", this.make_form())
-          .then((response) => {
+          .then((response: any) => {
             let token = response.data.access_token as string;
             if (token) {
               this.$authStore.setJwt(token);
@@ -77,10 +77,10 @@ export default {
           });
       }
     },
-    DisplayError(e) {
-      alert("Произошла ошибка", e);
+    DisplayError(e: any) {
+      alert("Произошла ошибка" + e);
     },
-    DisplayErrorFromResponse(response) {
+    DisplayErrorFromResponse(response: any) {
       let details = response.data.detail;
       let msg;
       if (details) {

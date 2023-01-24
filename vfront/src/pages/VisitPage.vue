@@ -23,7 +23,7 @@
             </button>
 
             <span v-if="checked_services.length != 0">
-              <p v-for="service in checked_services" :key="service.id">
+              <p v-for="service in checked_services" :key="String(service.service_id)">
                 {{ service.name }} {{ service.price }} {{ service.currency }}
               </p>
             </span>

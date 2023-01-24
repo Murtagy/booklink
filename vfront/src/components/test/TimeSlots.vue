@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <table>
     <tr v-for="time in timess" :key="time">
       {{
@@ -14,4 +14,4 @@ export default {
     timess: Array,
   },
 };
-</script>
+</script> -->

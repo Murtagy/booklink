@@ -108,7 +108,7 @@
       <label for="worker">Сотрудник</label>
       <input type="text" v-model="visit" id="worker" required />
       <br /><br />
-      <input type="checkbox" v-model="visit" id="reminder" />
+      <input type="checkbox" v-model="visit.reminder" id="reminder" />
       <label for="reminder">Напоминание</label>
       <br /><br />
       <button>Создать</button>
@@ -140,7 +140,7 @@ export default {
       ),
       client_id: 1,
       worker_id: 1,
-      // visit: {
+      visit: {"reminder": false},
       // client_id: 1,
       // from_
       // }
@@ -167,6 +167,9 @@ export default {
         console.log(err);
       }
     },
+    async create_worker() {
+      alert('TODO');
+    }
   },
 };
 </script>

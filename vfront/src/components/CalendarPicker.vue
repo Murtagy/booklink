@@ -13,7 +13,7 @@ part // todo - copy to components
     <button class="right" @click="moveToNextMonth">
       <img class="right" src="../assets/arrow2.png" />
     </button>
-    <div v-if="(availability == null) & availability_mode">Loading ...</div>
+    <div v-if="(availability == null) && availability_mode">Loading ...</div>
     <div
       v-if="!availability_mode || (availability != null && availability_mode)"
       class="dates"
@@ -51,6 +51,8 @@ part // todo - copy to components
 <style scoped src="@/assets/styles/calendar.css"></style>
 
 <script lang="ts">
+import type { PropType } from "vue";
+
 const months_rus = {
   0: "Январь",
   1: "Февраль",
@@ -85,7 +87,15 @@ export default {
       no_backend: import.meta.env.VITE_APP_OFFLINE, // todo switch to env var
     };
   },
-  props: ["availability", "availability_mode"], // todo - handle None
+  props: {
+    availability: {
+      type: Object as PropType<Record<string, Record<string, boolean>>>,
+      required: true,
+    },
+    availability_mode: {
+      type: Boolean,
+    }
+    }, // todo - handle None
   components: {},
   created() {
     //   console.debug('Created Calendar page')

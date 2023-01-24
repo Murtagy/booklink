@@ -2,11 +2,11 @@
 <template>
   <!-- TODO: remove hard code and make arrows work (moveToPrevMonth/moveToNextMonth does not exist)-->
   <div>
-    <button class="left" @click="moveToPrevMonth">
+    <button class="left">
       <img class="left" src="../assets/arrow2.png" />
     </button>
     <div class="chosen_date">22 сентября 2022</div>
-    <button class="right" @click="moveToNextMonth">
+    <button class="right">
       <img class="right" src="../assets/arrow2.png" />
     </button>
     <!-- {{ getRowsHours() }} -->
@@ -16,7 +16,7 @@
         <th>{{ row }}</th>
         <td
           v-for="time in filterRowTimeslots(row)"
-          :key="time"
+          :key="String(time)"
           @click="emitTimeSlot(time)"
         >
           <button>{{ formatTimeSlot(time) }}</button>

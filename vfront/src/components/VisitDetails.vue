@@ -10,7 +10,7 @@
     <!-- <p>{{visit_time}}</p> -->
     <p class="bold">Время:</p>
     <p class="border_main1" style="padding: 1em">
-      {{ this.parse_date(visit_time) }}
+      {{ parse_date() }}
     </p>
     <!-- <p>{{worker}}</p> -->
     <p class="bold">Запись к:</p>
