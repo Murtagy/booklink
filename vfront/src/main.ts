@@ -19,12 +19,10 @@ const apiPlugin = {
   },
 };
 
-const _auth = authStore();
-
 const authPlugin = {
   install(app: any) {
     // configure the app
-    app.config.globalProperties.$authStore = _auth;
+    app.config.globalProperties.$authStore = authStore;
   },
 };
 
@@ -36,7 +34,10 @@ app.use(router);
 declare module "vue" {
   interface ComponentCustomProperties {
     $api: typeof axios;
-    $authStore: typeof _auth;
+    $authStore: {  // tmp - copying the inferred type from VSCode
+      jwt_auth: string;
+      setJwt(jwt: string): void;
+    };
   }
 }
 
