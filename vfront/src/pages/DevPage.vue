@@ -140,7 +140,7 @@ export default {
       ),
       client_id: 1,
       worker_id: 1,
-      visit: {"reminder": false},
+      visit: { reminder: false },
       // client_id: 1,
       // from_
       // }
@@ -168,8 +168,8 @@ export default {
       }
     },
     async create_worker() {
-      alert('TODO');
-    }
+      alert("TODO");
+    },
   },
 };
 </script>

@@ -13,7 +13,7 @@ part // todo - copy to components
     <button class="right" @click="moveToNextMonth">
       <img class="right" src="../assets/arrow2.png" />
     </button>
-    <div v-if="(availability == null) && availability_mode">Loading ...</div>
+    <div v-if="availability == null && availability_mode">Loading ...</div>
     <div
       v-if="!availability_mode || (availability != null && availability_mode)"
       class="dates"
@@ -94,8 +94,8 @@ export default {
     },
     availability_mode: {
       type: Boolean,
-    }
-    }, // todo - handle None
+    },
+  }, // todo - handle None
   components: {},
   created() {
     //   console.debug('Created Calendar page')
