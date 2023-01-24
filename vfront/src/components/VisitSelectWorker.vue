@@ -17,8 +17,8 @@
 <style scoped src="@/assets/styles/worker.css"></style>
 
 <script lang="ts">
-import {Workers} from "@/models/Workers"
-import type {Worker} from "@/models/Worker"
+import { Workers } from "@/models/Workers";
+import type { Worker } from "@/models/Worker";
 
 export default {
   components: {},
@@ -31,11 +31,10 @@ export default {
     },
   },
   props: {
-      workers: {
-        type: Workers,
-        required: true
-      }
+    workers: {
+      type: Workers,
+      required: true,
     },
+  },
 };
-
 </script>

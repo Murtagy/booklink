@@ -21,14 +21,13 @@
 import Calendar from "@/components/CalendarPicker.vue";
 import TimeSched from "@/components/TimePicker.vue";
 
-import type { PropType } from 'vue'
-
+import type { PropType } from "vue";
 
 declare interface ComponentData {
-  availability_mode: boolean,
-  screen: string,
-  selected_date: Date | null,
-  timeslots: Record<string, boolean> | null
+  availability_mode: boolean;
+  screen: string;
+  selected_date: Date | null;
+  timeslots: Record<string, boolean> | null;
 }
 
 export default {
@@ -45,7 +44,7 @@ export default {
     availability: {
       type: Object as PropType<Record<string, Record<string, boolean>>>,
       required: true,
-    },  // temporary -  see if composition api would work https://vuejs.org/guide/extras/composition-api-faq.html#can-i-use-both-apis-together
+    }, // temporary -  see if composition api would work https://vuejs.org/guide/extras/composition-api-faq.html#can-i-use-both-apis-together
   },
   methods: {
     pickDate(x: Date) {

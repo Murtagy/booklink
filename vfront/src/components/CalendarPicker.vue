@@ -67,10 +67,10 @@ const months_rus = {
 };
 
 declare interface ComponentData {
-  calendar_dates:  Date[],
-  calendar_start_date: Date,
-  months_rus: Record<number, string>,
-  no_backend: boolean
+  calendar_dates: Date[];
+  calendar_start_date: Date;
+  months_rus: Record<number, string>;
+  no_backend: boolean;
 }
 
 export default {
