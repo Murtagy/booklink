@@ -114,9 +114,9 @@ input.sticky_button {
   font-size: 27px;
   font-weight: bold;
   height: 8%;
-  position: absolute;
+  position: fixed;
   right: 20px;
-  top: 82%;
+  top: 85%;
   width: 40%;
 }
 
@@ -144,7 +144,7 @@ input.sticky_button:hover {
     font-size: 20px;
   }
   input.sticky_button {
-    top: 65%;
+    top: 85%;
     font-size: 24px;
   }
 }
@@ -165,7 +165,7 @@ input.sticky_button:hover {
   }
 
   input.sticky_button {
-    top: 77%;
+    top: 85%;
     font-size: 20px;
     width: 50%;
   }
@@ -187,7 +187,7 @@ input.sticky_button:hover {
     right: 15px;
   }
   input.sticky_button {
-    top: 75%;
+    top: 85%;
     font-size: 20px;
     width: 70%;
   }

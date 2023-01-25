@@ -91,8 +91,13 @@
         v-bind:availability="availability"
       />
       <visit-details
-        v-if="current_screen == 'visit-details'"
+        v-if="current_screen == 'visit-details'
+          && worker
+          && visit_time
+          && client_id
+        "
         @go-start-screen="changeToStartScreen()"
+        :client_id="client_id"
         :worker="worker"
         :visit_time="visit_time"
         :services="checked_services"
