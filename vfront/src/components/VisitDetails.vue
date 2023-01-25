@@ -5,6 +5,7 @@
       <input
         id="phone" name="phone"
         placeholder="375-29-1234567"
+        type="tel"
         v-model="phone"
       /> 
       <label v-show="bad_phone" class="danger" > Телефон РБ с кодом</label>
@@ -13,6 +14,7 @@
       <input
         id="email" name="email"
         placeholder="email@example.com"
+        type="email"
         v-model.trim="email"
       /> 
 
