@@ -68,6 +68,7 @@ class Availability(BM):
         days: dict[datetime.date, Day] = {}
         for slot in slots:
             assert slot.slot_type == TimeSlotType.AVAILABLE
+            assert (slot.to_datetime - slot.from_datetime).total_seconds() <= 60*60*24, 'slot length should be below 24h' 
 
             slot_from_date = slot.from_datetime.date()
             if slot_from_date in days:
@@ -83,6 +84,22 @@ class Availability(BM):
                 )
             )
             days[slot_from_date] = day
+
+            slot_to_date = slot.to_datetime.date()
+            if slot_to_date != slot_from_date:
+                if slot_to_date in days:
+                    day = days[slot_to_date]
+                else:
+                    day = Day(date=slot_to_date, timeslots=[])
+
+                day.timeslots.append(
+                    TimeSlot(
+                        dt_from=slot.from_datetime,
+                        dt_to=slot.to_datetime,
+                        slot_type=TimeSlotType(slot.slot_type),
+                    )
+                )
+                days[slot_to_date] = day
 
         days_l = list(days.values())
         return cls(days=days_l)
@@ -101,9 +118,11 @@ class Availability(BM):
             for iday, day in enumerate(days):
                 new_ts = []
                 date = day.date
-                if not slot.from_datetime.date() <= date <= slot.to_datetime.date():
+                # if the slot is not an overnight one - skip it
+                if not (slot.from_datetime.date() == date or slot.to_datetime.date() == date):
                     continue
 
+                # (?) TODO - trim start/end date to be within the date
                 for its, ts in enumerate(day.timeslots):
                     f = ts.dt_from
                     t = ts.dt_to
@@ -120,13 +139,14 @@ class Availability(BM):
                     # slot is bigger than schedule slot
                     #  f t
                     # F    T
-                    if F < f and T > t:
+                    if F <= f and T >= t:
+                        # we remove availability
                         continue
 
                     # left is less, right in
                     #  f   __t
                     # F   T
-                    if F < f and T < t:
+                    if F <= f and T < t:
                         new_ts.append(
                             TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE)
                         )
@@ -134,7 +154,7 @@ class Availability(BM):
                     # right is bigger, left is in
                     # f__   t
                     #    F   T
-                    if F > f and T > t:
+                    if F > f and T >= t:
                         new_ts.append(
                             TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE)
                         )
