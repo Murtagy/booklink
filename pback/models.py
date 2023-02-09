@@ -104,11 +104,9 @@ class User(SQLModel, table=True):
     client_id: int = Field(foreign_key="clients.client_id")
     created_at: datetime.datetime = Field(default=func.now())
 
-    email: str  # = Column(String, index=True, unique=True, nullable=False)
-    username: str  # Column(String, nullable=False)
-    hashed_password: str  #  = Column(String, nullable=False)
-    # blocked_datetime = Column(DateTime(timezone=True))
-    # is_active = Column(Boolean,default=True)
+    email: str
+    username: str
+    hashed_password: str
 
 
 class Token(SQLModel, table=True):
