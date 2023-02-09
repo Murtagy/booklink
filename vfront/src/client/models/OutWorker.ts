@@ -7,6 +7,5 @@ export type OutWorker = {
     name: string;
     job_title: string;
     use_company_schedule: boolean;
-    photo_id?: number;
 };
 

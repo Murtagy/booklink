@@ -21,7 +21,6 @@ class UpdateWorker(BM):
     name: Optional[str]
     job_title: Optional[str]
     use_company_schedule: Optional[bool]
-    photo_id: Optional[int]
 
 
 class OutWorker(BM):
@@ -29,7 +28,6 @@ class OutWorker(BM):
     name: str
     job_title: str
     use_company_schedule: bool
-    photo_id: Optional[int]
 
 
 class OutWorkers(BM):
