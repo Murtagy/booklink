@@ -44,10 +44,6 @@ class Worker(SQLModel, table=True):
     client_id: int = Field(foreign_key="clients.client_id")
     name: str
     job_title: str
-    display_name: str | None
-    display_job_title: str | None
-    display_description: str | None
-    photo_id: int | None = Field(foreign_key="files.file_id")
     use_company_schedule: bool
     # use_company_services = Column(Boolean, nullable=False)
 
@@ -83,7 +79,6 @@ class Service(SQLModel, table=True):
     price_lower_bound: float | None
     price_higher_bound: float | None
     seconds: int
-    display_description: str | None
     description: str | None
     blocked_datetime: datetime.datetime | None
     client_id: int = Field(foreign_key="clients.client_id")
