@@ -124,8 +124,6 @@ class Availability(BM):
                 if not (slot.from_datetime.date() == date or slot.to_datetime.date() == date):
                     continue
 
-                # (?) TODO - trim start/end date to be within the date
-                # then perhaps we could merge the availability and then split by days and repack ?
                 for its, ts in enumerate(day.timeslots):
                     f = ts.dt_from
                     t = ts.dt_to
