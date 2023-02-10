@@ -10,7 +10,15 @@
       "cwd": "${workspaceFolder}/pback",
       "args": ["test.py"]
     },
-
+    {
+      "name": "tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "justMyCode": true,
+      "cwd": "${workspaceFolder}/pback",
+      "args": ["."]
+    },
     {
       "name": "app.py",
       "type": "python",
