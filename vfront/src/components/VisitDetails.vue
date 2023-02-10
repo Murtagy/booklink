@@ -19,6 +19,7 @@
       /> 
 
       <p class="bold"><label for="remind_me"> Напомнить о записи? </label></p>
+      <!-- todo: remove input-value and fix binding https://vuejs.org/examples/#form-bindings -->
       <input type="checkbox" v-model="remind_me" input-value="1"/>
 
     </form>
