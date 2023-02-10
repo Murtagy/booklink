@@ -82,7 +82,7 @@ def test_av_split():
         name='Day',
         slot_type='available',
         from_datetime=time,
-        to_datetime=time + datetime.timedelta(hours=5),
+        to_datetime=time + (5 * hour),
         worker_id=1,
         client_id=1,
     )
@@ -92,12 +92,13 @@ def test_av_split():
     assert len(av.days[0].timeslots) == 1
 
     # 1h visit in the start of availability, av shifts right
+    # basic test - 45 min slots
     visit_1h = Slot(
         slot_id=1,
         name='Visit',
         slot_type='visit',
         from_datetime=time,
-        to_datetime=time + datetime.timedelta(hours=1),
+        to_datetime=time + (1 * hour),
         worker_id=1,
         client_id=1,
     )
@@ -105,3 +106,29 @@ def test_av_split():
     av.SplitByLengthAndTrim(45*60)
     assert av.days[0].timeslots[0].dt_from == time + (1 * hour)
     assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (45 * minute)
+
+    # 44 min slot placed one close to another
+    av = Availability.CreateFromSlots(slots)
+    visit_44min = Slot(
+        slot_id=1,
+        name='Visit',
+        slot_type='visit',
+        from_datetime=time + (1 * hour),
+        to_datetime=time + (1 * hour) + (44 * minute),
+        worker_id=1,
+        client_id=1,
+    )
+    av.ReduceAvailabilityBySlots(slots=[visit_1h, visit_44min])
+    av.SplitByLengthAndTrim(45*60)
+    assert av.days[0].timeslots[0].dt_from == time + (1 * hour) + (44 * minute)
+    assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (44 * minute) + (45 * minute)
+
+    # 45 min slot placed after 44 min
+    av = Availability.CreateFromSlots(slots)
+    visit_44min.from_datetime = time + (1 * hour) + (44 * minute)
+    visit_44min.to_datetime = time + (1 * hour) + (44 * minute) + (45 * minute)
+    av.ReduceAvailabilityBySlots(slots=[visit_1h, visit_44min])
+    av.SplitByLengthAndTrim(45*60)
+    assert av.days[0].timeslots[0].dt_from == time + (1 * hour) + (44 * minute) + (45 * minute)
+    assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (44 * minute) + (45 * minute) + (45 * minute)
+
