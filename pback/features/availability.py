@@ -69,7 +69,9 @@ class Availability(BM):
         days: dict[datetime.date, Day] = {}
         for slot in slots:
             assert slot.slot_type == TimeSlotType.AVAILABLE
-            assert (slot.to_datetime - slot.from_datetime).total_seconds() <= 60*60*24, 'slot length should be below 24h' 
+            assert (
+                slot.to_datetime - slot.from_datetime
+            ).total_seconds() <= 60 * 60 * 24, "slot length should be below 24h"
 
             slot_from_date = slot.from_datetime.date()
             if slot_from_date in days:

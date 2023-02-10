@@ -1,7 +1,8 @@
-from models import Slot
-from .availability import Availability
 import datetime
 
+from models import Slot
+
+from .availability import Availability
 
 hour = datetime.timedelta(hours=1)
 minute = datetime.timedelta(minutes=1)
@@ -13,8 +14,8 @@ def test_av():
 
     availability_5h = Slot(
         slot_id=1,
-        name='Day',
-        slot_type='available',
+        name="Day",
+        slot_type="available",
         from_datetime=time,
         to_datetime=time + (5 * hour),
         worker_id=1,
@@ -28,8 +29,8 @@ def test_av():
     # 1h visit in the start of availability, av shifts right
     visit_1h = Slot(
         slot_id=1,
-        name='Visit',
-        slot_type='visit',
+        name="Visit",
+        slot_type="visit",
         from_datetime=time,
         to_datetime=time + hour,
         worker_id=1,
@@ -40,7 +41,7 @@ def test_av():
     assert len(av.days[0].timeslots) == 1
     assert av.days[0].timeslots[0].dt_from == time + hour
     assert av.days[0].timeslots[0].dt_to == time + (5 * hour)
-    assert av.days[0].timeslots[0].slot_type == 'available'
+    assert av.days[0].timeslots[0].slot_type == "available"
 
     # 1h visit in the middle of availability, av splits in 2
     av = Availability.CreateFromSlots(slots)
@@ -65,13 +66,14 @@ def test_av():
     # TMP, not sure how to handle overnight availability / visits
 
     # today - not changed
-    assert av.days[0].timeslots[0].dt_from == time 
+    assert av.days[0].timeslots[0].dt_from == time
     assert av.days[0].timeslots[0].dt_to == time + (5 * hour)
-    assert av.days[0].timeslots[0].slot_type == 'available'
+    assert av.days[0].timeslots[0].slot_type == "available"
     # tomorrow - to dt reduced
     assert av.days[1].timeslots[0].dt_from == time + (3 * hour)  # day should start from 00:00
     assert av.days[1].timeslots[0].dt_to == time + (4 * hour)
-    assert av.days[1].timeslots[0].slot_type == 'available'
+    assert av.days[1].timeslots[0].slot_type == "available"
+
 
 def test_av_split():
     # setting now to 9 pm (av slots created are overnight)
@@ -79,8 +81,8 @@ def test_av_split():
 
     availability_5h = Slot(
         slot_id=1,
-        name='Day',
-        slot_type='available',
+        name="Day",
+        slot_type="available",
         from_datetime=time,
         to_datetime=time + (5 * hour),
         worker_id=1,
@@ -95,15 +97,15 @@ def test_av_split():
     # basic test - 45 min slots
     visit_1h = Slot(
         slot_id=1,
-        name='Visit',
-        slot_type='visit',
+        name="Visit",
+        slot_type="visit",
         from_datetime=time,
         to_datetime=time + (1 * hour),
         worker_id=1,
         client_id=1,
     )
     av.ReduceAvailabilityBySlots(slots=[visit_1h])
-    av.SplitByLengthAndTrim(45*60)
+    av.SplitByLengthAndTrim(45 * 60)
     assert av.days[0].timeslots[0].dt_from == time + (1 * hour)
     assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (45 * minute)
 
@@ -111,15 +113,15 @@ def test_av_split():
     av = Availability.CreateFromSlots(slots)
     visit_44min = Slot(
         slot_id=1,
-        name='Visit',
-        slot_type='visit',
+        name="Visit",
+        slot_type="visit",
         from_datetime=time + (1 * hour),
         to_datetime=time + (1 * hour) + (44 * minute),
         worker_id=1,
         client_id=1,
     )
     av.ReduceAvailabilityBySlots(slots=[visit_1h, visit_44min])
-    av.SplitByLengthAndTrim(45*60)
+    av.SplitByLengthAndTrim(45 * 60)
     assert av.days[0].timeslots[0].dt_from == time + (1 * hour) + (44 * minute)
     assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (44 * minute) + (45 * minute)
 
@@ -128,7 +130,8 @@ def test_av_split():
     visit_44min.from_datetime = time + (1 * hour) + (44 * minute)
     visit_44min.to_datetime = time + (1 * hour) + (44 * minute) + (45 * minute)
     av.ReduceAvailabilityBySlots(slots=[visit_1h, visit_44min])
-    av.SplitByLengthAndTrim(45*60)
+    av.SplitByLengthAndTrim(45 * 60)
     assert av.days[0].timeslots[0].dt_from == time + (1 * hour) + (44 * minute) + (45 * minute)
-    assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (44 * minute) + (45 * minute) + (45 * minute)
-
+    assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (44 * minute) + (45 * minute) + (
+        45 * minute
+    )
