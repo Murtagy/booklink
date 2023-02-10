@@ -4,5 +4,6 @@
 	"thunder-client.saveToWorkspace": true,
 	"thunder-client.workspaceRelativePath": ".",
 	"python.formatting.provider": "black",
-	"python.analysis.typeCheckingMode": "basic"
+	"python.analysis.typeCheckingMode": "basic",
+	"git.branchProtectionPrompt": "alwaysCommit"
 }
