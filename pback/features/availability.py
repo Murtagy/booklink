@@ -93,6 +93,7 @@ class Availability(BM):
                 else:
                     day = Day(date=slot_to_date, timeslots=[])
 
+                # day should start from 00:00
                 day_start = datetime.datetime.combine(slot_to_date, DAY_START_TIME)
                 day.timeslots.append(
                     TimeSlot(
@@ -178,7 +179,7 @@ class Availability(BM):
 
         self.days = days
 
-    def SplitByLength(self, length_seconds: int) -> None:
+    def SplitByLengthAndTrim(self, length_seconds: int) -> None:
         for iday, day in enumerate(self.days):
             date = day.date
             timeslots = day.timeslots
@@ -277,7 +278,7 @@ class Availability(BM):
         )
         av.ReduceAvailabilityBySlots(busy_slots)
         if service_length:
-            av.SplitByLength(length_seconds=service_length)
+            av.SplitByLengthAndTrim(length_seconds=service_length)
         return WorkerAvailability(days=av.days, worker_id=worker.worker_id)
 
 
