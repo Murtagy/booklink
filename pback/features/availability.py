@@ -24,6 +24,7 @@ class Day(BM):
 
 DAYS = {0: "mo", 1: "tu", 2: "we", 3: "th", 4: "fr", 5: "st", 6: "su"}
 N_DAYS = 99
+DAY_START_TIME = datetime.time(hour=0, minute=0)
 
 
 class Availability(BM):
@@ -92,9 +93,10 @@ class Availability(BM):
                 else:
                     day = Day(date=slot_to_date, timeslots=[])
 
+                day_start = datetime.datetime.combine(slot_to_date, DAY_START_TIME)
                 day.timeslots.append(
                     TimeSlot(
-                        dt_from=slot.from_datetime,
+                        dt_from=day_start,
                         dt_to=slot.to_datetime,
                         slot_type=TimeSlotType(slot.slot_type),
                     )
@@ -123,6 +125,7 @@ class Availability(BM):
                     continue
 
                 # (?) TODO - trim start/end date to be within the date
+                # then perhaps we could merge the availability and then split by days and repack ?
                 for its, ts in enumerate(day.timeslots):
                     f = ts.dt_from
                     t = ts.dt_to

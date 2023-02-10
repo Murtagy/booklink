@@ -65,5 +65,6 @@ def test_av():
     assert av.days[0].timeslots[0].dt_to == time + datetime.timedelta(hours=5)
     assert av.days[0].timeslots[0].slot_type == 'available'
     # tomorrow - to dt reduced
+    assert av.days[1].timeslots[0].dt_from == time + datetime.timedelta(hours=3)
     assert av.days[1].timeslots[0].dt_to == time + datetime.timedelta(hours=4)
     assert av.days[1].timeslots[0].slot_type == 'available'
