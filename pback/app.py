@@ -18,6 +18,7 @@ from features import (
 )
 from features.workers import schemas as workers_schemas
 from features.workers import api as workers_api
+from fastapi.routing import APIRoute
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -33,7 +34,14 @@ ORIGINS = [
     "http://localhost:3000",
 ]
 
-app = FastAPI()
+def custom_generate_unique_id(route: APIRoute):
+    # https://fastapi.tiangolo.com/nl/advanced/generate-clients/#custom-generate-unique-id-function
+    # function name and method is enough IMO
+    return f"{route.name}"
+
+
+app = FastAPI(generate_unique_id_function=custom_generate_unique_id)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGINS,
@@ -45,8 +53,6 @@ SQLModel.metadata.create_all(db.engine)
 logger = structlog.get_logger()
 
 
-class StrEnum(str, Enum):
-    ...
 
 
 @app.get("/ping")

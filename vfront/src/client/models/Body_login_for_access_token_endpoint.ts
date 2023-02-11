@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type Body_login_for_access_token_endpoint_token_post = {
+export type Body_login_for_access_token_endpoint = {
     grant_type?: string;
     username: string;
     password: string;

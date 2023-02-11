@@ -8,8 +8,8 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { Availability } from './models/Availability';
 export type { AvailabilityPerWorker } from './models/AvailabilityPerWorker';
-export type { Body_create_file_endpoint_file_post } from './models/Body_create_file_endpoint_file_post';
-export type { Body_login_for_access_token_endpoint_token_post } from './models/Body_login_for_access_token_endpoint_token_post';
+export type { Body_create_file_endpoint } from './models/Body_create_file_endpoint';
+export type { Body_login_for_access_token_endpoint } from './models/Body_login_for_access_token_endpoint';
 export type { CreateService } from './models/CreateService';
 export type { CreateServiceWithClientId } from './models/CreateServiceWithClientId';
 export type { CreateSlot } from './models/CreateSlot';

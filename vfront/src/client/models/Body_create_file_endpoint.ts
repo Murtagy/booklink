@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type Body_create_file_endpoint_file_post = {
+export type Body_create_file_endpoint = {
     file: Blob;
 };
 
