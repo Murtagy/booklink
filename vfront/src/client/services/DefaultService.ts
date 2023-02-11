@@ -109,12 +109,12 @@ export class DefaultService {
     }
 
     /**
-     * Get Worker Endpoint
+     * Get Worker
      * @param workerId
      * @returns OutWorker Successful Response
      * @throws ApiError
      */
-    public static getWorkerEndpointWorkerWorkerIdGet(
+    public static getWorkerWorkerWorkerIdGet(
         workerId: number,
     ): CancelablePromise<OutWorker> {
         return __request(OpenAPI, {
@@ -130,13 +130,13 @@ export class DefaultService {
     }
 
     /**
-     * Update Worker Endpoint
+     * Update Worker
      * @param workerId
      * @param requestBody
      * @returns OutWorker Successful Response
      * @throws ApiError
      */
-    public static updateWorkerEndpointWorkerWorkerIdPut(
+    public static updateWorkerWorkerWorkerIdPut(
         workerId: number,
         requestBody: UpdateWorker,
     ): CancelablePromise<OutWorker> {
@@ -155,12 +155,12 @@ export class DefaultService {
     }
 
     /**
-     * Delete Worker Endpoint
+     * Delete Worker
      * @param workerId
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static deleteWorkerEndpointWorkerWorkerIdDelete(
+    public static deleteWorkerWorkerWorkerIdDelete(
         workerId: string,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
@@ -176,12 +176,12 @@ export class DefaultService {
     }
 
     /**
-     * Get Workers By Client Endpoint
+     * Get Workers By Client
      * @param clientId
      * @returns OutWorkers Successful Response
      * @throws ApiError
      */
-    public static getWorkersByClientEndpointClientClientIdWorkersGet(
+    public static getWorkersByClientClientClientIdWorkersGet(
         clientId: number,
     ): CancelablePromise<OutWorkers> {
         return __request(OpenAPI, {
@@ -197,11 +197,11 @@ export class DefaultService {
     }
 
     /**
-     * Get Workers Endpoint
+     * Get Workers
      * @returns OutWorkers Successful Response
      * @throws ApiError
      */
-    public static getWorkersEndpointWorkersGet(): CancelablePromise<OutWorkers> {
+    public static getWorkersWorkersGet(): CancelablePromise<OutWorkers> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/workers',
@@ -209,12 +209,12 @@ export class DefaultService {
     }
 
     /**
-     * Create Worker Endpoint
+     * Create Worker
      * @param requestBody
      * @returns OutWorker Successful Response
      * @throws ApiError
      */
-    public static createWorkerEndpointWorkerPost(
+    public static createWorkerWorkerPost(
         requestBody: CreateWorker,
     ): CancelablePromise<OutWorker> {
         return __request(OpenAPI, {
