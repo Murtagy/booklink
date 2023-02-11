@@ -118,13 +118,13 @@ import VisitDetails from "@/components/VisitDetails.vue";
 import availability_mock from "@/mocks/availability_mock.js";
 import services_mock from "@/mocks/services_mock.js";
 import workers_mock from "@/mocks/workers_mock.js";
-import type { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError } from "axios";
 
 import { DefaultService } from "@/client";
 import type { OutWorker } from "@/client/models/OutWorker";
 import type { OutService } from "@/client/models/OutService";
-import type { ClientAvailability } from "@/models/availability/ClientAvailability";
-import type { WorkerAvailability } from "@/models/availability/WorkerAvailability";
+import type { Availability } from "@/client/models/Availability";
+import type { AvailabilityPerWorker } from "@/client/models/AvailabilityPerWorker";
 
 declare interface ComponentData {
   availability: Record<string, Record<string, boolean>>;
@@ -258,34 +258,26 @@ export default {
         console.log(error);
       }
       console.log("Getting availability");
-      let path = `/client/${this.client_id}/availability`;
-      if (this.worker != null) {
-        path = `/client/${this.client_id}/worker/${this.worker.worker_id}/availability`;
-      }
+      let picked_services_str = undefined
       if (this.checked_services.length > 0) {
-        path += `?services=${this.checkedServicesIds.join(",")}`;
+        picked_services_str = this.checkedServicesIds.join(",")
       }
+
       try {
-        const response: AxiosResponse<ClientAvailability | WorkerAvailability> =
-          await this.$api.get(
-            path
-            // no need for auth here, keeping for example use
-            // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
-          );
-        if (response.data == null) {
-          console.log("GOT AVAILABILITY", response);
-          alert("Empty");
+        var r
+        if (this.worker != null) {
+          r = await DefaultService.getWorkerAvailability(this.worker.worker_id, picked_services_str)
         } else {
-          console.log("GOT AVAILABILITY", response);
-          this.availability = this.parseAvailability(response.data);
+          r = await DefaultService.getClientAvailability(this.getClientId(), picked_services_str)
         }
+        this.availability = this.parseAvailability(r);
       } catch (error: any | AxiosError) {
         handle_av_error(error);
       }
     },
-    parseAvailability(a: WorkerAvailability | ClientAvailability) {
+    parseAvailability(a: Availability | AvailabilityPerWorker) {
       console.log("Parsing...", a);
-      if ("worker_id" in a) {
+      if ("days" in a) {
         // TODO
         throw Error("not implemented");
       }
