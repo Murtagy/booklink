@@ -178,17 +178,22 @@ export class DefaultService {
     /**
      * Get Workers By Client
      * @param clientId
+     * @param services
      * @returns OutWorkers Successful Response
      * @throws ApiError
      */
     public static getWorkersByClient(
         clientId: number,
+        services?: string,
     ): CancelablePromise<OutWorkers> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/client/{client_id}/workers',
             path: {
                 'client_id': clientId,
+            },
+            query: {
+                'services': services,
             },
             errors: {
                 422: `Validation Error`,
@@ -625,12 +630,14 @@ export class DefaultService {
 
     /**
      * Get Worker Availability
+     * @param clientId
      * @param workerId
      * @param services
      * @returns Availability Successful Response
      * @throws ApiError
      */
     public static getWorkerAvailability(
+        clientId: string,
         workerId: string,
         services?: string,
     ): CancelablePromise<Availability> {
@@ -638,6 +645,7 @@ export class DefaultService {
             method: 'GET',
             url: '/client/{client_id}/worker/{worker_id}/availability',
             path: {
+                'client_id': clientId,
                 'worker_id': workerId,
             },
             query: {

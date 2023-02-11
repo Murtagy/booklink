@@ -1,4 +1,4 @@
-from fastapi import Depends, Path
+from fastapi import Depends, Path, Query
 from sqlalchemy.orm import Session  # type: ignore
 
 import crud
@@ -43,10 +43,22 @@ def delete_worker(
 
 def get_workers_by_client(
     client_id: int,
+    services: str | None = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
 ) -> schemas.OutWorkers:
     db_workers = crud.get_workers(s, client_id)
+    if services:
+        # filter for skilled workers only
+        service_ids = {int(s) for s in services.split(",")}
+        db_workers_tmp = db_workers.copy()
+        db_workers = []
+        for worker in db_workers_tmp:
+            worker_services = crud.get_services(s, client_id, worker_id=worker.worker_id)
+            worker_services_ids = {s.service_id for s in worker_services}
+            if not service_ids.issubset(worker_services_ids):
+                continue
+            db_workers.append(worker)
 
     return schemas.OutWorkers(workers=db_workers)
 

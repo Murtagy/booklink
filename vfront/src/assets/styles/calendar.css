@@ -44,23 +44,25 @@ div.month {
 }
 
 div.dates {
+  color: gray;
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  font-size: 18px;
   grid-auto-rows: minmax(140px auto);
   grid-gap: 3px;
-  padding: 20px;
-  width: auto;
-  font-size: 18px;
-  text-align: center;
+  grid-template-columns: repeat(7, 1fr);
   margin-left: 6%;
   margin-right: 6%;
+  padding: 20px;
+  text-align: center;
+  width: auto;
 }
 
 span.day {
-  margin-top: 25px;
-  margin-bottom: 20px;
+  color: black;
   font-size: 20px;
   font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 25px;
 }
 
 span.dates {
@@ -71,6 +73,7 @@ span.dates {
 span.clickable {
   background-color: var(--color3);
   border: 2px solid var(--color1);
+  color: black;
 }
 
 span.empty {

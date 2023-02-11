@@ -8,12 +8,11 @@ import router from "./router/router_main";
 import authStore from "./auth_store";
 import { OpenAPI } from "./client/core/OpenAPI";
 
-
 const app = createApp(App);
 // Vue.config.productionTip = false;
 
 if (import.meta.env.DEV) {
-  OpenAPI.BASE = import.meta.env.VITE_APP_API_URL
+  OpenAPI.BASE = import.meta.env.VITE_APP_API_URL;
 }
 
 const apiPlugin = {

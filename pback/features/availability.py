@@ -325,9 +325,9 @@ def visit_pick_worker_and_check(s: Session, slot: CreateSlot, *, exc: HTTPExcept
 
 
 def get_worker_availability(
-    # client_id: str,
+    client_id: str,
     worker_id: str = Path(regex=r'\d+'),
-    services: Optional[str] = Query(None),
+    services: str | None = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
 ) -> Availability:

@@ -168,9 +168,24 @@ export default {
   },
   computed: {
     checkedServicesIds() {
-      return this.checked_services.map((s) => {
+      const services_ids = this.checked_services.map((s) => {
         return s.service_id;
       });
+
+      if (services_ids.length ==  0) {
+        return undefined
+      }
+      return services_ids.join(",");
+    },
+  },
+  watch: {
+    checked_services() {
+      this.getWorkers();
+    },
+    worker() {
+      this.availability = null;
+      this.getAvailability();
+      // TODO: reget services - if we pick worker which is not skilled for a service
     },
   },
   mounted() {
@@ -221,7 +236,8 @@ export default {
 
       try {
         const workers = await DefaultService.getWorkersByClient(
-          this.getClientId()
+          this.getClientId(),
+          this.checkedServicesIds
         );
         this.workers = workers.workers;
         console.log("Got workers", workers);
@@ -247,20 +263,12 @@ export default {
       }
     },
     async getAvailability() {
+      console.log("Getting availability");
       // sets this.availability
       if (import.meta.env.VITE_APP_OFFLINE == "true") {
         this.availability = this.parseAvailability(availability_mock["mock"]);
       }
 
-      // todo: check if called in offline
-      function handle_av_error(error: any | AxiosError) {
-        console.log(error);
-      }
-      console.log("Getting availability");
-      let picked_services_str = undefined;
-      if (this.checked_services.length > 0) {
-        picked_services_str = this.checkedServicesIds.join(",");
-      }
 
       try {
         if (this.worker == null) {
@@ -268,12 +276,13 @@ export default {
           return;
         }
         const r = await DefaultService.getWorkerAvailability(
+          String(this.getClientId()),
           this.worker.worker_id,
-          picked_services_str
+          this.checkedServicesIds
         );
         this.availability = this.parseAvailability(r);
       } catch (error: any | AxiosError) {
-        handle_av_error(error);
+        console.log(error);
       }
     },
     parseAvailability(a: Availability): Availability {
