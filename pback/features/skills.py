@@ -23,57 +23,6 @@ class Received(BM):
     msg: str = "Received"
 
 
-def add_skill_endpoint(
-    skill: SkillIn,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> Received:
-    worker_id = skill.worker_id
-    service_id = skill.service_id
-
-    db_worker = crud.get_worker(s, worker_id)
-    db_service = crud.get_service(s, service_id)
-
-    if db_worker is None:
-        raise app_exceptions.WorkerNotFound
-    if db_service is None:
-        raise app_exceptions.ServiceNotFound
-
-    assert current_user.client_id == db_worker.client_id
-    assert db_service.client_id == db_worker.client_id
-    crud.create_skill(s, worker_id, service_id)
-    return Received()
-
-
-def add_skills_endpoint(
-    skills: SkillsIn,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> Received:
-    assert len(set((w.worker_id for w in skills.services)))
-    worker_id = skills.services[0].worker_id
-
-    db_worker = crud.get_worker(s, worker_id)
-    if db_worker is None:
-        raise app_exceptions.WorkerNotFound
-
-    for updated_service in skills.services:
-        service_id = updated_service.service_id
-        service = crud.get_service(s, service_id)
-
-        assert service is not None
-        assert service.client_id == current_user.client_id
-        assert current_user.client_id == db_worker.client_id
-
-        picked_in_db = skill_picked(s, worker_id, service_id)
-        if picked_in_db and not updated_service.picked:
-            crud.delete_skill(s, worker_id, service_id)
-        if not picked_in_db and updated_service.picked:
-            crud.create_skill(s, worker_id, service_id)
-
-    return Received()
-
-
 def skill_picked(s: Session, worker_id: int, service_id: int) -> bool:
     ws = crud.get_skill(s, worker_id, service_id)
     if ws is None:
@@ -109,7 +58,60 @@ class SkillsOut(BM):
     services: list[SkillOut]
 
 
-def get_skills_endpoint(
+
+# endpoints:
+def add_skill(
+    skill: SkillIn,
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> Received:
+    worker_id = skill.worker_id
+    service_id = skill.service_id
+
+    db_worker = crud.get_worker(s, worker_id)
+    db_service = crud.get_service(s, service_id)
+
+    if db_worker is None:
+        raise app_exceptions.WorkerNotFound
+    if db_service is None:
+        raise app_exceptions.ServiceNotFound
+
+    assert current_user.client_id == db_worker.client_id
+    assert db_service.client_id == db_worker.client_id
+    crud.create_skill(s, worker_id, service_id)
+    return Received()
+
+
+def add_skills(
+    skills: SkillsIn,
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> Received:
+    assert len(set((w.worker_id for w in skills.services)))
+    worker_id = skills.services[0].worker_id
+
+    db_worker = crud.get_worker(s, worker_id)
+    if db_worker is None:
+        raise app_exceptions.WorkerNotFound
+
+    for updated_service in skills.services:
+        service_id = updated_service.service_id
+        service = crud.get_service(s, service_id)
+
+        assert service is not None
+        assert service.client_id == current_user.client_id
+        assert current_user.client_id == db_worker.client_id
+
+        picked_in_db = skill_picked(s, worker_id, service_id)
+        if picked_in_db and not updated_service.picked:
+            crud.delete_skill(s, worker_id, service_id)
+        if not picked_in_db and updated_service.picked:
+            crud.create_skill(s, worker_id, service_id)
+
+    return Received()
+
+
+def get_skills(
     client_id: int,
     worker_id: int | None = Query(None),
     s: Session = Depends(db.get_session),

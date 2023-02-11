@@ -104,7 +104,7 @@ def unjwttfy_token_id(token: Optional[str]) -> Optional[str]:
     return payload.get("sub")
 
 
-async def create_user_endpoint(
+async def create_user(
     user: UserCreate, s: Session = Depends(db.get_session)
 ) -> dict[str, str | int]:
     # print(user)
@@ -128,19 +128,19 @@ async def create_user_endpoint(
     }
 
 
-async def read_users_me_endpoint(
+async def read_users_me(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     return current_user
 
 
-async def read_users_me2_endpoint(
+async def read_users_me2(
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
 ) -> Optional[models.User]:
     return current_user
 
 
-async def login_for_access_token_endpoint(
+async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     s: Session = Depends(db.get_session),
 ) -> dict[Literal["access_token", "token_type"], str]:

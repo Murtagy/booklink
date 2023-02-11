@@ -61,10 +61,10 @@ def ping() -> dict[str, str]:
 
 
 # USERS
-app.post("/signup", response_model=users.TokenOut)(users.create_user_endpoint)
-app.get("/users/me/", response_model=users.UserOut)(users.read_users_me_endpoint)
-app.get("/my_user", response_model=users.UserOut)(users.read_users_me2_endpoint)
-app.post("/token")(users.login_for_access_token_endpoint)
+app.post("/signup", response_model=users.TokenOut)(users.create_user)
+app.get("/users/me/", response_model=users.UserOut)(users.read_users_me)
+app.get("/my_user", response_model=users.UserOut)(users.read_users_me2)
+app.post("/token")(users.login_for_access_token)
 
 
 # WORKERS
@@ -79,55 +79,55 @@ app.post("/worker", response_model=workers_schemas.OutWorker)(workers_api.create
 
 
 # SERVICES
-app.post("/service", response_model=services.OutService)(services.create_service_endpoint)
-app.post("/my_service", response_model=services.OutService)(services.my_create_service_endpoint)
-app.get("/service/{service_id}", response_model=services.OutService)(services.get_service_endpoint)
+app.post("/service", response_model=services.OutService)(services.create_service)
+app.post("/my_service", response_model=services.OutService)(services.my_create_service)
+app.get("/service/{service_id}", response_model=services.OutService)(services.get_service)
 app.get("/client/{client_id}/service/{service_id}", response_model=services.OutService)(
-    services.get_service_by_client_endpoint
+    services.get_service_by_client
 )
 app.get("/client/{client_id}/services", response_model=services.OutServices)(
-    services.get_services_by_client_endpoint
+    services.get_services_by_client
 )
 
 # WORKER-SERVICE
-app.post("/worker_services", response_model=skills.Received)(skills.add_skills_endpoint)
-app.post("/worker_service", response_model=skills.Received)(skills.add_skill_endpoint)
+app.post("/worker_services", response_model=skills.Received)(skills.add_skills)
+app.post("/worker_service", response_model=skills.Received)(skills.add_skill)
 
 app.post("/my_worker_services", response_model=skills.Received)(skills.my_add_skill)
 app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
-    skills.get_skills_endpoint
+    skills.get_skills
 )
 
 
 # SLOTS
-app.post("/slot", response_model=slots.Slot)(visits.create_slot_endpoint)
-app.delete("/slot/{slot_id}", response_model=slots.Slot)(slots.delete_client_slot_endpoint)
-app.post("/client/{client_id}/client_weekly_slot")(slots.create_client_weekly_slot_endpoint)
-app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot_endpoint)
+app.post("/slot", response_model=slots.Slot)(visits.create_slot)
+app.delete("/slot/{slot_id}", response_model=slots.Slot)(slots.delete_client_slot)
+app.post("/client/{client_id}/client_weekly_slot")(slots.create_client_weekly_slot)
+app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot)
 
 
 # VISITS
-app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit_endpoint)
-app.get("/visits")(visits.get_visits_endpoint)
-app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot_endpoint)
-app.post("/public/visit", response_model=visits.OutVisit)(visits.public_book_visit_endpoint)
-app.put("/visit/{visit_id}")(visits.update_visit_endpoint)
+app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit)
+app.get("/visits")(visits.get_visits)
+app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot)
+app.post("/public/visit", response_model=visits.OutVisit)(visits.public_book_visit)
+app.put("/visit/{visit_id}")(visits.update_visit)
 
 
 # AVAILABILITY
 app.get(
     "/client/{client_id}/worker/{worker_id}/availability",
     response_model=availability.Availability,
-)(availability.get_worker_availability_endpoint)
+)(availability.get_worker_availability)
 app.get(
     "/client/{client_id}/availability/",
     response_model=availability.AvailabilityPerWorker,
-)(availability.get_client_availability_endpoint)
+)(availability.get_client_availability)
 
 
 # FILES
-app.post("/file")(files.create_file_endpoint)
-app.get("/file/{file_name}")(files.get_file_endpoint)
+app.post("/file")(files.create_file)
+app.get("/file/{file_name}")(files.get_file)
 
 
 if __name__ == "__main__":

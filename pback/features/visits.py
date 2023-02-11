@@ -57,7 +57,7 @@ class InVisit(BM):
 #     # FINISHED = 'finished'
 
 
-def get_visits_endpoint(
+def get_visits(
     worker_id: Optional[int] = None,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -67,7 +67,7 @@ def get_visits_endpoint(
     return crud.get_visits(s, client_id, worker_id=worker_id)
 
 
-def update_visit_endpoint(
+def update_visit(
     visit_id: str,
     visit: InVisit,
     s: Session = Depends(db.get_session),
@@ -76,7 +76,7 @@ def update_visit_endpoint(
     return None
 
 
-def get_visit_endpoint(
+def get_visit(
     visit_id: int,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -87,7 +87,7 @@ def get_visit_endpoint(
     return visit
 
 
-def create_slot_endpoint(
+def create_slot(
     slot: slots.CreateSlot,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -112,7 +112,7 @@ def create_slot_endpoint(
 #     return db_visit
 
 
-def create_visit_slot_endpoint(
+def create_visit_slot(
     slot: slots.CreateSlot,
     s: Session = Depends(db.get_session),
 ) -> models.Visit:
@@ -130,7 +130,7 @@ def create_visit_slot_endpoint(
     return db_visit
 
 
-def public_book_visit_endpoint(
+def public_book_visit(
     visit: InVisit,
     s: Session = Depends(db.get_session),
     # TODO: visitor

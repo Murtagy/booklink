@@ -324,7 +324,7 @@ def visit_pick_worker_and_check(s: Session, slot: CreateSlot, *, exc: HTTPExcept
     return slot
 
 
-def get_worker_availability_endpoint(
+def get_worker_availability(
     worker_id: int,
     services: Optional[str] = Query(None),
     s: Session = Depends(db.get_session),
@@ -346,7 +346,7 @@ def get_worker_availability_endpoint(
     return av
 
 
-def get_client_availability_endpoint(
+def get_client_availability(
     client_id: int,
     services: Optional[str] = None,
     s: Session = Depends(db.get_session),

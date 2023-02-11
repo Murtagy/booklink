@@ -3,8 +3,8 @@
 /* eslint-disable */
 import type { Availability } from '../models/Availability';
 import type { AvailabilityPerWorker } from '../models/AvailabilityPerWorker';
-import type { Body_create_file_endpoint } from '../models/Body_create_file_endpoint';
-import type { Body_login_for_access_token_endpoint } from '../models/Body_login_for_access_token_endpoint';
+import type { Body_create_file } from '../models/Body_create_file';
+import type { Body_login_for_access_token } from '../models/Body_login_for_access_token';
 import type { CreateService } from '../models/CreateService';
 import type { CreateServiceWithClientId } from '../models/CreateServiceWithClientId';
 import type { CreateSlot } from '../models/CreateSlot';
@@ -45,12 +45,12 @@ export class DefaultService {
     }
 
     /**
-     * Create User Endpoint
+     * Create User
      * @param requestBody
      * @returns TokenOut Successful Response
      * @throws ApiError
      */
-    public static createUserEndpoint(
+    public static createUser(
         requestBody: UserCreate,
     ): CancelablePromise<TokenOut> {
         return __request(OpenAPI, {
@@ -65,11 +65,11 @@ export class DefaultService {
     }
 
     /**
-     * Read Users Me Endpoint
+     * Read Users Me
      * @returns UserOut Successful Response
      * @throws ApiError
      */
-    public static readUsersMeEndpoint(): CancelablePromise<UserOut> {
+    public static readUsersMe(): CancelablePromise<UserOut> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/users/me/',
@@ -77,11 +77,11 @@ export class DefaultService {
     }
 
     /**
-     * Read Users Me2 Endpoint
+     * Read Users Me2
      * @returns UserOut Successful Response
      * @throws ApiError
      */
-    public static readUsersMe2Endpoint(): CancelablePromise<UserOut> {
+    public static readUsersMe2(): CancelablePromise<UserOut> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/my_user',
@@ -89,13 +89,13 @@ export class DefaultService {
     }
 
     /**
-     * Login For Access Token Endpoint
+     * Login For Access Token
      * @param formData
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static loginForAccessTokenEndpoint(
-        formData: Body_login_for_access_token_endpoint,
+    public static loginForAccessToken(
+        formData: Body_login_for_access_token,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -229,12 +229,12 @@ export class DefaultService {
     }
 
     /**
-     * Create Service Endpoint
+     * Create Service
      * @param requestBody
      * @returns OutService Successful Response
      * @throws ApiError
      */
-    public static createServiceEndpoint(
+    public static createService(
         requestBody: CreateService,
     ): CancelablePromise<OutService> {
         return __request(OpenAPI, {
@@ -249,12 +249,12 @@ export class DefaultService {
     }
 
     /**
-     * My Create Service Endpoint
+     * My Create Service
      * @param requestBody
      * @returns OutService Successful Response
      * @throws ApiError
      */
-    public static myCreateServiceEndpoint(
+    public static myCreateService(
         requestBody: CreateServiceWithClientId,
     ): CancelablePromise<OutService> {
         return __request(OpenAPI, {
@@ -269,12 +269,12 @@ export class DefaultService {
     }
 
     /**
-     * Get Service Endpoint
+     * Get Service
      * @param serviceId
      * @returns OutService Successful Response
      * @throws ApiError
      */
-    public static getServiceEndpoint(
+    public static getService(
         serviceId: number,
     ): CancelablePromise<OutService> {
         return __request(OpenAPI, {
@@ -290,13 +290,13 @@ export class DefaultService {
     }
 
     /**
-     * Get Service By Client Endpoint
+     * Get Service By Client
      * @param clientId
      * @param serviceId
      * @returns OutService Successful Response
      * @throws ApiError
      */
-    public static getServiceByClientEndpoint(
+    public static getServiceByClient(
         clientId: number,
         serviceId: number,
     ): CancelablePromise<OutService> {
@@ -314,13 +314,13 @@ export class DefaultService {
     }
 
     /**
-     * Get Services By Client Endpoint
+     * Get Services By Client
      * @param clientId
      * @param workerId
      * @returns OutServices Successful Response
      * @throws ApiError
      */
-    public static getServicesByClientEndpoint(
+    public static getServicesByClient(
         clientId: number,
         workerId?: number,
     ): CancelablePromise<OutServices> {
@@ -340,12 +340,12 @@ export class DefaultService {
     }
 
     /**
-     * Add Skills Endpoint
+     * Add Skills
      * @param requestBody
      * @returns Received Successful Response
      * @throws ApiError
      */
-    public static addSkillsEndpoint(
+    public static addSkills(
         requestBody: SkillsIn,
     ): CancelablePromise<Received> {
         return __request(OpenAPI, {
@@ -360,12 +360,12 @@ export class DefaultService {
     }
 
     /**
-     * Add Skill Endpoint
+     * Add Skill
      * @param requestBody
      * @returns Received Successful Response
      * @throws ApiError
      */
-    public static addSkillEndpoint(
+    public static addSkill(
         requestBody: SkillIn,
     ): CancelablePromise<Received> {
         return __request(OpenAPI, {
@@ -400,13 +400,13 @@ export class DefaultService {
     }
 
     /**
-     * Get Skills Endpoint
+     * Get Skills
      * @param clientId
      * @param workerId
      * @returns SkillsOut Successful Response
      * @throws ApiError
      */
-    public static getSkillsEndpoint(
+    public static getSkills(
         clientId: number,
         workerId?: number,
     ): CancelablePromise<SkillsOut> {
@@ -426,12 +426,12 @@ export class DefaultService {
     }
 
     /**
-     * Create Slot Endpoint
+     * Create Slot
      * @param requestBody
      * @returns Slot Successful Response
      * @throws ApiError
      */
-    public static createSlotEndpoint(
+    public static createSlot(
         requestBody: CreateSlot,
     ): CancelablePromise<Slot> {
         return __request(OpenAPI, {
@@ -446,12 +446,12 @@ export class DefaultService {
     }
 
     /**
-     * Delete Client Slot Endpoint
+     * Delete Client Slot
      * @param slotId
      * @returns Slot Successful Response
      * @throws ApiError
      */
-    public static deleteClientSlotEndpoint(
+    public static deleteClientSlot(
         slotId: number,
     ): CancelablePromise<Slot> {
         return __request(OpenAPI, {
@@ -467,13 +467,13 @@ export class DefaultService {
     }
 
     /**
-     * Create Client Weekly Slot Endpoint
+     * Create Client Weekly Slot
      * @param clientId
      * @param requestBody
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createClientWeeklySlotEndpoint(
+    public static createClientWeeklySlot(
         clientId: number,
         requestBody: CreateWeeklySlot,
     ): CancelablePromise<any> {
@@ -492,13 +492,13 @@ export class DefaultService {
     }
 
     /**
-     * Create Worker Weekly Slot Endpoint
+     * Create Worker Weekly Slot
      * @param workerId
      * @param requestBody
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createWorkerWeeklySlotEndpoint(
+    public static createWorkerWeeklySlot(
         workerId: number,
         requestBody: CreateWeeklySlot,
     ): CancelablePromise<any> {
@@ -517,12 +517,12 @@ export class DefaultService {
     }
 
     /**
-     * Get Visit Endpoint
+     * Get Visit
      * @param visitId
      * @returns OutVisit Successful Response
      * @throws ApiError
      */
-    public static getVisitEndpoint(
+    public static getVisit(
         visitId: number,
     ): CancelablePromise<OutVisit> {
         return __request(OpenAPI, {
@@ -538,13 +538,13 @@ export class DefaultService {
     }
 
     /**
-     * Update Visit Endpoint
+     * Update Visit
      * @param visitId
      * @param requestBody
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static updateVisitEndpoint(
+    public static updateVisit(
         visitId: string,
         requestBody: InVisit,
     ): CancelablePromise<any> {
@@ -563,12 +563,12 @@ export class DefaultService {
     }
 
     /**
-     * Get Visits Endpoint
+     * Get Visits
      * @param workerId
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getVisitsEndpoint(
+    public static getVisits(
         workerId?: number,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
@@ -584,12 +584,12 @@ export class DefaultService {
     }
 
     /**
-     * Create Visit Slot Endpoint
+     * Create Visit Slot
      * @param requestBody
      * @returns OutVisit Successful Response
      * @throws ApiError
      */
-    public static createVisitSlotEndpoint(
+    public static createVisitSlot(
         requestBody: CreateSlot,
     ): CancelablePromise<OutVisit> {
         return __request(OpenAPI, {
@@ -604,12 +604,12 @@ export class DefaultService {
     }
 
     /**
-     * Public Book Visit Endpoint
+     * Public Book Visit
      * @param requestBody
      * @returns OutVisit Successful Response
      * @throws ApiError
      */
-    public static publicBookVisitEndpoint(
+    public static publicBookVisit(
         requestBody: InVisit,
     ): CancelablePromise<OutVisit> {
         return __request(OpenAPI, {
@@ -624,13 +624,13 @@ export class DefaultService {
     }
 
     /**
-     * Get Worker Availability Endpoint
+     * Get Worker Availability
      * @param workerId
      * @param services
      * @returns Availability Successful Response
      * @throws ApiError
      */
-    public static getWorkerAvailabilityEndpoint(
+    public static getWorkerAvailability(
         workerId: number,
         services?: string,
     ): CancelablePromise<Availability> {
@@ -650,13 +650,13 @@ export class DefaultService {
     }
 
     /**
-     * Get Client Availability Endpoint
+     * Get Client Availability
      * @param clientId
      * @param services
      * @returns AvailabilityPerWorker Successful Response
      * @throws ApiError
      */
-    public static getClientAvailabilityEndpoint(
+    public static getClientAvailability(
         clientId: number,
         services?: string,
     ): CancelablePromise<AvailabilityPerWorker> {
@@ -676,13 +676,13 @@ export class DefaultService {
     }
 
     /**
-     * Create File Endpoint
+     * Create File
      * @param formData
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createFileEndpoint(
-        formData: Body_create_file_endpoint,
+    public static createFile(
+        formData: Body_create_file,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -696,12 +696,12 @@ export class DefaultService {
     }
 
     /**
-     * Get File Endpoint
+     * Get File
      * @param fileName
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getFileEndpoint(
+    public static getFile(
         fileName: string,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
