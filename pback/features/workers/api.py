@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, Path
 from sqlalchemy.orm import Session  # type: ignore
 
 import crud
@@ -9,7 +9,7 @@ from features.workers import schemas
 
 
 def get_worker(
-    worker_id: int,
+    worker_id: str = Path(regex=r'\d+'),
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> models.Worker:
@@ -22,8 +22,8 @@ def get_worker(
 
 
 def update_worker(
-    worker_id: int,
     worker: schemas.UpdateWorker,
+    worker_id: str = Path(regex=r'\d+'),
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> models.Worker:
@@ -35,7 +35,9 @@ def update_worker(
     return db_worker
 
 
-def delete_worker(worker_id: str) -> None:
+def delete_worker(
+    worker_id: str = Path(regex=r'\d+'),
+) -> None:
     return None
 
 

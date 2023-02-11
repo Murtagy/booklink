@@ -115,7 +115,7 @@ export class DefaultService {
      * @throws ApiError
      */
     public static getWorker(
-        workerId: number,
+        workerId: string,
     ): CancelablePromise<OutWorker> {
         return __request(OpenAPI, {
             method: 'GET',
@@ -137,7 +137,7 @@ export class DefaultService {
      * @throws ApiError
      */
     public static updateWorker(
-        workerId: number,
+        workerId: string,
         requestBody: UpdateWorker,
     ): CancelablePromise<OutWorker> {
         return __request(OpenAPI, {
