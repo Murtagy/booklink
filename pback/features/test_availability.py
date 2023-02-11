@@ -26,6 +26,7 @@ def test_av_create_from_slots():
     assert av.days[0].timeslots[0].dt_from == time
     assert av.days[0].timeslots[0].dt_to == time + (8 * hour)
 
+
 def test_av_single_visit():
     # setting now to 9 pm (av slots created are overnight)
     time = datetime.datetime(year=2023, month=1, day=1, hour=21)

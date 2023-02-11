@@ -4,21 +4,13 @@ import structlog
 import uvicorn  # type: ignore
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.routing import APIRoute
 from sqlmodel import SQLModel
 
 import db
-from features import (
-    availability,
-    files,
-    services,
-    skills,
-    slots,
-    users,
-    visits,
-)
-from features.workers import schemas as workers_schemas
+from features import availability, files, services, skills, slots, users, visits
 from features.workers import api as workers_api
-from fastapi.routing import APIRoute
+from features.workers import schemas as workers_schemas
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -33,6 +25,7 @@ ORIGINS = [
     "http://localhost:3333",
     "http://localhost:3000",
 ]
+
 
 def custom_generate_unique_id(route: APIRoute):
     # https://fastapi.tiangolo.com/nl/advanced/generate-clients/#custom-generate-unique-id-function
@@ -51,8 +44,6 @@ app.add_middleware(
 )
 SQLModel.metadata.create_all(db.engine)
 logger = structlog.get_logger()
-
-
 
 
 @app.get("/ping")
@@ -94,9 +85,7 @@ app.post("/worker_services", response_model=skills.Received)(skills.add_skills)
 app.post("/worker_service", response_model=skills.Received)(skills.add_skill)
 
 app.post("/my_worker_services", response_model=skills.Received)(skills.my_add_skill)
-app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
-    skills.get_skills
-)
+app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(skills.get_skills)
 
 
 # SLOTS

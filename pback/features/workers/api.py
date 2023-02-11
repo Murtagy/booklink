@@ -1,13 +1,12 @@
-
+from fastapi import Depends
+from sqlalchemy.orm import Session  # type: ignore
 
 import crud
 import db
 import models
 from features import users
-
-from fastapi import Depends
-from sqlalchemy.orm import Session  # type: ignore
 from features.workers import schemas
+
 
 def get_worker(
     worker_id: int,

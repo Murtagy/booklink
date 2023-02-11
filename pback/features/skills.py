@@ -58,7 +58,6 @@ class SkillsOut(BM):
     services: list[SkillOut]
 
 
-
 # endpoints:
 def add_skill(
     skill: SkillIn,
