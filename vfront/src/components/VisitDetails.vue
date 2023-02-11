@@ -80,7 +80,7 @@ p.bold {
 
 <script lang="ts">
 import { Worker } from "@/models/Worker"
-import type { Service } from "@/models/Service"
+import type { OutService } from "@/client/models/OutService"
 import {sanitize_phone} from "@/sanitize_phone";
 import {validate_phone} from "@/validate_phone";
 
@@ -125,7 +125,7 @@ export default {
       type: String, required: true
     },
     services: {
-      type: Array<Service>, required: true
+      type: Array<OutService>, required: true
     },
     client_id: {
       type: Number, required: true

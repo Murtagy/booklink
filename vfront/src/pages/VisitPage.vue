@@ -122,18 +122,17 @@ import type { AxiosError, AxiosResponse } from "axios";
 
 import { DefaultService } from "@/client";
 import type { OutWorker } from "@/client/models/OutWorker";
-import type { Service } from "@/models/Service";
-import { Services } from "@/models/Services";
+import type { OutService } from "@/client/models/OutService";
 import type { ClientAvailability } from "@/models/availability/ClientAvailability";
 import type { WorkerAvailability } from "@/models/availability/WorkerAvailability";
 
 declare interface ComponentData {
   availability: Record<string, Record<string, boolean>>;
-  checked_services: Service[];
+  checked_services: OutService[];
   client_id: number | null;
   current_screen: string;
   current_screen_title: string;
-  services: Services;
+  services: OutService[];
   visit_time: string | null;
   worker: OutWorker | null;
   workers: OutWorker[];
@@ -149,7 +148,7 @@ export default {
   },
   data(): ComponentData {
     var availability: Record<string, Record<string, boolean>> = {}; // trying out {} instead of null for ts compat
-    var services = new Services([]);
+    var services: OutService[] = [];
     var workers: OutWorker[] = [];
     if (import.meta.env.VITE_APP_OFFLINE == "true") {
       // availability is mocked at get av
@@ -204,7 +203,7 @@ export default {
       this.current_screen_title = "Онлайн запись";
     },
     // todo: flush selection (something has been selected, current availability might be wrong)
-    applyCheckedServices: function (x: Service[]) {
+    applyCheckedServices: function (x: OutService[]) {
       this.checked_services = x;
       this.getAvailability();
       this.changeToStartScreen();
@@ -239,26 +238,14 @@ export default {
 
       let path = `/client/${this.client_id}/services`;
       try {
-        const response: AxiosResponse<Services> = await this.$api.get<Services>(
-          path
+          const services_response = (await DefaultService.getServicesByClient(this.getClientId()))
+          this.services = services_response.services
+
           // no need for auth here, keeping for example use
           // {"headers": {'Authorization': 'bearer ' + this.$authStore.state.jwt_auth}}
-        );
-        if (response.data == null) {
-          console.log("Got services", response);
-          alert("Empty");
-        } else {
-          console.log("Got services", response.data);
-          this.services = this.parseResponse(response);
-        }
       } catch (error: any | AxiosError) {
         console.log(error);
       }
-    },
-    parseResponse(r: AxiosResponse<Services>): Services {
-      // todo
-      console.log(r);
-      return new Services(r.data.services);
     },
     async getAvailability() {
       // sets this.availability

@@ -1,7 +1,5 @@
-import { Services } from "@/models/Services";
-
 export default {
-  mock: new Services([
+  mock: [
     // test data for now
     {
       name: "Услуга X",
@@ -45,5 +43,5 @@ export default {
       service_id: 6,
       seconds: 1800,
     },
-  ]),
+  ],
 };
