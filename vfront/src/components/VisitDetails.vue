@@ -42,7 +42,7 @@
          <div v-if="worker">
           {{ worker.name }}, {{ worker.job_title }}
          </div>
-         <div v-else>
+         <div v-else >
             Не важно
          </div>
         </p>

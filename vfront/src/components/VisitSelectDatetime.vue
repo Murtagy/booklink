@@ -18,6 +18,7 @@
 <style scoped src="@/assets/styles/visit.css"></style>
 
 <script lang="ts">
+import type { Availability, TimeSlot } from "@/client";
 import Calendar from "@/components/CalendarPicker.vue";
 import TimeSched from "@/components/TimePicker.vue";
 
@@ -27,7 +28,7 @@ declare interface ComponentData {
   availability_mode: boolean;
   screen: string;
   selected_date: Date | null;
-  timeslots: Record<string, boolean> | null;
+  timeslots: TimeSlot[] | null;
 }
 
 export default {
@@ -42,7 +43,7 @@ export default {
   },
   props: {
     availability: {
-      type: Object as PropType<Record<string, Record<string, boolean>>>,
+      type: Object as PropType<Availability>,
       required: true,
     }, // temporary -  see if composition api would work https://vuejs.org/guide/extras/composition-api-faq.html#can-i-use-both-apis-together
   },
@@ -53,8 +54,13 @@ export default {
       this.selected_date = _date;
       const date = this.selected_date.toISOString().split("T")[0];
 
-      this.timeslots = this.availability[date];
-      this.screen = "time";
+      for (let day of this.availability.days) {
+        if (day.date == date) {
+          this.timeslots = day.timeslots;
+          this.screen = "time";
+        }
+      }
+      throw Error("picked date not found");
     },
     pickTimeSlot(x: Date) {
       console.log("Picked timeslot", x);

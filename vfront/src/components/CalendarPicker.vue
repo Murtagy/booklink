@@ -51,6 +51,8 @@ part // todo - copy to components
 <style scoped src="@/assets/styles/calendar.css"></style>
 
 <script lang="ts">
+import type { Availability } from "@/client/models/Availability";
+import type { Day } from "@/client/models/Day";
 import type { PropType } from "vue";
 
 const months_rus = {
@@ -89,7 +91,7 @@ export default {
   },
   props: {
     availability: {
-      type: Object as PropType<Record<string, Record<string, boolean>>>,
+      type: Object as PropType<Availability>,
       required: true,
     },
     availability_mode: {
@@ -105,11 +107,28 @@ export default {
     //       this.getAvailability()
     this.updateCalendarDates();
   },
+  computed: {
+    availability_days(): string[] {
+      const days = [];
+      for (const day of this.availability.days) {
+        days.push(day.date);
+      }
+      return days;
+    },
+  },
   methods: {
     emitDateIfClickable(day: Date) {
       if (this.isClickable(day)) {
         this.$emit("pick-date", day);
       }
+    },
+    getDay(target_day: string): Day | null {
+      for (const day of this.availability.days) {
+        if (day.date == target_day) {
+          return day;
+        }
+      }
+      return null;
     },
     findCalendarBase(_date: Date) {
       // finds a cell to begin calendar with (Monday which is 1st in current month or prior to that)
@@ -183,11 +202,14 @@ export default {
       const _date = new Date(__date);
       const date = _date.toISOString().split("T")[0];
 
-      if (!(date in this.availability)) {
+      if (!(date in this.availability_days)) {
         return false;
       }
-      const timeslots = this.availability[date];
-      if (Object.keys(timeslots).length == 0) {
+      const day = this.getDay(date);
+      if (!day) {
+        return false;
+      }
+      if (day.timeslots.length == 0) {
         return false;
       }
       return true;

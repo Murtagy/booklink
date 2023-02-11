@@ -35,7 +35,7 @@
 <style scoped src="@/assets/styles/services.css"></style>
 
 <script lang="ts">
-import type { OutService } from "@/client/models/OutService"
+import type { OutService } from "@/client/models/OutService";
 
 export default {
   components: {},

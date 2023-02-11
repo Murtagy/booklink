@@ -10,7 +10,7 @@
       <br /><br /><span id="job">{{ worker.job_title }}</span
       ><br />
       <br />
-    <!-- {{ worker.description }} -->
+      <!-- {{ worker.description }} -->
     </button>
   </div>
 </template>
@@ -18,7 +18,7 @@
 <style scoped src="@/assets/styles/worker.css"></style>
 
 <script lang="ts">
-import type { OutWorker } from "@/client/models/OutWorker"
+import type { OutWorker } from "@/client/models/OutWorker";
 
 export default {
   components: {},
