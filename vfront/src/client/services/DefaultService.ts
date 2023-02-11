@@ -631,7 +631,7 @@ export class DefaultService {
      * @throws ApiError
      */
     public static getWorkerAvailability(
-        workerId: number,
+        workerId: string,
         services?: string,
     ): CancelablePromise<Availability> {
         return __request(OpenAPI, {

@@ -13,7 +13,7 @@ def get_worker(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> models.Worker:
-    db_worker = crud.get_worker(s, worker_id)
+    db_worker = crud.get_worker(s, int(worker_id))
     assert db_worker is not None
 
     assert current_user.client_id == db_worker.client_id
@@ -27,11 +27,11 @@ def update_worker(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> models.Worker:
-    db_worker = crud.get_worker(s, worker_id)
+    db_worker = crud.get_worker(s, int(worker_id))
     assert db_worker is not None
     assert current_user.client_id == db_worker.client_id
 
-    db_worker = crud.update_worker(s, worker, worker_id)
+    db_worker = crud.update_worker(s, worker, int(worker_id))
     return db_worker
 
 
