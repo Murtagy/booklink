@@ -120,6 +120,7 @@ import services_mock from "@/mocks/services_mock.js";
 import workers_mock from "@/mocks/workers_mock.js";
 import type { AxiosError, AxiosResponse } from "axios";
 
+import { DefaultService } from "@/client";
 import type { Service } from "@/models/Service";
 import { Services } from "@/models/Services";
 import { Workers } from "@/models/Workers";
