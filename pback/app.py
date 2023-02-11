@@ -15,8 +15,9 @@ from features import (
     slots,
     users,
     visits,
-    workers,
 )
+from features.workers import schemas as workers_schemas
+from features.workers import api as workers_api
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -61,14 +62,14 @@ app.post("/token")(users.login_for_access_token_endpoint)
 
 
 # WORKERS
-app.get("/worker/{worker_id}", response_model=workers.OutWorker)(workers.get_worker_endpoint)
-app.put("/worker/{worker_id}", response_model=workers.OutWorker)(workers.update_worker_endpoint)
-app.delete("/worker/{worker_id}")(workers.delete_worker_endpoint)
-app.get("/client/{client_id}/workers", response_model=workers.OutWorkers)(
-    workers.get_workers_by_client_endpoint
+app.get("/worker/{worker_id}", response_model=workers_schemas.OutWorker)(workers_api.get_worker)
+app.put("/worker/{worker_id}", response_model=workers_schemas.OutWorker)(workers_api.update_worker)
+app.delete("/worker/{worker_id}")(workers_api.delete_worker)
+app.get("/client/{client_id}/workers", response_model=workers_schemas.OutWorkers)(
+    workers_api.get_workers_by_client
 )
-app.get("/workers", response_model=workers.OutWorkers)(workers.get_workers_endpoint)
-app.post("/worker", response_model=workers.OutWorker)(workers.create_worker_endpoint)
+app.get("/workers", response_model=workers_schemas.OutWorkers)(workers_api.get_workers)
+app.post("/worker", response_model=workers_schemas.OutWorker)(workers_api.create_worker)
 
 
 # SERVICES

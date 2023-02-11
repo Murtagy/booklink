@@ -7,7 +7,8 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from sqlmodel import col, delete, select
 
-from features import services, slots, users, visits, workers
+from features import services, slots, users, visits
+from features.workers import schemas as workers
 from models import (
     Client,
     File,
