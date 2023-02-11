@@ -19,8 +19,7 @@
       /> 
 
       <p class="bold"><label for="remind_me"> Напомнить о записи? </label></p>
-      <!-- todo: remove input-value and fix binding https://vuejs.org/examples/#form-bindings -->
-      <input type="checkbox" v-model="remind_me" input-value="1"/>
+      <input type="checkbox" v-model="remind_me"/>
 
     </form>
     <!-- <p>{{services}}</p> -->
@@ -40,7 +39,12 @@
     <div class="cards">
       <div class="card">
         <p class="border_main1" style="padding: 1em">
+         <div v-if="worker">
           {{ worker.name }}, {{ worker.job_title }}
+         </div>
+         <div v-else>
+            Не важно
+         </div>
         </p>
       </div>
     </div>
@@ -115,7 +119,7 @@ export default {
   },
   props: {
     worker: {
-      type: Worker, required: true
+      type: Worker
     },
     visit_time: {
       type: String, required: true
