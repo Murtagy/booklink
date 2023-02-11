@@ -79,10 +79,11 @@ p.bold {
 </style>
 
 <script lang="ts">
-import { Worker } from "@/models/Worker"
+import type { OutWorker } from "@/client/models/OutWorker"
 import type { OutService } from "@/client/models/OutService"
 import {sanitize_phone} from "@/sanitize_phone";
 import {validate_phone} from "@/validate_phone";
+import type { PropType } from 'vue'
 
 export default {
   components: {},
@@ -119,7 +120,7 @@ export default {
   },
   props: {
     worker: {
-      type: Worker
+      type: Object as PropType<OutWorker>,
     },
     visit_time: {
       type: String, required: true
