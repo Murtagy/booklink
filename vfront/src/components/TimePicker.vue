@@ -15,11 +15,11 @@
       <tr v-for="row in getRowsHours()" :key="row">
         <th>{{ row }}</th>
         <td
-          v-for="time in filterRowTimeslots(row)"
-          :key="String(time)"
-          @click="emitTimeSlot(time)"
+          v-for="timeslot in filterRowTimeslots(row)"
+          :key="timeslot.dt_from"
+          @click="emitTimeSlot(timeslot)"
         >
-          <button>{{ formatTimeSlot(time) }}</button>
+          <button>{{ formatTimeSlot(timeslot) }}</button>
         </td>
       </tr>
       <!-- <tr><th>8:00</th><td><button>8:10</button></td><td><button>8:40</button></td></tr>
@@ -40,36 +40,54 @@
 </template>
 
 <script lang="ts">
+import type { TimeSlot } from '@/models/availability/TimeSlot';
+
 export default {
   components: {},
   data() {
     return {};
   },
   methods: {
-    formatTimeSlot(x: Date) {
+    formatTimeSlot(ts: TimeSlot) {
+      const x = new Date(ts.dt_from)
       // hour + padded with leading zero minute
       return x.getHours() + ":" + ("0" + x.getMinutes()).slice(-2);
     },
     getRowsHours() {
-      const ts = Object.keys(this.timeslots);
-      const hours = ts.map((_ts) => {
-        const x = new Date(_ts);
+      const hours = this.timeslots.map(ts => {
+        const x = new Date(ts.dt_from);
         return x.getHours();
       });
       const _hours_no_duplicated = new Set(hours);
       return Array.from(_hours_no_duplicated);
     },
-    filterRowTimeslots(hour: number) {
-      const ts = Object.keys(this.timeslots);
-      const hours = ts.map((_ts) => new Date(_ts));
-      return hours.filter((_ts) => _ts.getHours() == hour);
+    filterRowTimeslots(target_hour: number): TimeSlot[] {
+      const filtered: TimeSlot[] = []
+      for (const timeslot of this.timeslots) {
+        const dt_from = timeslot.dt_from
+        const dt_from_date = new Date(dt_from)
+        if (dt_from_date.getHours() != target_hour) {
+          continue
+        }
+        filtered.push(timeslot)
+      }
+      return filtered
     },
-    emitTimeSlot(timeslot: Date) {
+    emitTimeSlot(timeslot: TimeSlot) {
       console.log("Emit ts", timeslot);
       this.$emit("pick-timeslot", timeslot);
     },
   },
-  props: ["date", "timeslots"],
+  props: {
+    date: {
+      type: String,
+      required: true,
+    },
+    timeslots: {
+      type: Array<TimeSlot>,
+      required: true,
+    }
+  },
 };
 </script>
 

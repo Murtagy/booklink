@@ -54,8 +54,8 @@
             >
               <img src="../assets/calendar-icon.png" />Дата и время
             </button>
-            <span v-if="visit_time != null" class="selected">
-              Дата и время {{ visit_time }}
+            <span v-if="visit_slot != null" class="selected">
+              Дата и время {{ visit_slot }}
             </span>
           </li>
         </ul>
@@ -92,12 +92,12 @@
       />
       <visit-details
         v-if="
-          current_screen == 'visit-details' && worker && visit_time && client_id
+          current_screen == 'visit-details' && worker && visit_slot && client_id
         "
         @go-start-screen="changeToStartScreen()"
         :client_id="client_id"
         :worker="worker"
-        :visit_time="visit_time"
+        :visit_slot="visit_slot"
         :services="checked_services"
       />
     </div>
@@ -122,6 +122,7 @@ import { DefaultService } from "@/client";
 import type { OutWorker } from "@/client/models/OutWorker";
 import type { OutService } from "@/client/models/OutService";
 import type { Availability } from "@/client/models/Availability";
+import type { TimeSlot } from "@/models/availability/TimeSlot";
 // import type { AvailabilityPerWorker } from "@/client/models/AvailabilityPerWorker";
 
 declare interface ComponentData {
@@ -131,7 +132,7 @@ declare interface ComponentData {
   current_screen: string;
   current_screen_title: string;
   services: OutService[];
-  visit_time: string | null;
+  visit_slot: TimeSlot | null;
   worker: OutWorker | null;
   workers: OutWorker[];
 }
@@ -159,7 +160,7 @@ export default {
       current_screen: "start",
       current_screen_title: "Онлайн запись",
       services: services,
-      visit_time: null,
+      visit_slot: null,
       worker: worker,
       workers: workers,
       // todo: add loading (passed to child components and renders loading screen while something is loaded)
@@ -223,10 +224,10 @@ export default {
       this.worker = x;
       this.changeToStartScreen();
     },
-    applySelectedDateTime: function (date: string, slot: string) {
+    applySelectedDateTime: function (date: string, slot: TimeSlot) {
       // todo: slots are parsed in a map atm, date: bool, not sure why did it, might be better to parse that into a simple array
       console.log(date, slot);
-      this.visit_time = slot;
+      this.visit_slot = slot;
       this.changeToStartScreen();
     },
     async getWorkers() {

@@ -7,9 +7,9 @@
       @pick-date="pickDate"
     />
     <TimeSched
-      v-if="screen == 'time'"
-      v-bind:date="selected_date"
-      v-bind:timeslots="timeslots"
+      v-if="screen == 'time' && (selected_date != null)"
+      :date="selected_date"
+      :timeslots="timeslots"
       @pick-timeslot="pickTimeSlot"
     />
   </div>
@@ -27,8 +27,8 @@ import type { PropType } from "vue";
 declare interface ComponentData {
   availability_mode: boolean;
   screen: string;
-  selected_date: Date | null;
-  timeslots: TimeSlot[] | null;
+  selected_date: string;
+  timeslots: TimeSlot[];
 }
 
 export default {
@@ -37,8 +37,8 @@ export default {
     return {
       availability_mode: true,
       screen: "calendar",
-      selected_date: null,
-      timeslots: null,
+      selected_date: '',
+      timeslots: [],
     };
   },
   props: {
@@ -50,19 +50,19 @@ export default {
   methods: {
     pickDate(x: Date) {
       console.log("Picked date", x);
-      const _date = new Date(x);
-      this.selected_date = _date;
-      const date = this.selected_date.toISOString().split("T")[0];
+      const date = x.toISOString().split("T")[0];
+      this.selected_date = date;
 
       for (let day of this.availability.days) {
         if (day.date == date) {
           this.timeslots = day.timeslots;
           this.screen = "time";
+          return
         }
       }
       throw Error("picked date not found");
     },
-    pickTimeSlot(x: Date) {
+    pickTimeSlot(x: TimeSlot) {
       console.log("Picked timeslot", x);
       this.$emit("select-datetime", this.selected_date, x);
     },

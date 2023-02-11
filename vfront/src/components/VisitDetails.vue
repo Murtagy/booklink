@@ -16,7 +16,9 @@
         placeholder="email@example.com"
         type="email"
         v-model.trim="email"
-      /> 
+      />
+
+      <!-- TODO: name -->
 
       <p class="bold"><label for="remind_me"> Напомнить о записи? </label></p>
       <input type="checkbox" v-model="remind_me"/>
@@ -84,6 +86,7 @@ import type { OutService } from "@/client/models/OutService"
 import {sanitize_phone} from "@/sanitize_phone";
 import {validate_phone} from "@/validate_phone";
 import type { PropType } from 'vue'
+import { TimeSlot } from "@/models/availability/TimeSlot";
 
 export default {
   components: {},
@@ -102,8 +105,8 @@ export default {
   },
   methods: {
     parse_date() {
-      if (this.visit_time != null) {
-        const date = new Date(this.visit_time);
+      if (this.visit_slot != null) {
+        const date = new Date(this.visit_slot.dt_from);
         const day = `${String(date.getFullYear())}-${String(
           date.getMonth()
         ).padStart(2, "0")}-${String(date.getDay()).padStart(2, "0")}`;
@@ -122,8 +125,8 @@ export default {
     worker: {
       type: Object as PropType<OutWorker>,
     },
-    visit_time: {
-      type: String, required: true
+    visit_slot: {
+      type: TimeSlot, required: true
     },
     services: {
       type: Array<OutService>, required: true
