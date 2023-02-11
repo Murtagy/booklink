@@ -121,10 +121,9 @@ import workers_mock from "@/mocks/workers_mock.js";
 import type { AxiosError, AxiosResponse } from "axios";
 
 import { DefaultService } from "@/client";
+import type { OutWorker } from "@/client/models/OutWorker";
 import type { Service } from "@/models/Service";
 import { Services } from "@/models/Services";
-import { Workers } from "@/models/Workers";
-import type { Worker } from "@/models/Worker";
 import type { ClientAvailability } from "@/models/availability/ClientAvailability";
 import type { WorkerAvailability } from "@/models/availability/WorkerAvailability";
 
@@ -136,8 +135,8 @@ declare interface ComponentData {
   current_screen_title: string;
   services: Services;
   visit_time: string | null;
-  worker: Worker | null;
-  workers: Workers;
+  worker: OutWorker | null;
+  workers: OutWorker[];
 }
 
 export default {
@@ -151,7 +150,7 @@ export default {
   data(): ComponentData {
     var availability: Record<string, Record<string, boolean>> = {}; // trying out {} instead of null for ts compat
     var services = new Services([]);
-    var workers = new Workers([]);
+    var workers: OutWorker[] = [];
     if (import.meta.env.VITE_APP_OFFLINE == "true") {
       // availability is mocked at get av
       services = services_mock["mock"];
@@ -188,6 +187,12 @@ export default {
     // alert(`client_id ${this.client_id}`)
   },
   methods: {
+    getClientId(): number {
+      if (!this.client_id) {
+        throw Error('Client id not set')
+      }
+      return this.client_id
+    },
     changeCurrentScreen: function (screen: string, screen_title: string) {
       console.log("Change screen!", screen, screen_title);
       this.current_screen = screen;
@@ -204,7 +209,7 @@ export default {
       this.getAvailability();
       this.changeToStartScreen();
     },
-    applySelectedWorker: function (x: Worker) {
+    applySelectedWorker: function (x: OutWorker) {
       this.worker = x;
       this.changeToStartScreen();
     },
@@ -219,16 +224,10 @@ export default {
         return;
       }
 
-      let path = `/client/${this.client_id}/workers`;
       try {
-        const response: AxiosResponse<Workers> = await this.$api.get(path);
-        if (response.data == null) {
-          console.log("Got workers", response);
-          alert("Empty");
-        } else {
-          this.workers = new Workers(response.data.workers);
-          console.log("Got workers", response);
-        }
+        const workers = await DefaultService.getWorkersByClient(this.getClientId());
+        this.workers = workers.workers
+        console.log("Got workers", workers);
       } catch (error) {
         console.log(error);
       }

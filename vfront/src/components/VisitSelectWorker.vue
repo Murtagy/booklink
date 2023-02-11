@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <button
-      v-for="worker in workers.workers"
+      v-for="worker in workers"
       :key="worker.worker_id"
       @click="emitWorker(worker)"
     >
@@ -9,7 +9,8 @@
       <span id="name">{{ worker.name }} </span>
       <br /><br /><span id="job">{{ worker.job_title }}</span
       ><br />
-      <br />{{ worker.description }}
+      <br />
+    <!-- {{ worker.description }} -->
     </button>
   </div>
 </template>
@@ -17,8 +18,7 @@
 <style scoped src="@/assets/styles/worker.css"></style>
 
 <script lang="ts">
-import { Workers } from "@/models/Workers";
-import type { Worker } from "@/models/Worker";
+import type { OutWorker } from "@/client/models/OutWorker"
 
 export default {
   components: {},
@@ -26,13 +26,13 @@ export default {
     return {};
   },
   methods: {
-    emitWorker: function (x: Worker) {
+    emitWorker: function (x: OutWorker) {
       this.$emit("select-worker", x);
     },
   },
   props: {
     workers: {
-      type: Workers,
+      type: Array<OutWorker>,
       required: true,
     },
   },
