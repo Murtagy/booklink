@@ -1,5 +1,5 @@
 <!-- Main page of visit booking process.
- Visit page is in control of fetching the data and setting the props of other components 
+ Visit page is in control of fetching the data and setting the props of other components
  Other pages are considered sub-pages and are not independant -->
 
 <template>
@@ -184,7 +184,7 @@ export default {
       this.getWorkers();
     },
     worker() {
-      this.availability = null;
+      this.availability = null  ;
       this.getAvailability();
       // TODO: reget services - if we pick worker which is not skilled for a service
     },
