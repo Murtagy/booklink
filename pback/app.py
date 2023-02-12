@@ -77,11 +77,13 @@ app.get("/client/{client_id}/services", response_model=services.OutServices)(
 )
 
 # WORKER-SERVICE
-app.post("/worker_services", response_model=skills.Received)(skills.add_skills)
-app.post("/worker_service", response_model=skills.Received)(skills.add_skill)
+app.post("/worker_services", response_model=workers_schemas.Received)(workers_api.add_skills)
+app.post("/worker_service", response_model=workers_schemas.Received)(workers_api.add_skill)
 
-app.post("/my_worker_services", response_model=skills.Received)(skills.my_add_skill)
-app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(skills.get_skills)
+app.post("/my_worker_services", response_model=workers_schemas.Received)(workers_api.my_add_skill)
+app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
+    workers_api.get_skills
+)
 
 
 # SLOTS

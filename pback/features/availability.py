@@ -326,7 +326,7 @@ def visit_pick_worker_and_check(s: Session, slot: CreateSlot, *, exc: HTTPExcept
 
 def get_worker_availability(
     client_id: str,
-    worker_id: str = Path(regex=r'\d+'),
+    worker_id: str = Path(regex=r"\d+"),
     services: str | None = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
@@ -338,7 +338,9 @@ def get_worker_availability(
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
-        db_worker_services = crud.get_services(s, client_id=worker.client_id, worker_id=int(worker_id))
+        db_worker_services = crud.get_services(
+            s, client_id=worker.client_id, worker_id=int(worker_id)
+        )
         for service in db_services:
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled

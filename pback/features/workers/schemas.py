@@ -1,5 +1,7 @@
 from pydantic import BaseModel as BM
 
+from features.services import OutService
+
 
 class CreateWorker(BM):
     name: str
@@ -23,3 +25,17 @@ class OutWorker(BM):
 
 class OutWorkers(BM):
     workers: list[OutWorker]
+
+
+class SkillIn(BM):
+    worker_id: int
+    service_id: int
+    picked: bool = True
+
+
+class SkillsIn(BM):
+    services: list[SkillIn]
+
+
+class Received(BM):
+    msg: str = "Received"

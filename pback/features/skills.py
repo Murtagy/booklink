@@ -9,122 +9,29 @@ import models
 from features import services, users
 
 
-class SkillIn(BM):
-    worker_id: int
-    service_id: int
-    picked: bool = True
-
-
-class SkillsIn(BM):
-    services: list[SkillIn]
-
-
-class Received(BM):
-    msg: str = "Received"
-
-
-def skill_picked(s: Session, worker_id: int, service_id: int) -> bool:
-    ws = crud.get_skill(s, worker_id, service_id)
-    if ws is None:
-        return False
-    else:
-        return True
-
-
-class SkillOut(services.OutService):
+class SkillOut(BM):
     picked: bool
+    service: services.OutService
 
 
 class SkillsOut(BM):
     services: list[SkillOut]
 
 
-# endpoints:
-def add_skill(
-    skill: SkillIn,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> Received:
-    worker_id = skill.worker_id
-    service_id = skill.service_id
-
-    db_worker = crud.get_worker(s, worker_id)
-    db_service = crud.get_service(s, service_id)
-
-    if db_worker is None:
-        raise app_exceptions.WorkerNotFound
-    if db_service is None:
-        raise app_exceptions.ServiceNotFound
-
-    assert current_user.client_id == db_worker.client_id
-    assert db_service.client_id == db_worker.client_id
-    crud.create_skill(s, worker_id, service_id)
-    return Received()
-
-
-def add_skills(
-    skills: SkillsIn,
-    s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
-) -> Received:
-    assert len(set((w.worker_id for w in skills.services)))
-    worker_id = skills.services[0].worker_id
-
-    db_worker = crud.get_worker(s, worker_id)
-    if db_worker is None:
-        raise app_exceptions.WorkerNotFound
-
-    for updated_service in skills.services:
-        service_id = updated_service.service_id
-        service = crud.get_service(s, service_id)
-
-        assert service is not None
-        assert service.client_id == current_user.client_id
-        assert current_user.client_id == db_worker.client_id
-
-        picked_in_db = skill_picked(s, worker_id, service_id)
-        if picked_in_db and not updated_service.picked:
-            crud.delete_skill(s, worker_id, service_id)
-        if not picked_in_db and updated_service.picked:
-            crud.create_skill(s, worker_id, service_id)
-
-    return Received()
-
-
-def get_skills(
-    client_id: int,
-    worker_id: int | None = Query(None),
-    s: Session = Depends(db.get_session),
-    # current_user: models.User = Depends(users.get_current_user),
+def get_worker_skills_including_not_picked(
+    s: Session, client_id: int, worker_id: int | None
 ) -> SkillsOut:
     skills_out: list[SkillOut] = []
+    client_services = services.get_services(client_id, s=s)
+    worker_services = services.get_services(client_id, worker_id, s)
 
-    client_services = crud.get_services(s, client_id)
-    worker_services = crud.get_services(s, client_id, worker_id=worker_id)
-
-    for cs in client_services:
-        worker_picked_service = cs in worker_services
-        pre_service = services.OutService.from_orm(cs)
-        service_out = SkillOut(picked=worker_picked_service, **pre_service.dict())
+    for cs in client_services.services:
+        worker_picked_service = cs in worker_services.services
+        service_out = SkillOut(picked=worker_picked_service, service=cs)
         skills_out.append(service_out)
 
     return SkillsOut(services=skills_out)
 
 
-def my_add_skill(
-    skill: SkillIn,
-    s: Session = Depends(db.get_session),
-) -> Received:
-    worker_id = skill.worker_id
-    service_id = skill.service_id
-
-    db_worker = crud.get_worker(s, worker_id)
-    db_service = crud.get_service(s, service_id)
-
-    if db_worker is None:
-        raise app_exceptions.WorkerNotFound
-    if db_service is None:
-        raise app_exceptions.ServiceNotFound
-
+def create_skill(s: Session, worker_id: int, service_id: int) -> None:
     crud.create_skill(s, worker_id, service_id)
-    return Received()
