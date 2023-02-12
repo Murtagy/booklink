@@ -46,19 +46,16 @@
           <input type="checkbox" v-model="remind_me" />
         </div>
       </form>
-      <!-- <p>{{services}}</p> -->
       <p class="bold">Выбранные услуги:</p>
       <li v-for="service in services" :key="service.service_id">
         <label :for="String(service.service_id)">{{ service.name }}</label>
         <span class="price">{{ service.price }} {{ service.currency }}</span>
       </li>
 
-      <!-- <p>{{visit_time}}</p> -->
       <p class="bold">Время:</p>
       <p class="border_main1" style="padding: 1em">
         {{ parse_date() }}
       </p>
-      <!-- <p>{{worker}}</p> -->
       <p class="bold">Запись к:</p>
       <div class="cards">
         <div class="card">
