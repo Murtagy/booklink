@@ -32,4 +32,4 @@ repos:
     rev: ''  # Use the sha / tag you want to point at
     hooks:
     -   id: eslint
-        files: '^vfront/*\.[jt]sx?$'  # *.js, *.jsx, *.ts and *.tsx
+        files: '^vfront/.*\.[jt]sx'  # *.js, *.jsx, *.ts and *.tsx
