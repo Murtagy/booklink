@@ -148,7 +148,7 @@ export default {
   },
   methods: {
     async create_service(event: Event) {
-      console.log(event)  ;
+      console.log(  event)
       event.preventDefault();
       let path = `/my_service`;
       const service = { ...this.created_service, client_id: this.client_id };
