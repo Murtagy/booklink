@@ -91,6 +91,14 @@ def get_services(
     return OutServices(services=services)
 
 
+def get_services_by_ids(
+    services_ids: list[int],
+    s: Session = Depends(db.get_session),
+) -> list[OutService]:
+    db_services = crud.get_services_by_ids(s, services_ids)
+    return [OutService.from_orm(s) for s in db_services]
+
+
 def get_service_by_client(
     client_id: int,
     service_id: int,

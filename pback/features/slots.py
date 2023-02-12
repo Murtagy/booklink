@@ -34,8 +34,15 @@ class UpdateSlot(BM):
     to_datetime: datetime.datetime | None
 
 
-class Slot(BM):
+class OutSlot(BM):
     slot_id: int
+    from_datetime: datetime.datetime
+    to_datetime: datetime.datetime
+    slot_type: str  # busy/visit/available
+    worker_id: int | None
+
+    class Config:
+        orm_mode = True
 
 
 class TimeSlot(BM):
@@ -83,6 +90,11 @@ class CreateWeeklySlot(BM):
     su: list[tuple[str, str]] | None
 
 
+def create_slot(s: Session, slot: slots.CreateSlot) -> OutSlot:
+    db_slot = crud.create_slot(s, slot)
+    return OutSlot.from_orm(db_slot)
+
+
 def delete_client_slot(
     slot_id: int,
     s: Session = Depends(db.get_session),
@@ -105,7 +117,7 @@ def create_client_weekly_slot(
     assert client_id == current_user.client_id
     # check time being free ?
     # check another schedule being not present?
-    db_slot = crud.create_weekly_slot(s, slot, client_id)
+    _ = crud.create_weekly_slot(s, slot, client_id)
     # d = {"slot_id": db_slot.slot_id, **db_slot.schedule_by_day}
     return "OK"
 

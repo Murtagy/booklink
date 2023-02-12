@@ -85,8 +85,8 @@ app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
 
 
 # SLOTS
-app.post("/slot", response_model=slots.Slot)(visits.create_slot)
-app.delete("/slot/{slot_id}", response_model=slots.Slot)(slots.delete_client_slot)
+app.post("/slot", response_model=slots.OutSlot)(visits.create_slot)
+app.delete("/slot/{slot_id}", response_model=slots.OutSlot)(slots.delete_client_slot)
 app.post("/client/{client_id}/client_weekly_slot")(slots.create_client_weekly_slot)
 app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot)
 
@@ -95,7 +95,7 @@ app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot)
 app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit)
 app.get("/visits")(visits.get_visits)
 app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot)
-app.post("/public/visit", response_model=visits.OutVisit)(visits.public_book_visit)
+app.post("/public/visit", response_model=visits.OutVisitExtended)(visits.public_book_visit)
 app.put("/visit/{visit_id}")(visits.update_visit)
 
 

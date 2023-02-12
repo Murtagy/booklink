@@ -11,7 +11,7 @@ import app_exceptions
 import crud
 import db
 import models
-from features import availability, slots, users
+from features import availability, services, slots, users
 from features.slots import TimeSlotType
 
 
@@ -21,15 +21,19 @@ class InServiceToVisit(BM):
 
 class OutVisit(BM):
     version: Literal[1] = 1
-    phone: Optional[str]
-    # from_dt: datetime.datetime
-    # to_dt: datetime.datetime
 
-    @classmethod
-    def Example(cls) -> "OutVisit":
-        return cls(
-            phone="375291231123",
-        )
+    email: str | None
+    has_notification: bool
+    phone: str | None
+    status: str
+    visit_id: int
+    worker_id: int | None
+
+
+class OutVisitExtended(BM):
+    services: list[services.OutService]
+    slot: slots.OutSlot
+    visit: OutVisit
 
 
 class Received(BM):
@@ -136,15 +140,16 @@ def public_book_visit(
     visit: InVisit,
     s: Session = Depends(db.get_session),
     # TODO: visitor
-) -> models.Visit:
+) -> OutVisitExtended:
     if visit.from_dt < datetime.datetime.now():
         raise app_exceptions.SlotNotAvailable
 
-    services = crud.get_services_by_ids(s, [s.service_id for s in visit.services])
-    assert len(services) > 0
-    visit_len_seconds: int = sum([service.seconds for service in services])
+    service_ids = [s.service_id for s in visit.services]
+    visit_services = services.get_services_by_ids(service_ids, s=s)
+    assert len(visit_services) > 0
+    visit_len_seconds: int = sum([service.seconds for service in visit_services])
 
-    slot = slots.CreateSlot(
+    potential_slot = slots.CreateSlot(
         name=f"Визит в {visit.from_dt}",
         slot_type=slots.TimeSlotType.VISIT,
         client_id=visit.client_id,
@@ -152,15 +157,22 @@ def public_book_visit(
         from_datetime=visit.from_dt,
         to_datetime=visit.from_dt + datetime.timedelta(seconds=visit_len_seconds),
     )
-    slot = availability.visit_pick_worker_and_check(s, slot, exc=app_exceptions.SlotNotAvailable)
-
-    db_slot = crud.create_slot(s, slot)
+    potential_slot = availability.visit_pick_worker_and_check(
+        s, potential_slot, exc=app_exceptions.SlotNotAvailable
+    )
+    slot = slots.create_slot(s, potential_slot)
 
     db_visit = crud.create_customer_visit(
         s,
         visit,
-        slot_id=db_slot.slot_id,
-        worker_id=db_slot.worker_id,
+        slot_id=slot.slot_id,
+        worker_id=slot.worker_id,
         customer_id=None,
     )
-    return db_visit
+    out_visit = OutVisit.from_orm(db_visit)
+
+    return OutVisitExtended(
+        slot=slot,
+        services=visit_services,
+        visit=out_visit,
+    )
