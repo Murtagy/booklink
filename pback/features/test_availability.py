@@ -207,3 +207,46 @@ def test_av_split():
     assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (44 * minute) + (45 * minute) + (
         45 * minute
     )
+
+
+def test_av_split_():
+    time = datetime.datetime(year=2023, month=1, day=1, hour=12)
+
+    availability_5h = Slot(
+        slot_id=1,
+        name="Day",
+        slot_type="available",
+        from_datetime=time,
+        to_datetime=time + (5 * hour),
+        worker_id=1,
+        client_id=1,
+    )
+    slots = [availability_5h]
+    av = Availability.CreateFromSlots(slots)
+    # 2 slots before start of av (for example manually added)
+    visit_45min = Slot(
+        slot_id=1,
+        name="Visit",
+        slot_type="visit",
+        from_datetime=time - (2 * hour),
+        to_datetime=time - (1 * hour),
+        worker_id=1,
+        client_id=1,
+    )
+    visit_45min_2 = Slot(
+        slot_id=1,
+        name="Visit",
+        slot_type="visit",
+        from_datetime=time - (1 * hour),
+        to_datetime=time,
+        worker_id=1,
+        client_id=1,
+    )
+    av.ReduceAvailabilityBySlots(slots=[visit_45min, visit_45min_2])
+    assert av.days[0].timeslots[0].dt_from == time
+    assert av.days[0].timeslots[0].dt_to == time + (5 * hour)
+    assert len(av.days[0].timeslots) == 1
+    av.SplitByLengthAndTrim(45 * 60)
+    assert av.days[0].timeslots[0].dt_from == time
+    assert av.days[0].timeslots[0].dt_to == time + (45 * minute)
+    assert len(av.days[0].timeslots) == 6
