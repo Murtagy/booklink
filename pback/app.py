@@ -1,5 +1,3 @@
-from enum import Enum
-
 import structlog
 import uvicorn  # type: ignore
 from fastapi import FastAPI
