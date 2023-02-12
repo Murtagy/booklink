@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import type { TimeSlot } from '@/models/availability/TimeSlot';
+import type { TimeSlot } from "@/models/availability/TimeSlot";
 
 export default {
   components: {},
@@ -49,12 +49,12 @@ export default {
   },
   methods: {
     formatTimeSlot(ts: TimeSlot) {
-      const x = new Date(ts.dt_from)
+      const x = new Date(ts.dt_from);
       // hour + padded with leading zero minute
       return x.getHours() + ":" + ("0" + x.getMinutes()).slice(-2);
     },
     getRowsHours() {
-      const hours = this.timeslots.map(ts => {
+      const hours = this.timeslots.map((ts) => {
         const x = new Date(ts.dt_from);
         return x.getHours();
       });
@@ -62,16 +62,16 @@ export default {
       return Array.from(_hours_no_duplicated);
     },
     filterRowTimeslots(target_hour: number): TimeSlot[] {
-      const filtered: TimeSlot[] = []
+      const filtered: TimeSlot[] = [];
       for (const timeslot of this.timeslots) {
-        const dt_from = timeslot.dt_from
-        const dt_from_date = new Date(dt_from)
+        const dt_from = timeslot.dt_from;
+        const dt_from_date = new Date(dt_from);
         if (dt_from_date.getHours() != target_hour) {
-          continue
+          continue;
         }
-        filtered.push(timeslot)
+        filtered.push(timeslot);
       }
-      return filtered
+      return filtered;
     },
     emitTimeSlot(timeslot: TimeSlot) {
       console.log("Emit ts", timeslot);
@@ -86,7 +86,7 @@ export default {
     timeslots: {
       type: Array<TimeSlot>,
       required: true,
-    }
+    },
   },
 };
 </script>

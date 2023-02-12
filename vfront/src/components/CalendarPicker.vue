@@ -202,7 +202,8 @@ export default {
       const _date = new Date(__date);
       const date = _date.toISOString().split("T")[0];
 
-      const date_not_in_availability_days = (this.availability_days.indexOf(date) == -1)
+      const date_not_in_availability_days =
+        this.availability_days.indexOf(date) == -1;
       if (date_not_in_availability_days) {
         return false;
       }

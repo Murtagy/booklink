@@ -128,7 +128,7 @@ export default {
       services: new Services([]),
       worker: new CreateWorker(
         "", // name
-        "" // title
+        "", // title
       ),
       created_service: new CreateService(
         "", // name
@@ -136,7 +136,7 @@ export default {
         undefined, // price
         undefined,
         undefined,
-        undefined
+        undefined,
       ),
       client_id: 1,
       worker_id: 1,
@@ -148,7 +148,7 @@ export default {
   },
   methods: {
     async create_service(event: Event) {
-      console.log(  event)
+      console.log(event);
       event.preventDefault();
       let path = `/my_service`;
       const service = { ...this.created_service, client_id: this.client_id };

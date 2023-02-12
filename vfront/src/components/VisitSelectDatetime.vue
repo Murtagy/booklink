@@ -7,7 +7,7 @@
       @pick-date="pickDate"
     />
     <TimeSched
-      v-if="screen == 'time' && (selected_date != null)"
+      v-if="screen == 'time' && selected_date != null"
       :date="selected_date"
       :timeslots="timeslots"
       @pick-timeslot="pickTimeSlot"
@@ -37,7 +37,7 @@ export default {
     return {
       availability_mode: true,
       screen: "calendar",
-      selected_date: '',
+      selected_date: "",
       timeslots: [],
     };
   },
@@ -57,7 +57,7 @@ export default {
         if (day.date == date) {
           this.timeslots = day.timeslots;
           this.screen = "time";
-          return
+          return;
         }
       }
       throw Error("picked date not found");
