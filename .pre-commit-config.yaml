@@ -31,4 +31,4 @@ repos:
     rev: 'v8.34.0'
     hooks:
     -   id: eslint
-        types: [javascript, jsx, ts, tsx]
+        types: [javascript, jsx, ts, tsx, vue]
