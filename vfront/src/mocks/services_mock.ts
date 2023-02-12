@@ -6,6 +6,7 @@ export default {
       price: 25,
       currency: "бел.руб",
       service_id: 1,
+      client_id: 1,
       seconds: 600,
     },
     {
@@ -13,6 +14,7 @@ export default {
       price: 25,
       currency: "бел.руб",
       service_id: 2,
+      client_id: 1,
       seconds: 600,
     },
     {
@@ -20,6 +22,7 @@ export default {
       price: 25,
       currency: "бел.руб",
       service_id: 3,
+      client_id: 1,
       seconds: 600,
     },
     {
@@ -27,6 +30,7 @@ export default {
       price: 25,
       currency: "бел.руб",
       service_id: 4,
+      client_id: 1,
       seconds: 600,
     },
     {
@@ -34,6 +38,7 @@ export default {
       price: 25,
       currency: "бел.руб",
       service_id: 5,
+      client_id: 1,
       seconds: 1200,
     },
     {
@@ -41,6 +46,7 @@ export default {
       price: 25,
       currency: "бел.руб",
       service_id: 6,
+      client_id: 1,
       seconds: 1800,
     },
   ],
