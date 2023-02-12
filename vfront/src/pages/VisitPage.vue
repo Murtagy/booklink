@@ -184,7 +184,7 @@ export default {
       this.getWorkers();
     },
     worker() {
-      this.availability = null   ;
+      this.availability = null;
       this.getAvailability();
       // TODO: reget services - if we pick worker which is not skilled for a service
     },
@@ -193,7 +193,7 @@ export default {
     this.client_id =
       this.$route.query.org || import.meta.env.VITE_APP_CLIENT_ID; // setting null to avoid undefined
 
-    this.getWorkers();
+    this.getWorkers()  ;
     this.getServices();
     // alert(`client_id ${this.client_id}`)
   },
