@@ -101,7 +101,7 @@ def get_service_by_client(
 
 def get_services_by_client(
     client_id: int,
-    worker_id: Optional[int]  = Query(None),
+    worker_id: Optional[int]   = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
 ) -> OutServices:
