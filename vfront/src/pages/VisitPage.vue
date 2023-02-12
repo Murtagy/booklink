@@ -184,7 +184,7 @@ export default {
       this.getWorkers();
     },
     worker() {
-      this.availability = null;
+      this.availability = null ;
       this.getAvailability();
       // TODO: reget services - if we pick worker which is not skilled for a service
     },
