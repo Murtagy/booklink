@@ -40,7 +40,6 @@ class Availability(BM):
         today = datetime.date.today()
 
         for day_delta in range(n_days):
-
             target_day = today + datetime.timedelta(days=day_delta)
             weekday = DAYS[target_day.weekday()]
             list_from_to = schedule[weekday] if schedule else []
@@ -147,6 +146,18 @@ class Availability(BM):
                         # we remove availability
                         continue
 
+                    if F > t:
+                        new_ts.append(
+                            TimeSlot(dt_from=ts.dt_from, dt_to=ts.dt_to, slot_type=ts.slot_type)
+                        )
+                        continue
+
+                    if T < f:
+                        new_ts.append(
+                            TimeSlot(dt_from=ts.dt_from, dt_to=ts.dt_to, slot_type=ts.slot_type)
+                        )
+                        continue
+
                     # left is less, right in
                     #  f   __t
                     # F   T
@@ -183,7 +194,7 @@ class Availability(BM):
 
     def SplitByLengthAndTrim(self, length_seconds: int) -> None:
         for iday, day in enumerate(self.days):
-            date = day.date
+            day.date
             timeslots = day.timeslots
 
             new_timeslots: list[TimeSlot] = []

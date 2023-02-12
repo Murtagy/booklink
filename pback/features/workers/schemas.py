@@ -22,6 +22,9 @@ class OutWorker(BM):
     job_title: str
     use_company_schedule: bool
 
+    class Config:
+        orm_mode = True
+
 
 class OutWorkers(BM):
     workers: list[OutWorker]

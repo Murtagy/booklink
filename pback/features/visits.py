@@ -13,6 +13,8 @@ import db
 import models
 from features import availability, services, slots, users
 from features.slots import TimeSlotType
+from features.workers import api as worker_api
+from features.workers import schemas as worker_schemas
 
 
 class InServiceToVisit(BM):
@@ -29,11 +31,15 @@ class OutVisit(BM):
     visit_id: int
     worker_id: int | None
 
+    class Config:
+        orm_mode = True
+
 
 class OutVisitExtended(BM):
     services: list[services.OutService]
     slot: slots.OutSlot
     visit: OutVisit
+    worker: worker_schemas.OutWorker | None
 
 
 class Received(BM):
@@ -171,8 +177,13 @@ def public_book_visit(
     )
     out_visit = OutVisit.from_orm(db_visit)
 
+    worker = None
+    if db_visit.worker_id:
+        worker = worker_api.get_worker_by_id(db_visit.worker_id, s=s)
+
     return OutVisitExtended(
         slot=slot,
         services=visit_services,
         visit=out_visit,
+        worker=worker,
     )

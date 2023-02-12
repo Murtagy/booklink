@@ -22,6 +22,14 @@ def get_worker(
     return db_worker
 
 
+def get_worker_by_id(
+    worker_id: int,
+    s: Session,
+) -> schemas.OutWorker:
+    db_worker = crud.get_worker(s, int(worker_id))
+    return schemas.OutWorker.from_orm(db_worker)
+
+
 def update_worker(
     worker: schemas.UpdateWorker,
     worker_id: str = Path(regex=r"\d+"),
