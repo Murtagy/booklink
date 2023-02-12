@@ -13,23 +13,27 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
-        files: 'pback/.*\.py'
+        files: ^pback/
+        types_or: [python]
 
 -   repo: https://github.com/psf/black
     rev: 23.1.0
     hooks:
     -   id: black
-        files: 'pback/.*\.py'
+        files: ^pback/
+        types_or: [python]
         language_version: python3.11
 
 -   repo: https://github.com/PyCQA/autoflake
     rev: v2.0.1
     hooks:
     -   id: autoflake
-        files: 'pback/.*\.py'
+        files: ^pback/
+        types_or: [python]
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
     rev: 'v8.34.0'
     hooks:
     -   id: eslint
-        files: '^vfront/.*\.[jt]sx'  # *.js, *.jsx, *.ts and *.tsx
+        files: ^vfront/
+        types_or: [javascript, jsx, ts, tsx]
