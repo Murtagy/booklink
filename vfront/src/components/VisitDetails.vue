@@ -83,6 +83,7 @@
           <!-- TODO: more booked_visit info -->
           <!-- TODO: link to visit -->
           <!-- TODO: abstract into component -->
+          <!-- (?) maybe store by cookie a secret to get a visit -->
 
           <h2>Информация о записи</h2>
           <p class="bold">Время:</p>
