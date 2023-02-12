@@ -40,12 +40,14 @@ class InVisit(BM):
     client_id: int
     from_dt: datetime.datetime
     # to_dt: datetime.datetime
+    first_name: str
+    last_name: str
     email: str
     services: List[InServiceToVisit]
     phone: str
     remind_me: bool
     version: Literal[1] = 1
-    worker_id: Optional[int]
+    worker_id: str | None
 
 
 # class VisitStatus(SEnum):

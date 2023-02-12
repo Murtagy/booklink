@@ -66,6 +66,10 @@ def create_customer_visit(
     slot_id: Optional[int] = None,
     worker_id: Optional[int] = None,
 ) -> Visit:
+    target_worker_id = None
+    if visit.worker_id:
+        target_worker_id = int(visit.worker_id)
+    target_worker_id = target_worker_id or worker_id
     db_visit = Visit(
         client_id=visit.client_id,
         customer_id=customer_id,
@@ -75,7 +79,7 @@ def create_customer_visit(
         status="submitted",
         services=[s.service_id for s in visit.services],
         slot_id=slot_id,
-        worker_id=visit.worker_id or worker_id,
+        worker_id=target_worker_id,
     )
     db.add(db_visit)
     db.commit()
