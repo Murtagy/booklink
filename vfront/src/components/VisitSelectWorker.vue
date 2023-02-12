@@ -11,6 +11,12 @@
       ><br />
       <br />
       <!-- {{ worker.description }} -->
+      <input
+        type="button"
+        class="sticky_button"
+        @click="emitWorker(null)"
+        value="Сбросить"
+      />
     </button>
   </div>
 </template>
@@ -22,11 +28,8 @@ import type { OutWorker } from "@/client/models/OutWorker";
 
 export default {
   components: {},
-  data() {
-    return {};
-  },
   methods: {
-    emitWorker: function (x: OutWorker) {
+    emitWorker: function (x: OutWorker | null) {
       this.$emit("select-worker", x);
     },
   },

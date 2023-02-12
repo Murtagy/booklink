@@ -37,14 +37,22 @@
 <script lang="ts">
 import type { OutService } from "@/client/models/OutService";
 
+declare interface ComponentData {
+  checkedServices: OutService[];
+}
+
 export default {
   components: {},
-  data() {
+  data(): ComponentData {
     return {
       checkedServices: [],
     };
-    // TODO get services in online mode
   },
+  mounted() {
+    console.log("Mounted");
+    this.checkedServices = this.alreadyCheckedServices;
+  },
+  computed: {},
   methods: {
     emitServices: function () {
       this.$emit("check-services", this.checkedServices);
@@ -53,6 +61,10 @@ export default {
   },
   props: {
     services: Array<OutService>,
+    alreadyCheckedServices: {
+      type: Array<OutService>,
+      required: true,
+    },
   },
 };
 </script>

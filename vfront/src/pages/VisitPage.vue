@@ -76,7 +76,8 @@
         v-if="current_screen == 'visit-select-service'"
         @go-start-screen="changeToStartScreen()"
         @check-services="applyCheckedServices"
-        v-bind:services="services"
+        :services="services"
+        :alreadyCheckedServices="checked_services"
       />
       <visit-select-worker
         v-if="current_screen == 'visit-select-worker'"
@@ -183,10 +184,25 @@ export default {
     checked_services() {
       this.getWorkers();
     },
+    services() {
+      for (const checked_service of this.checked_services) {
+        let in_checked = false;
+        for (const service of this.services) {
+          if (service.service_id == checked_service.service_id) {
+            in_checked = true;
+          }
+        }
+        if (!in_checked) {
+          // picked service is not in the new list - we must flush the selections
+          this.checked_services = [];
+          return;
+        }
+      }
+    },
     worker() {
       this.availability = null;
       this.getAvailability();
-      // TODO: reget services - if we pick worker which is not skilled for a service
+      this.getServices();
     },
   },
   mounted() {
@@ -214,18 +230,16 @@ export default {
       this.current_screen = "start";
       this.current_screen_title = "Онлайн запись";
     },
-    // todo: flush selection (something has been selected, current availability might be wrong)
     applyCheckedServices: function (x: OutService[]) {
       this.checked_services = x;
       this.getAvailability();
       this.changeToStartScreen();
     },
-    applySelectedWorker: function (x: OutWorker) {
+    applySelectedWorker: function (x: OutWorker | null) {
       this.worker = x;
       this.changeToStartScreen();
     },
     applySelectedDateTime: function (date: string, slot: TimeSlot) {
-      // todo: slots are parsed in a map atm, date: bool, not sure why did it, might be better to parse that into a simple array
       console.log(date, slot);
       this.visit_slot = slot;
       this.changeToStartScreen();
@@ -250,10 +264,14 @@ export default {
       if (import.meta.env.VITE_APP_OFFLINE == "true") {
         return;
       }
-
+      var workerId;
+      if (this.worker?.worker_id) {
+        workerId = Number.parseInt(this.worker.worker_id);
+      }
       try {
         const services_response = await DefaultService.getServicesByClient(
           this.getClientId(),
+          workerId,
         );
         this.services = services_response.services;
 
