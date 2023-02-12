@@ -15,7 +15,7 @@
               @click="
                 changeCurrentScreen(
                   'visit-select-service',
-                  (current_screen_title = 'Выбор услуги')
+                  (current_screen_title = 'Выбор услуги'),
                 )
               "
             >
@@ -66,7 +66,7 @@
           @click="
             changeCurrentScreen(
               'visit-details',
-              (current_screen_title = 'Подтверждение записи')
+              (current_screen_title = 'Подтверждение записи'),
             )
           "
         />
@@ -173,8 +173,8 @@ export default {
         return s.service_id;
       });
 
-      if (services_ids.length ==  0) {
-        return undefined
+      if (services_ids.length == 0) {
+        return undefined;
       }
       return services_ids.join(",");
     },
@@ -184,7 +184,7 @@ export default {
       this.getWorkers();
     },
     worker() {
-      this.availability = null ;
+      this.availability = null;
       this.getAvailability();
       // TODO: reget services - if we pick worker which is not skilled for a service
     },
@@ -193,7 +193,7 @@ export default {
     this.client_id =
       this.$route.query.org || import.meta.env.VITE_APP_CLIENT_ID; // setting null to avoid undefined
 
-    this.getWorkers()  ;
+    this.getWorkers();
     this.getServices();
     // alert(`client_id ${this.client_id}`)
   },
@@ -238,7 +238,7 @@ export default {
       try {
         const workers = await DefaultService.getWorkersByClient(
           this.getClientId(),
-          this.checkedServicesIds
+          this.checkedServicesIds,
         );
         this.workers = workers.workers;
         console.log("Got workers", workers);
@@ -253,7 +253,7 @@ export default {
 
       try {
         const services_response = await DefaultService.getServicesByClient(
-          this.getClientId()
+          this.getClientId(),
         );
         this.services = services_response.services;
 
@@ -270,7 +270,6 @@ export default {
         this.availability = this.parseAvailability(availability_mock["mock"]);
       }
 
-
       try {
         if (this.worker == null) {
           // r = await DefaultService.getClientAvailability(this.getClientId(), picked_services_str)
@@ -279,7 +278,7 @@ export default {
         const r = await DefaultService.getWorkerAvailability(
           String(this.getClientId()),
           this.worker.worker_id,
-          this.checkedServicesIds
+          this.checkedServicesIds,
         );
         this.availability = this.parseAvailability(r);
       } catch (error: any | AxiosError) {
