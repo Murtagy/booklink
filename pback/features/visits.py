@@ -11,10 +11,8 @@ import app_exceptions
 import crud
 import db
 import models
-from features import availability, services, slots, users
+from features import availability, services, slots, users, workers
 from features.slots import TimeSlotType
-from features.workers import api as worker_api
-from features.workers import schemas as worker_schemas
 
 
 class InServiceToVisit(BM):
@@ -39,7 +37,7 @@ class OutVisitExtended(BM):
     services: list[services.OutService]
     slot: slots.OutSlot
     visit: OutVisit
-    worker: worker_schemas.OutWorker | None
+    worker: workers.OutWorker | None
 
 
 class Received(BM):
@@ -179,7 +177,7 @@ def public_book_visit(
 
     worker = None
     if db_visit.worker_id:
-        worker = worker_api.get_worker_by_id(db_visit.worker_id, s=s)
+        worker = workers.get_worker_by_id(db_visit.worker_id, s=s)
 
     return OutVisitExtended(
         slot=slot,

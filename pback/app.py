@@ -6,9 +6,16 @@ from fastapi.routing import APIRoute
 from sqlmodel import SQLModel
 
 import db
-from features import availability, files, services, skills, slots, users, visits
-from features.workers import api as workers_api
-from features.workers import schemas as workers_schemas
+from features import (
+    availability,
+    files,
+    services,
+    skills,
+    slots,
+    users,
+    visits,
+    workers,
+)
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -53,14 +60,14 @@ app.post("/token")(users.login_for_access_token)
 
 
 # WORKERS
-app.get("/worker/{worker_id}", response_model=workers_schemas.OutWorker)(workers_api.get_worker)
-app.put("/worker/{worker_id}", response_model=workers_schemas.OutWorker)(workers_api.update_worker)
-app.delete("/worker/{worker_id}")(workers_api.delete_worker)
-app.get("/client/{client_id}/workers", response_model=workers_schemas.OutWorkers)(
-    workers_api.get_workers_by_client
+app.get("/worker/{worker_id}", response_model=workers.OutWorker)(workers.get_worker)
+app.put("/worker/{worker_id}", response_model=workers.OutWorker)(workers.update_worker)
+app.delete("/worker/{worker_id}")(workers.delete_worker)
+app.get("/client/{client_id}/workers", response_model=workers.OutWorkers)(
+    workers.get_workers_by_client
 )
-app.get("/workers", response_model=workers_schemas.OutWorkers)(workers_api.get_workers)
-app.post("/worker", response_model=workers_schemas.OutWorker)(workers_api.create_worker)
+app.get("/workers", response_model=workers.OutWorkers)(workers.get_workers)
+app.post("/worker", response_model=workers.OutWorker)(workers.create_worker)
 
 
 # SERVICES
@@ -75,13 +82,11 @@ app.get("/client/{client_id}/services", response_model=services.OutServices)(
 )
 
 # WORKER-SERVICE
-app.post("/worker_services", response_model=workers_schemas.Received)(workers_api.add_skills)
-app.post("/worker_service", response_model=workers_schemas.Received)(workers_api.add_skill)
+app.post("/worker_services", response_model=workers.Received)(workers.add_skills)
+app.post("/worker_service", response_model=workers.Received)(workers.add_skill)
 
-app.post("/my_worker_services", response_model=workers_schemas.Received)(workers_api.my_add_skill)
-app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
-    workers_api.get_skills
-)
+app.post("/my_worker_services", response_model=workers.Received)(workers.my_add_skill)
+app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(workers.get_skills)
 
 
 # SLOTS

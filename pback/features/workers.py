@@ -1,4 +1,5 @@
 from fastapi import Depends, Path, Query
+from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
 import app_exceptions
@@ -6,7 +7,47 @@ import crud
 import db
 import models
 from features import services, skills, users
-from features.workers import schemas
+
+
+class CreateWorker(BM):
+    name: str
+    job_title: str
+    use_company_schedule: bool | None
+
+
+class UpdateWorker(BM):
+    # worker_id: int
+    name: None | str
+    job_title: None | str
+    use_company_schedule: None | bool
+
+
+class OutWorker(BM):
+    worker_id: str
+    name: str
+    job_title: str
+    use_company_schedule: bool
+
+    class Config:
+        orm_mode = True
+
+
+class OutWorkers(BM):
+    workers: list[OutWorker]
+
+
+class SkillIn(BM):
+    worker_id: int
+    service_id: int
+    picked: bool = True
+
+
+class SkillsIn(BM):
+    services: list[SkillIn]
+
+
+class Received(BM):
+    msg: str = "Received"
 
 
 def get_worker(
@@ -25,13 +66,13 @@ def get_worker(
 def get_worker_by_id(
     worker_id: int,
     s: Session,
-) -> schemas.OutWorker:
+) -> OutWorker:
     db_worker = crud.get_worker(s, int(worker_id))
-    return schemas.OutWorker.from_orm(db_worker)
+    return OutWorker.from_orm(db_worker)
 
 
 def update_worker(
-    worker: schemas.UpdateWorker,
+    worker: UpdateWorker,
     worker_id: str = Path(regex=r"\d+"),
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
@@ -55,7 +96,7 @@ def get_workers_by_client(
     services: str | None = Query(None),
     s: Session = Depends(db.get_session),
     # current_user: models.User = Depends(users.get_current_user),
-) -> schemas.OutWorkers:
+) -> OutWorkers:
     db_workers = crud.get_workers(s, client_id)
     if services:
         # filter for skilled workers only
@@ -69,20 +110,20 @@ def get_workers_by_client(
                 continue
             db_workers.append(worker)
 
-    return schemas.OutWorkers(workers=db_workers)
+    return OutWorkers(workers=db_workers)
 
 
 def get_workers(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
-) -> schemas.OutWorkers:
+) -> OutWorkers:
     db_workers = crud.get_workers(s, current_user.client_id)
 
-    return schemas.OutWorkers(workers=db_workers)
+    return OutWorkers(workers=db_workers)
 
 
 def create_worker(
-    worker: schemas.CreateWorker,
+    worker: CreateWorker,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> models.Worker:
@@ -106,10 +147,10 @@ def _skill_picked(s: Session, worker_id: int, service_id: int) -> bool:
 
 # endpoints:
 def add_skill(
-    skill: schemas.SkillIn,
+    skill: SkillIn,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
-) -> schemas.Received:
+) -> Received:
     worker_id = skill.worker_id
     service_id = skill.service_id
 
@@ -124,14 +165,14 @@ def add_skill(
     assert current_user.client_id == db_worker.client_id
     assert service.client_id == db_worker.client_id
     skills.create_skill(s, worker_id, service_id)
-    return schemas.Received()
+    return Received()
 
 
 def add_skills(
-    skills_in: schemas.SkillsIn,
+    skills_in: SkillsIn,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
-) -> schemas.Received:
+) -> Received:
     assert len(set((w.worker_id for w in skills_in.services)))
     worker_id = skills_in.services[0].worker_id
 
@@ -152,7 +193,7 @@ def add_skills(
         if not picked_in_db and updated_service.picked:
             skills.create_skill(s, worker_id, service_id)
 
-    return schemas.Received()
+    return Received()
 
 
 def get_skills(
@@ -165,9 +206,9 @@ def get_skills(
 
 
 def my_add_skill(
-    skill: schemas.SkillIn,
+    skill: SkillIn,
     s: Session = Depends(db.get_session),
-) -> schemas.Received:
+) -> Received:
     worker_id = skill.worker_id
     service_id = skill.service_id
 
@@ -180,4 +221,4 @@ def my_add_skill(
         raise app_exceptions.ServiceNotFound
 
     skills.create_skill(s, worker_id, service_id)
-    return schemas.Received()
+    return Received()
