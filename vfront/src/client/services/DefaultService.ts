@@ -51,7 +51,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static createUser(
-    requestBody: UserCreate,
+    requestBody: UserCreate
   ): CancelablePromise<TokenOut> {
     return __request(OpenAPI, {
       method: "POST",
@@ -95,7 +95,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static loginForAccessToken(
-    formData: Body_login_for_access_token,
+    formData: Body_login_for_access_token
   ): CancelablePromise<any> {
     return __request(OpenAPI, {
       method: "POST",
@@ -136,7 +136,7 @@ export class DefaultService {
    */
   public static updateWorker(
     workerId: string,
-    requestBody: UpdateWorker,
+    requestBody: UpdateWorker
   ): CancelablePromise<OutWorker> {
     return __request(OpenAPI, {
       method: "PUT",
@@ -180,7 +180,7 @@ export class DefaultService {
    */
   public static getWorkersByClient(
     clientId: number,
-    services?: string,
+    services?: string
   ): CancelablePromise<OutWorkers> {
     return __request(OpenAPI, {
       method: "GET",
@@ -216,7 +216,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static createWorker(
-    requestBody: CreateWorker,
+    requestBody: CreateWorker
   ): CancelablePromise<OutWorker> {
     return __request(OpenAPI, {
       method: "POST",
@@ -236,7 +236,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static createService(
-    requestBody: CreateService,
+    requestBody: CreateService
   ): CancelablePromise<OutService> {
     return __request(OpenAPI, {
       method: "POST",
@@ -256,7 +256,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static myCreateService(
-    requestBody: CreateServiceWithClientId,
+    requestBody: CreateServiceWithClientId
   ): CancelablePromise<OutService> {
     return __request(OpenAPI, {
       method: "POST",
@@ -297,7 +297,7 @@ export class DefaultService {
    */
   public static getServiceByClient(
     clientId: number,
-    serviceId: number,
+    serviceId: number
   ): CancelablePromise<OutService> {
     return __request(OpenAPI, {
       method: "GET",
@@ -321,7 +321,7 @@ export class DefaultService {
    */
   public static getServicesByClient(
     clientId: number,
-    workerId?: number,
+    workerId?: number
   ): CancelablePromise<OutServices> {
     return __request(OpenAPI, {
       method: "GET",
@@ -401,7 +401,7 @@ export class DefaultService {
    */
   public static getSkills(
     clientId: number,
-    workerId?: number,
+    workerId?: number
   ): CancelablePromise<SkillsOut> {
     return __request(OpenAPI, {
       method: "GET",
@@ -425,7 +425,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static createSlot(
-    requestBody: CreateSlot,
+    requestBody: CreateSlot
   ): CancelablePromise<OutSlot> {
     return __request(OpenAPI, {
       method: "POST",
@@ -466,7 +466,7 @@ export class DefaultService {
    */
   public static createClientWeeklySlot(
     clientId: number,
-    requestBody: CreateWeeklySlot,
+    requestBody: CreateWeeklySlot
   ): CancelablePromise<any> {
     return __request(OpenAPI, {
       method: "POST",
@@ -491,7 +491,7 @@ export class DefaultService {
    */
   public static createWorkerWeeklySlot(
     workerId: number,
-    requestBody: CreateWeeklySlot,
+    requestBody: CreateWeeklySlot
   ): CancelablePromise<any> {
     return __request(OpenAPI, {
       method: "POST",
@@ -535,7 +535,7 @@ export class DefaultService {
    */
   public static updateVisit(
     visitId: string,
-    requestBody: InVisit,
+    requestBody: InVisit
   ): CancelablePromise<any> {
     return __request(OpenAPI, {
       method: "PUT",
@@ -577,7 +577,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static createVisitSlot(
-    requestBody: CreateSlot,
+    requestBody: CreateSlot
   ): CancelablePromise<OutVisit> {
     return __request(OpenAPI, {
       method: "POST",
@@ -597,7 +597,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static publicBookVisit(
-    requestBody: InVisit,
+    requestBody: InVisit
   ): CancelablePromise<OutVisitExtended> {
     return __request(OpenAPI, {
       method: "POST",
@@ -621,7 +621,7 @@ export class DefaultService {
   public static getWorkerAvailability(
     clientId: string,
     workerId: string,
-    services?: string,
+    services?: string
   ): CancelablePromise<Availability> {
     return __request(OpenAPI, {
       method: "GET",
@@ -648,7 +648,7 @@ export class DefaultService {
    */
   public static getClientAvailability(
     clientId: number,
-    services?: string,
+    services?: string
   ): CancelablePromise<AvailabilityPerWorker> {
     return __request(OpenAPI, {
       method: "GET",

@@ -195,10 +195,10 @@ export default {
       if (this.visit_slot != null) {
         const date = new Date(this.visit_slot.dt_from);
         const day = `${String(date.getFullYear())}-${String(
-          date.getMonth(),
+          date.getMonth()
         ).padStart(2, "0")}-${String(date.getDay()).padStart(2, "0")}`;
         const time = `${String(date.getHours())}:${String(
-          date.getMinutes(),
+          date.getMinutes()
         ).padStart(2, "0")}`;
         return `${day} ${time}`;
       }

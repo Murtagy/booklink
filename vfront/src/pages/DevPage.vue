@@ -128,7 +128,7 @@ export default {
       services: new Services([]),
       worker: new CreateWorker(
         "", // name
-        "", // title
+        "" // title
       ),
       created_service: new CreateService(
         "", // name
@@ -136,7 +136,7 @@ export default {
         undefined, // price
         undefined,
         undefined,
-        undefined,
+        undefined
       ),
       client_id: 1,
       worker_id: 1,

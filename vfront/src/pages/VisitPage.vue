@@ -15,7 +15,7 @@
               @click="
                 changeCurrentScreen(
                   'visit-select-service',
-                  (current_screen_title = 'Выбор услуги'),
+                  (current_screen_title = 'Выбор услуги')
                 )
               "
             >
@@ -66,7 +66,7 @@
           @click="
             changeCurrentScreen(
               'visit-details',
-              (current_screen_title = 'Подтверждение записи'),
+              (current_screen_title = 'Подтверждение записи')
             )
           "
         />
@@ -252,7 +252,7 @@ export default {
       try {
         const workers = await DefaultService.getWorkersByClient(
           this.getClientId(),
-          this.checkedServicesIds,
+          this.checkedServicesIds
         );
         this.workers = workers.workers;
         console.log("Got workers", workers);
@@ -271,7 +271,7 @@ export default {
       try {
         const services_response = await DefaultService.getServicesByClient(
           this.getClientId(),
-          workerId,
+          workerId
         );
         this.services = services_response.services;
 
@@ -296,7 +296,7 @@ export default {
         const r = await DefaultService.getWorkerAvailability(
           String(this.getClientId()),
           this.worker.worker_id,
-          this.checkedServicesIds,
+          this.checkedServicesIds
         );
         this.availability = this.parseAvailability(r);
       } catch (error: any | AxiosError) {

@@ -3,6 +3,5 @@
 /* eslint-disable */
 
 export type Received = {
-    msg?: string;
+  msg?: string;
 };
-
