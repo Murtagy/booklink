@@ -45,7 +45,7 @@ OpenAPI.TOKEN = authstore.jwt_auth;
 axios.interceptors.response.use(undefined, function (error) {
   if (error) {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       // authstore.dispatch('LogOut')
       return router.push("/login");

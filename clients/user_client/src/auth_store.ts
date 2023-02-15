@@ -1,6 +1,6 @@
 // import Vue from "vue";
 import { defineStore } from "pinia";
-
+import { DefaultService, type UserOut } from "./client";
 // Vue.use(Vuex);
 
 function getCookie(cname: string) {
@@ -30,17 +30,39 @@ function checkAuthCookie() {
   return getCookie("jwtAuth");
 }
 
+declare interface stateType {
+  jwt_auth: string,
+  user: null | UserOut,
+}
+
 const authStore = defineStore("auth", {
-  state: () => ({
+  state: (): stateType => ({
     jwt_auth: checkAuthCookie(),
+    user: null,
   }),
   actions: {
     setJwt(jwt: string) {
-      console.log("Setting token");
+      // console.log("Setting token");
       setCookie("jwtAuth", jwt, 14);
       this.jwt_auth = jwt;
     },
+    async getUserMust(): Promise<UserOut> {
+      if (this.user) {
+        return this.user
+      }
+      try {
+        this.user = await DefaultService.readUsersMe()
+      }
+      catch (e) {
+        console.log(e)
+        throw e
+      }
+      if (!this.user) {
+        throw Error('Could not get user')
+      }
+      return this.user
+    }
   },
 });
-// const initialized_store = store()
+
 export default authStore;
