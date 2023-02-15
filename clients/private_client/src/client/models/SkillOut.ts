@@ -2,10 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { OutService } from './OutService';
+import type { OutService } from "./OutService";
 
 export type SkillOut = {
-    picked: boolean;
-    service: OutService;
+  picked: boolean;
+  service: OutService;
 };
-

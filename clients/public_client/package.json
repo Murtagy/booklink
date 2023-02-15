@@ -12,7 +12,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "generate-client": "openapi --input http://localhost:8000/openapi.json --output ./src/client --client axios"
+    "generate-client": "openapi --input http://localhost:8000/public_api/openapi.json --output ./src/client --client axios"
   },
   "dependencies": {
     "axios": "^0.23.0",

@@ -2,9 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { SkillOut } from './SkillOut';
+import type { SkillOut } from "./SkillOut";
 
 export type SkillsOut = {
-    services: Array<SkillOut>;
+  services: Array<SkillOut>;
 };
-

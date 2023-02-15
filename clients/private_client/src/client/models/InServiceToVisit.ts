@@ -3,6 +3,5 @@
 /* eslint-disable */
 
 export type InServiceToVisit = {
-    service_id: number;
+  service_id: number;
 };
-

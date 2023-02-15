@@ -90,7 +90,6 @@ input.sticky_button:hover {
 }
 
 @media screen and (max-width: 900px) {
-
   li span.price {
     font-size: 20px;
   }
@@ -101,7 +100,6 @@ input.sticky_button:hover {
 }
 
 @media screen and (max-width: 620px) {
-
   li span.price {
     font-size: 18px;
     line-height: 25px;
