@@ -6,7 +6,7 @@
  * An enumeration.
  */
 export enum TimeSlotType {
-  BUSY = "busy",
-  AVAILABLE = "available",
-  VISIT = "visit",
+    BUSY = 'busy',
+    AVAILABLE = 'available',
+    VISIT = 'visit',
 }

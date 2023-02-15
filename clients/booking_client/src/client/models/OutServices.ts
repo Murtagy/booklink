@@ -2,8 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { OutService } from "./OutService";
+import type { OutService } from './OutService';
 
 export type OutServices = {
-  services: Array<OutService>;
+    services: Array<OutService>;
 };
+
