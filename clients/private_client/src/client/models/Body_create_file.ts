@@ -3,5 +3,6 @@
 /* eslint-disable */
 
 export type Body_create_file = {
-  file: Blob;
+    file: Blob;
 };
+

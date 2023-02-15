@@ -2,10 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { TimeSlotType } from "./TimeSlotType";
+import type { TimeSlotType } from './TimeSlotType';
 
 export type TimeSlot = {
-  dt_from: string;
-  dt_to: string;
-  slot_type: TimeSlotType;
+    dt_from: string;
+    dt_to: string;
+    slot_type: TimeSlotType;
 };
+
