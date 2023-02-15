@@ -1,0 +1,95 @@
+div.main {
+  font-family: "TimesNewRoman";
+  color: var(--color7);
+}
+
+img {
+  height: 15px;
+  width: 15px;
+}
+
+img.left {
+  transform: rotate(90deg);
+}
+
+img.right {
+  transform: rotate(270deg);
+}
+
+button {
+  border: none;
+  padding: 10px;
+  background-color: var(--color6-bg);
+}
+
+button.left {
+  margin-top: 150px;
+  margin-left: 16%;
+}
+
+button.right {
+  margin-right: 16%;
+}
+
+div.month {
+  margin-top: 0;
+  margin-left: 25%;
+  margin-right: 25%;
+  text-align: center;
+  padding: 10px;
+  font-size: 25px;
+  font-weight: bolder;
+  display: inline-block;
+  border-bottom: 3px solid var(--color1);
+}
+
+div.dates {
+  color: gray;
+  display: grid;
+  font-size: 18px;
+  grid-auto-rows: minmax(140px auto);
+  grid-gap: 3px;
+  grid-template-columns: repeat(7, 1fr);
+  margin-left: 6%;
+  margin-right: 6%;
+  padding: 20px;
+  text-align: center;
+  width: auto;
+}
+
+span.day {
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 25px;
+}
+
+span.dates {
+  padding: 20px;
+  border: 2px solid var(--color3);
+}
+
+span.clickable {
+  background-color: var(--color3);
+  border: 2px solid var(--color1);
+  color: black;
+}
+
+span.empty {
+  background-color: var(--color4);
+  border: 2px solid var(--color5);
+}
+
+span.square {
+  height: 10px;
+  width: 10px;
+  padding: 0;
+  padding-left: 18px;
+  margin-left: 12%;
+  border: 2px solid var(--color1);
+}
+
+span.description {
+  border: none;
+}

@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  background-color: var(--color6-bg);
+  font-family: "Times New Roman";
+}
+
+img {
+  height: 15px;
+  width: 15px;
+}
+
+img.left {
+  transform: rotate(90deg);
+}
+
+img.right {
+  transform: rotate(270deg);
+}
+
+button.left,
+button.right {
+  border: none;
+  padding: 10px;
+  background-color: var(--color6-bg);
+}
+
+button.left {
+  margin-top: 140px;
+  margin-left: 15%;
+}
+
+button.right {
+  margin-right: 15%;
+}
+
+div.chosen_date {
+  margin-top: 0;
+  margin-left: 25%;
+  margin-right: 25%;
+  text-align: center;
+  padding: 10px;
+  font-size: 22px;
+  font-weight: bolder;
+  display: inline-block;
+  color: var(--color7);
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  border-top: solid 1px var(--color2);
+  margin-top: 15px;
+}
+
+button,
+th {
+  font-size: 25px;
+  font-family: "Times New Roman";
+  padding: 6px;
+}
+
+th {
+  border-right: solid 1px var(--color2);
+  color: var(--color7);
+  width: 10%;
+}
+
+tr {
+  border-bottom: solid 1px var(--color2);
+  height: 55px;
+}
+
+td {
+  text-align: center;
+}
+
+td button {
+  border: 5px double white;
+  border-radius: 20px;
+  width: 30%;
+  background-color: var(--color2);
+  color: white;
+  font-weight: bold;
+}
+
+td button:hover {
+  cursor: pointer;
+  border: 5px double var(--color1);
+}

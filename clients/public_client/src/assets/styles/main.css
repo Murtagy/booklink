@@ -1,0 +1,128 @@
+:root {
+  --color1: rgb(119, 96, 205);
+  --color2: rgba(135, 116, 203, 1);
+  --color3: rgba(188, 177, 226, 1);
+  --color4: rgb(216, 207, 230);
+  --color5: rgb(188, 181, 201);
+  --color6-bg: rgba(251, 250, 254, 1);
+  --color7: #414141;
+  /* --color8: rgb(122, 95, 216); */
+  --color9-shadow: rgb(235, 228, 255);
+  /* --colorA: rgb(150, 128, 226); */
+}
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color6-bg);
+  font-family: "Times New Roman";
+}
+
+.box {
+  /* display: flex; */
+  /* justify-content: space-between; */
+  padding: 1.5em;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-gap: 20px;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: max-content 200px 1fr;
+}
+
+/* .card img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+} */
+
+li span.price {
+  font-size: 22px;
+  font-family: "TimesNewRoman";
+  color: var(--color7);
+  font-weight: bolder;
+  line-height: 38px;
+  position: absolute;
+  right: 25px;
+  font-style: italic;
+}
+
+li label.service_name {
+  font-size: 22px;
+  font-family: "TimesNewRoman";
+  color: var(--color7);
+  font-weight: bolder;
+  line-height: 38px;
+}
+
+input.sticky_button {
+  background-color: var(--color2);
+  border-radius: 20px;
+  border: 5px double white;
+  color: white;
+  font-family: "TimesNewRoman";
+  font-size: 27px;
+  font-weight: bold;
+  height: 8%;
+  position: fixed;
+  right: 20px;
+  top: 85%;
+  width: 40%;
+}
+
+input.sticky_button:hover {
+  cursor: pointer;
+  border: 5px double var(--color1);
+}
+
+.border_main1 {
+  border: 2px solid var(--color1);
+}
+
+@media screen and (max-width: 900px) {
+
+  li span.price {
+    font-size: 20px;
+  }
+  input.sticky_button {
+    top: 85%;
+    font-size: 24px;
+  }
+}
+
+@media screen and (max-width: 620px) {
+
+  li span.price {
+    font-size: 18px;
+    line-height: 25px;
+  }
+
+  input.sticky_button {
+    top: 85%;
+    font-size: 20px;
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  li span.price {
+    font-size: 16px;
+    line-height: 20px;
+    right: 15px;
+  }
+  input.sticky_button {
+    top: 85%;
+    font-size: 20px;
+    width: 70%;
+  }
+}
