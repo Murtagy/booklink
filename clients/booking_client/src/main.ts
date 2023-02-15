@@ -17,6 +17,7 @@ if (import.meta.env.DEV) {
 const apiPlugin = {
   install(app: any) {
     // configure the app
+    // this is no longer used! keeping as global var example
     app.config.globalProperties.$api = axios.create({
       baseURL: "http://127.0.0.1:8000/public_api/",
     });

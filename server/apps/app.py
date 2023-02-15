@@ -52,7 +52,7 @@ logger = structlog.get_logger()
 def ping() -> dict[str, str]:
     return {"message": "pong"}
 
-app.mount("/public_api/", public_app)
+app.mount("/booking_api/", public_app)
 
 # USERS
 app.post("/signup", response_model=users.TokenOut)(users.create_user)
