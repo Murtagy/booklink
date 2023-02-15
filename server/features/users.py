@@ -106,7 +106,7 @@ def unjwttfy_token_id(token: Optional[str]) -> Optional[str]:
 
 async def create_user(
     user: UserCreate, s: Session = Depends(db.get_session)
-) -> dict[str, str | int]:
+) -> TokenOut:
     # print(user)
     # return {"access_token": 'asda', "token_type": "bearer"}
 
@@ -121,11 +121,11 @@ async def create_user(
     # TODO add to client created_by user
     access_token = crud.create_user_token(s, db_user.user_id)
     jwt = jwtfy(access_token)
-    return {
-        "access_token": jwt,
-        "token_type": "bearer",
-        "client_id": db_client.client_id,
-    }
+    return TokenOut(
+        access_token=jwt,
+        token_type="bearer",
+        client_id=db_client.client_id,
+    )
 
 
 async def read_users_me(
@@ -137,13 +137,15 @@ async def read_users_me(
 async def read_users_me2(
     current_user: Optional[models.User] = Depends(get_current_user_or_none),
 ) -> Optional[models.User]:
+    if not current_user:
+        raise exceptions.BadToken
     return current_user
 
 
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     s: Session = Depends(db.get_session),
-) -> dict[Literal["access_token", "token_type"], str]:
+) -> TokenOut:
     db_user = crud.get_user_by_username(s, form_data.username)
     if not db_user:
         raise exceptions.BadCreds
@@ -152,4 +154,4 @@ async def login_for_access_token(
         raise exceptions.BadCreds
     access_token = crud.create_user_token(s, db_user.user_id)
     jwt_token = jwtfy(access_token)
-    return {"access_token": jwt_token, "token_type": "bearer"}
+    return TokenOut(access_token=jwt_token, token_type="bearer", client_id=db_user.client_id)

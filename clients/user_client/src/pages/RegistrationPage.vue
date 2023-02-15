@@ -65,7 +65,9 @@
 </template>
 
 <script lang="ts">
+import { DefaultService } from "@/client/services/DefaultService";
 import type { AxiosError, AxiosResponse } from "axios";
+import { OpenAPI } from "@/client";
 
 import WideHeader from "../components/WideHeader.vue";
 
@@ -95,15 +97,16 @@ export default {
         alert("Форма не заполнена");
       } else {
         try {
-          const response: AxiosResponse<any> = await this.$api.post("/signup", {
+          const response = await DefaultService.createUser({
             username: this.username,
             email: this.email,
             company: this.company,
             password: this.password,
           });
-          let token = response.data.access_token;
+          let token = response.access_token;
           if (token) {
             this.$authStore.setJwt(token);
+            OpenAPI.TOKEN = token;
             this.$router.push("/my_user");
           } else {
             this.DisplayError("Произошла ошибка");
@@ -114,9 +117,9 @@ export default {
           } else {
             this.DisplayError(e);
           }
+          throw e;
         }
       }
-      // TODO catch error
     },
     DisplayError(e: any) {
       alert("Произошла ошибка" + e);

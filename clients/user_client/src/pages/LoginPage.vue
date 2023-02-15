@@ -23,12 +23,7 @@
             required
           />
         </li>
-        <input
-          type="button"
-          value="Создать пользователя"
-          @click="Login"
-          id="submit"
-        />
+        <input type="button" value="Войти" @click="Login" id="submit" />
       </ul>
     </form>
   </div>
@@ -36,6 +31,8 @@
 
 <script lang="ts">
 import WideHeader from "../components/WideHeader.vue";
+import { DefaultService, OpenAPI } from "@/client";
+
 export default {
   components: { WideHeader },
   data() {
@@ -45,36 +42,29 @@ export default {
     };
   },
   methods: {
-    make_form() {
-      var body = new FormData();
-      body.append("username", this.username);
-      body.append("password", this.password);
-      return body;
-    },
-    Login() {
+    async Login() {
       console.log("Login");
       if (this.username == "") {
         alert("Логин не указан");
       } else {
-        this.$api
-          .post("/token", this.make_form())
-          .then((response: any) => {
-            let token = response.data.access_token as string;
-            if (token) {
-              this.$authStore.setJwt(token);
-              this.$router.push("/my_user");
-            } else {
-              this.DisplayError("Ошибка");
-            }
-          })
-          .catch((e) => {
-            if (e.response) {
-              this.DisplayErrorFromResponse(e.response);
-            } else {
-              console.log(e);
-              this.DisplayError(e);
-            }
+        try {
+          const response = await DefaultService.loginForAccessToken({
+            username: this.username,
+            password: this.password,
           });
+          let token = response.access_token;
+          this.$authStore.setJwt(token);
+          OpenAPI.TOKEN = token;
+          this.$router.push("/my_user");
+        } catch (e: any) {
+          if (e.response) {
+            this.DisplayErrorFromResponse(e.response);
+          } else {
+            console.log(e);
+            this.DisplayError(e);
+          }
+          throw e;
+        }
       }
     },
     DisplayError(e: any) {

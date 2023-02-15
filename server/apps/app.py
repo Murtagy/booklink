@@ -58,7 +58,7 @@ app.mount("/booking_api/", public_app)
 app.post("/signup", response_model=users.TokenOut)(users.create_user)
 app.get("/users/me/", response_model=users.UserOut)(users.read_users_me)
 app.get("/my_user", response_model=users.UserOut)(users.read_users_me2)
-app.post("/token")(users.login_for_access_token)
+app.post("/token", response_model=users.TokenOut)(users.login_for_access_token)
 
 
 # WORKERS

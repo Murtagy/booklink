@@ -16,12 +16,7 @@ if (import.meta.env.DEV) {
 }
 
 const apiPlugin = {
-  install(app: any) {
-    // configure the app
-    app.config.globalProperties.$api = axios.create({
-      baseURL: "http://127.0.0.1:8000/",
-    });
-  },
+  install(app: any) {},
 };
 
 const authPlugin = {
@@ -35,6 +30,21 @@ app.use(createPinia());
 app.use(apiPlugin);
 app.use(authPlugin);
 app.use(router);
+
+// reading token from cookies
+const authstore = app.config.globalProperties.$authStore;
+OpenAPI.TOKEN = authstore.jwt_auth;
+
+axios.interceptors.response.use(undefined, function (error) {
+  if (error) {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      // authstore.dispatch('LogOut')
+      return router.push("/login");
+    }
+  }
+});
 
 declare module "vue" {
   interface ComponentCustomProperties {

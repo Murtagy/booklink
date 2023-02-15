@@ -91,12 +91,12 @@ export class DefaultService {
   /**
    * Login For Access Token
    * @param formData
-   * @returns any Successful Response
+   * @returns TokenOut Successful Response
    * @throws ApiError
    */
   public static loginForAccessToken(
     formData: Body_login_for_access_token
-  ): CancelablePromise<any> {
+  ): CancelablePromise<TokenOut> {
     return __request(OpenAPI, {
       method: "POST",
       url: "/token",
