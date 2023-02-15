@@ -17,6 +17,7 @@ from features import (
     workers,
 )
 from .public_app import app as public_app
+import app_exceptions
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':

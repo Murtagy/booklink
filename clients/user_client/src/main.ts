@@ -11,13 +11,10 @@ import { OpenAPI } from "./client/core/OpenAPI";
 const app = createApp(App);
 // Vue.config.productionTip = false;
 
+const apiURL = import.meta.env.VITE_APP_API_URL;
 if (import.meta.env.DEV) {
-  OpenAPI.BASE = import.meta.env.VITE_APP_API_URL;
+  OpenAPI.BASE = apiURL;
 }
-
-const apiPlugin = {
-  install(app: any) {},
-};
 
 const authPlugin = {
   install(app: any) {
@@ -26,9 +23,19 @@ const authPlugin = {
   },
 };
 
+const apiPlugin = {
+  install(app: any) {
+    // configure the app
+    // this is no longer used! keeping as global var example
+    app.config.globalProperties.$api = axios.create({
+      baseURL: apiURL,
+    });
+  },
+};
+
 app.use(createPinia());
-app.use(apiPlugin);
 app.use(authPlugin);
+app.use(apiPlugin);
 app.use(router);
 
 // reading token from cookies
