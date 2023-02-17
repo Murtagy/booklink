@@ -1,8 +1,16 @@
 <template>
-  <CreateWorker v-if="show_createWorker" 
-    @created-worker="show_createWorker=false;fetchWorkers();"
+  <CreateWorker
+    v-if="show_createWorker"
+    @created-worker="
+      show_createWorker = false;
+      fetchWorkers();
+    "
   />
-  <input type="button" value="Создать сотрудника" @click="show_createWorker=true">
+  <input
+    type="button"
+    value="Создать сотрудника"
+    @click="show_createWorker = true"
+  />
   <div>
     <WorkersCardMin
       v-for="worker in workers"
@@ -20,10 +28,9 @@ import { DefaultService, type OutWorker } from "@/client";
 import WorkersCardMin from "@/components/WorkersCardMin.vue";
 import CreateWorker from "@/components/CreateWorker.vue";
 
-
 declare interface ComponentData {
-  workers: OutWorker[],
-  show_createWorker: boolean,
+  workers: OutWorker[];
+  show_createWorker: boolean;
 }
 
 export default {
@@ -31,7 +38,7 @@ export default {
   data(): ComponentData {
     return {
       workers: [],
-      show_createWorker: false
+      show_createWorker: false,
     };
   },
   mounted() {
