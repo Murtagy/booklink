@@ -15,10 +15,8 @@
 
 <script lang="ts">
 import { DefaultService, type OutWorker } from "@/client";
-import WorkersCardMin from "@/components/WorkersCardMin.vue";
 
 export default {
-  components: { WorkersCardMin },
   data() {
     return {
       job_title: "",
