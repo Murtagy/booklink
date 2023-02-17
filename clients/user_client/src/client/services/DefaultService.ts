@@ -250,6 +250,27 @@ export class DefaultService {
   }
 
   /**
+   * Get Services By User
+   * @param workerId
+   * @returns OutServices Successful Response
+   * @throws ApiError
+   */
+  public static getServicesByUser(
+    workerId?: number
+  ): CancelablePromise<OutServices> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/services",
+      query: {
+        worker_id: workerId,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
    * My Create Service
    * @param requestBody
    * @returns OutService Successful Response
