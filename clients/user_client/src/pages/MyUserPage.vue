@@ -7,7 +7,7 @@
 import { DefaultService, type UserOut } from "@/client";
 
 export default {
-  data(): { user: number | null, user2: null | UserOut } {
+  data(): { user: number | null; user2: null | UserOut } {
     return { user: null, user2: null };
   },
 
@@ -22,8 +22,8 @@ export default {
     },
     async getUser2() {
       const user = await this.$authStore.getUserMust();
-      return user
-    }
+      return user;
+    },
   },
 };
 </script>

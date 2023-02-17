@@ -7,15 +7,15 @@
 </template>
 
 <script lang="ts">
-import type { OutWorker } from '@/client';
-import type { PropType } from 'vue';
+import type { OutWorker } from "@/client";
+import type { PropType } from "vue";
 
 export default {
   props: {
     worker: {
       type: Object as PropType<OutWorker>,
-      required: true
-    }
-  }
-}
+      required: true,
+    },
+  },
+};
 </script>

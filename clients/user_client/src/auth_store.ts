@@ -31,8 +31,8 @@ function checkAuthCookie() {
 }
 
 declare interface stateType {
-  jwt_auth: string,
-  user: null | UserOut,
+  jwt_auth: string;
+  user: null | UserOut;
 }
 
 const authStore = defineStore("auth", {
@@ -48,20 +48,19 @@ const authStore = defineStore("auth", {
     },
     async getUserMust(): Promise<UserOut> {
       if (this.user) {
-        return this.user
+        return this.user;
       }
       try {
-        this.user = await DefaultService.readUsersMe()
-      }
-      catch (e) {
-        console.log(e)
-        throw e
+        this.user = await DefaultService.readUsersMe();
+      } catch (e) {
+        console.log(e);
+        throw e;
       }
       if (!this.user) {
-        throw Error('Could not get user')
+        throw Error("Could not get user");
       }
-      return this.user
-    }
+      return this.user;
+    },
   },
 });
 

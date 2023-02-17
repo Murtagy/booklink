@@ -51,7 +51,7 @@ axios.interceptors.response.use(undefined, function (error) {
       return router.push("/login");
     }
   }
-  throw error
+  throw error;
 });
 
 declare module "vue" {
