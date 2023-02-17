@@ -6,7 +6,9 @@
     /></label>
     <div class="menu-content">
       <a class="sized" href="#news">Визиты</a>
-      <a class="sized" href="#contact">Сотрудники</a>
+      <a class="sized">
+        <router-link to="/workers">Сотрудники</router-link>
+      </a>
       <a class="sized" href="#about">Услуги</a>
     </div>
     <img
