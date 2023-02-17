@@ -37,7 +37,8 @@ body {
 
 .card {
   display: grid;
-  grid-template-rows: max-content 200px 1fr;
+  /* закомментил для  */
+  /* grid-template-rows: max-content 200px 1fr; */
 }
 
 /* .card img {
