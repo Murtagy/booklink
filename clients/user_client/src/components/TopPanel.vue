@@ -9,7 +9,9 @@
       <a class="sized">
         <router-link to="/workers">Сотрудники</router-link>
       </a>
-      <a class="sized" href="#about">Услуги</a>
+      <a class="sized">
+        <router-link to="/services">Услуги</router-link>
+      </a>
     </div>
     <img
       src="@/assets/worker-icon.png"
