@@ -115,3 +115,13 @@ def get_services_by_client(
 ) -> OutServices:
     services = get_services(client_id, worker_id=worker_id, s=s)
     return services
+
+
+def get_services_by_user(
+    current_user: models.User = Depends(users.get_current_user),
+    worker_id: Optional[int] = Query(None),
+    s: Session = Depends(db.get_session),
+) -> OutServices:
+    client_id = current_user.client_id
+    services = get_services(client_id, worker_id=worker_id, s=s)
+    return services

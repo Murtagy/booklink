@@ -75,6 +75,7 @@ app.post("/worker", response_model=workers.OutWorker)(workers.create_worker)
 
 # SERVICES
 app.post("/service", response_model=services.OutService)(services.create_service)
+app.get("/services", response_model=services.OutServices)(services.get_services_by_user)
 app.post("/my_service", response_model=services.OutService)(services.my_create_service)
 app.get("/service/{service_id}", response_model=services.OutService)(services.get_service)
 app.get("/client/{client_id}/service/{service_id}", response_model=services.OutService)(
