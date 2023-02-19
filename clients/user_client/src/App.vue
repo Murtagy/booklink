@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <TopPanel v-if="!skipPanel" />
-    <router-view />
+    <div class="box">
+      <router-view />
+    </div>
   </div>
 </template>
 
