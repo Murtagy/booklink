@@ -12,9 +12,8 @@ from features import users
 
 class CreateService(BM):
     name: str
-    price: Optional[float]
-    price_lower_bound: Optional[float]
-    price_higher_bound: Optional[float]
+    price: float
+    price_to: Optional[float]
     seconds: int
     description: Optional[str]
 
@@ -28,8 +27,7 @@ class OutService(BM):
     client_id: int
     name: str
     price: Optional[float]
-    price_lower_bound: Optional[float]
-    price_higher_bound: Optional[float]
+    price_to: Optional[float]
     seconds: int
     description: str | None
     currency: str = "рублей"

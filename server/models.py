@@ -76,8 +76,7 @@ class Service(SQLModel, table=True):
 
     name: str
     price: float | None
-    price_lower_bound: float | None
-    price_higher_bound: float | None
+    price_to: float | None
     seconds: int
     description: str | None
     blocked_datetime: datetime.datetime | None

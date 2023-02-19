@@ -204,8 +204,6 @@ def test_portyanka():
         {
             "name": "Стрижка",
             "price": 13.1,
-            # price_lower_bound: Optional[float]
-            # price_higher_bound: Optional[float]
             "seconds": 45 * 60,
             "description": "Ножницы, все такое",
         }
@@ -220,8 +218,6 @@ def test_portyanka():
         {
             "name": "Стрижка",
             "price": 13.1,
-            # price_lower_bound: Optional[float]
-            # price_higher_bound: Optional[float]
             "seconds": 45 * 60,
             "description": "Ножницы, все такое",
         }

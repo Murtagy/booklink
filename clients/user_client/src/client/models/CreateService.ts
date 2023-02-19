@@ -4,9 +4,8 @@
 
 export type CreateService = {
   name: string;
-  price?: number;
-  price_lower_bound?: number;
-  price_higher_bound?: number;
+  price: number;
+  price_to?: number;
   seconds: number;
   description?: string;
 };
