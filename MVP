@@ -15,10 +15,10 @@ Admin app:
     login +
     create worker +
     create service +
-    assign service to worker
     create schedule - create av for clicked days
-    list visits
-    add visit
+    list visits by days
+    assign service to worker
+    add visit manually
     get visit info
     billing
     iframe + button
