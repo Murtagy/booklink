@@ -88,6 +88,11 @@ input.sticky_button:hover {
 
 .border_main1 {
   border: 2px solid var(--color1);
+  padding: 1em;
+}
+
+p.bold {
+  font-weight: bold;
 }
 
 @media screen and (max-width: 900px) {
