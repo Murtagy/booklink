@@ -1,0 +1,31 @@
+Plan:
+    - make a simple online-booking
+        - an app for online-booking
+        - an app for administration
+        - a separate SSR web page for website
+    - make payment for notifications (integrate with rocketsms)
+    - make payment for extra usage
+Reasoning:
+    - there seems to be strong competitors in notifications and CRM space
+      yclients and online-zapis are pretty expensive, so it should be easy to gain customers through cheaper pricing
+
+
+Admin app:
+    register +
+    login +
+    create worker +
+    create service +
+    assign service to worker
+    create schedule - create av for clicked days
+    list visits
+    add visit
+    get visit info
+    billing
+    iframe + button
+    notify
+        notify customer
+            at book
+            before visit
+        notify user
+            at book
+

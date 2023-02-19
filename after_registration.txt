@@ -1,4 +1,0 @@
-reg
-worker
-service
-schedule
