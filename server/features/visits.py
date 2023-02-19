@@ -4,7 +4,7 @@ import datetime
 from typing import List, Literal, Optional
 
 from fastapi import Depends
-from pydantic import BaseModel as BM
+from pydantic import BaseModel as BM, validator
 from sqlalchemy.orm import Session  # type: ignore
 
 import app_exceptions
@@ -58,6 +58,30 @@ class InVisit(BM):
     worker_id: str | None
 
 
+class VisitDay(BM):
+    date: datetime.date
+    visits_n: int
+    visits: list[OutVisit]
+
+
+class VisitsByDays(BM):
+    days: list[VisitDay]
+
+
+class VisitsByDaysRQ(BM):
+    date_from: datetime.date
+    date_to: datetime.date
+
+    @validator('date_to')
+    def date_to_check(cls, v, values):
+        if v < values['date_from']:
+            raise ValueError('to should be greater than from')
+        delta: datetime.timedelta = v - values['date_from']
+        if delta > datetime.timedelta(days=7):
+            raise ValueError('range is too big')
+        return v
+
+
 # class VisitStatus(SEnum):
 #     SUMBITTED = 'submitted'  # -> R/A
 #     REJECTED = 'rejected'
@@ -75,6 +99,18 @@ def get_visits(
     client_id = current_user.client_id
 
     return crud.get_visits(s, client_id, worker_id=worker_id)
+
+
+def get_visits_days(
+    rq: VisitsByDaysRQ,
+    worker_id: Optional[int] = None,
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> VisitsByDays:
+    client_id = current_user.client_id
+
+    visits = crud.get_visits(s, client_id, worker_id=worker_id)
+    return VisitsByDays(days=[])
 
 
 def update_visit(
