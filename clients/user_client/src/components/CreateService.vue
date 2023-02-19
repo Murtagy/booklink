@@ -3,7 +3,8 @@
     <form @submit.prevent="createService" class="border_main1">
       <p class="bold"><label for="name">Название</label></p>
       <input
-        id="name" 
+        id="name"
+        class="wide"
         v-model.trim="name"
         placeholder="Название (например: Мойка)" 
         required
@@ -12,8 +13,18 @@
       <input
         id="minutes"
         v-model="minutes"
+        type="range"
+        class="wide"
+        min="0"
+        max="100"
+        step="5"
+        required
+      />
+      <br>
+      <input
+        id="minutes"
+        v-model="minutes"
         type="number"
-        placeholder="Длительность в минутах"
         required
       />
       <p class="bold"><label for="price">Стоимость</label></p>
@@ -21,7 +32,6 @@
         id="price"
         v-model="price"
         type="number"
-        placeholder="Стоимость ( например 35,5 )"
         required
       />
       <p class="bold"><label for="price_to">Верхняя стоимость (если услуга оценивается диапазоном от-до)</label></p>
@@ -29,8 +39,8 @@
         id="price_to"
         v-model="price_to"
         type="number"
-        placeholder="(например 50)"
       />
+      (необязательно) 
       <div style="margin-top:1em; float: right;">
         <button type="submit">Создать</button>
       </div>
@@ -39,6 +49,14 @@
 </template>
 
 <style scoped>
+
+input {
+  width: 5em;
+}
+input.wide {
+  width: fit-content;
+  min-width: 30%;
+}
 </style>
 
 <script lang="ts">
