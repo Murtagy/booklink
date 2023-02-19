@@ -25,7 +25,7 @@
 <script lang="ts">
 import { DefaultService, type OutService } from "@/client";
 import ServiceCardMin from "@/components/ServiceCardMin.vue";
-import CreateService from "@/components/CreateServiceTODO.vue";
+import CreateService from "@/components/CreateService.vue";
 
 declare interface ComponentData {
   services: OutService[];

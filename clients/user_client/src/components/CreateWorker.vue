@@ -1,12 +1,16 @@
 <template>
   <div>
-    <form @submit.prevent="createWorker">
-      <input v-model.trim="name" placeholder="Имя (например: Мария)" />
+    <form @submit.prevent="createWorker" class="border_main1">
+      <p class="bold"><label for="name">Имя / Название</label></p>
+      <input v-model.trim="name" placeholder="Иван / Номер 1 " />
+      <p class="bold"><label for="job_title">Должность / Роль</label></p>
       <input
         v-model.trim="job_title"
-        placeholder="Должность/Роль (например: Визажист)"
+        placeholder=" Визажист / Машиноместо"
       />
-      <button type="submit">Создать</button>
+      <div style="margin-top:1em; float: right;">
+        <button type="submit">Создать</button>
+      </div>
     </form>
   </div>
 </template>
