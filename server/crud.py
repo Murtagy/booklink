@@ -16,60 +16,39 @@ from models import (
     Slot,
     Token,
     User,
-    Visit,
-    WeeklySlot,
     Worker,
+    SlotType,
 )
 
 
-def get_visit(db: Session, visit_id: int) -> Optional[Visit]:
-    stmt = select(Visit).where(Visit.visit_id == visit_id)
+def get_visit(db: Session, visit_id: int) -> Optional[Slot]:
+    stmt = select(Slot).where(Slot.slot_id == visit_id).where(Slot.status == SlotType.VISIT)
     return db.execute(stmt).scalar_one_or_none()
 
 
 def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
-    q = select(Visit).where(Visit.client_id == client_id)
+    q = select(Slot).where(Slot.client_id == client_id).where(Slot.status == SlotType.VISIT)
     if worker_id:
-        q = q.where(Visit.worker_id == worker_id)
+        q = q.where(Slot.worker_id == worker_id)
     return db.execute(q).scalars().all()
-
-
-def create_visit(
-    db: Session,
-    *,
-    client_id: Optional[int] = None,
-    customer_id: Optional[int] = None,
-    slot_id: Optional[int] = None,
-    worker_id: Optional[int] = None,
-) -> Visit:
-    db_visit = Visit(
-        client_id=client_id,
-        customer_id=customer_id,
-        has_notification=False,
-        status="submitted",
-        # services=[s.service_id for s in visit.services],
-        slot_id=slot_id,
-        worker_id=worker_id,
-    )
-    db.add(db_visit)
-    db.commit()
-    db.refresh(db_visit)
-    return db_visit
 
 
 def create_customer_visit(
     db: Session,
     visit: visits.InVisit,
     *,
-    customer_id: Optional[int] = None,
-    slot_id: Optional[int] = None,
+    to_dt: datetime.datetime,
+    # customer_id: Optional[int] = None,
     worker_id: Optional[int] = None,
-) -> Visit:
+) -> Slot:
     target_worker_id = None
     if visit.worker_id:
         target_worker_id = int(visit.worker_id)
     target_worker_id = target_worker_id or worker_id
-    db_visit = Visit(
+    db_visit = Slot(
+        slot_type=SlotType.VISIT
+        from_datetime=visit.from_dt,
+        to_datetime=to_dt,
         client_id=visit.client_id,
         customer_id=customer_id,
         email=visit.email,
@@ -77,7 +56,6 @@ def create_customer_visit(
         phone=visit.phone,
         status="submitted",
         services=[s.service_id for s in visit.services],
-        slot_id=slot_id,
         worker_id=target_worker_id,
     )
     db.add(db_visit)
@@ -239,43 +217,12 @@ def get_client_slots(db: Session, client_id: int, *, slot_types: Optional[List[s
     return db.execute(q).scalars().all()
 
 
-def get_client_weeklyslot(db: Session, client_id: int) -> Optional[WeeklySlot]:
-    # add filtering
-    stmt = (
-        select(WeeklySlot)
-        .where(WeeklySlot.client_id == client_id)
-        .where(WeeklySlot.worker_id == None)
-    )
-    return db.execute(stmt).scalar_one_or_none()
-
-
-def get_worker_weeklyslot(db: Session, worker_id: int) -> Optional[WeeklySlot]:
-    # add filtering
-    stmt = select(WeeklySlot).where(WeeklySlot.worker_id == worker_id)
-    return db.execute(stmt).scalar_one_or_none()
-
-
 def get_worker_slots(db: Session, worker_id: int, *, slot_types: Optional[List[str]]) -> List[Slot]:
     # add filtering
     q = select(Slot).where(Slot.worker_id == worker_id)
     if slot_types:
         q = q.where(col(Slot.slot_type).in_(slot_types))
     return db.execute(q).scalars().all()
-
-
-def create_weekly_slot(
-    db: Session,
-    slot: slots.CreateWeeklySlot,
-    client_id: int,
-    *,
-    worker_id: Optional[int] = None,
-) -> WeeklySlot:
-    schedule = slot.dict()
-    db_slot = WeeklySlot(client_id=client_id, schedule_by_day=schedule, worker_id=worker_id)
-    db.add(db_slot)
-    db.commit()
-    db.refresh(db_slot)
-    return db_slot
 
 
 def create_service(

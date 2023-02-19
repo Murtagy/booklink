@@ -103,7 +103,6 @@ app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot)
 # VISITS
 app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit)
 app.get("/visits")(visits.get_visits)
-app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot)
 app.post("/public/visit", response_model=visits.OutVisitExtended)(visits.public_book_visit)
 app.put("/visit/{visit_id}")(visits.update_visit)
 

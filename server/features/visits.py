@@ -20,13 +20,11 @@ class InServiceToVisit(BM):
 
 
 class OutVisit(BM):
-    version: Literal[1] = 1
-
     email: str | None
     has_notification: bool
     phone: str | None
     status: str
-    visit_id: int
+    slot_id: int
     worker_id: int | None
 
     class Config:
@@ -95,7 +93,7 @@ def get_visits(
     worker_id: Optional[int] = None,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
-) -> list[models.Visit]:
+) -> list[models.Slot]:
     client_id = current_user.client_id
 
     return crud.get_visits(s, client_id, worker_id=worker_id)
@@ -126,7 +124,7 @@ def get_visit(
     visit_id: int,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
-) -> models.Visit:
+) -> models.Slot:
     visit = crud.get_visit(s, visit_id)
     if not visit:
         raise app_exceptions.VisitNotFound
@@ -140,40 +138,12 @@ def create_slot(
 ) -> models.Slot:
     if slot.slot_type == TimeSlotType.VISIT:
         # in case slot is a visit - check for collision
-        slot = availability.visit_pick_worker_and_check(
+        slot = availability.visit_pick_worker_or_throw(
             s, slot, exc=app_exceptions.SlotNotAvailable
         )
     # others we let to duplicate
     db_slot = crud.create_slot(s, slot)
     return db_slot
-
-
-# this endpoint use ?
-# def create_visit_endpoint(
-#     visit: InVisit,
-#     s: Session = Depends(db.get_session),
-#     current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
-# ) -> models.Visit:
-#     db_visit = crud.create_visit(s, visit)
-#     return db_visit
-
-
-def create_visit_slot(
-    slot: slots.CreateSlot,
-    s: Session = Depends(db.get_session),
-) -> models.Visit:
-    if slot.slot_type not in [TimeSlotType.VISIT]:
-        raise app_exceptions.SlotType
-
-    slot = availability.visit_pick_worker_and_check(s, slot, exc=app_exceptions.SlotNotAvailable)
-    db_slot = crud.create_slot(s, slot)
-    db_visit = crud.create_visit(
-        s,
-        client_id=db_slot.client_id,
-        slot_id=db_slot.slot_id,
-        worker_id=db_slot.worker_id,
-    )
-    return db_visit
 
 
 def public_book_visit(
@@ -197,7 +167,7 @@ def public_book_visit(
         from_datetime=visit.from_dt,
         to_datetime=visit.from_dt + datetime.timedelta(seconds=visit_len_seconds),
     )
-    potential_slot = availability.visit_pick_worker_and_check(
+    potential_slot = availability.visit_pick_worker_or_throw(
         s, potential_slot, exc=app_exceptions.SlotNotAvailable
     )
     slot = slots.create_slot(s, potential_slot)
@@ -205,9 +175,8 @@ def public_book_visit(
     db_visit = crud.create_customer_visit(
         s,
         visit,
-        slot_id=slot.slot_id,
+        to_dt=potential_slot.to_datetime,
         worker_id=slot.worker_id,
-        customer_id=None,
     )
     out_visit = OutVisit.from_orm(db_visit)
 

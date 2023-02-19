@@ -270,21 +270,10 @@ class Availability(BM):
         else:
             worker = worker_u
 
-        if worker.use_company_schedule:
-            wl = crud.get_client_weeklyslot(s, worker.client_id)
-            assert wl
-            assert isinstance(wl.schedule_by_day, dict)
-            av = cls.CreateFromSchedule(wl.schedule_by_day)
-        else:
-            wl = crud.get_worker_weeklyslot(s, worker.worker_id)
-            if wl is not None:
-                assert isinstance(wl.schedule_by_day, dict)
-                av = cls.CreateFromSchedule(wl.schedule_by_day)
-            else:
-                slots = crud.get_worker_slots(
-                    s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
-                )
-                av = cls.CreateFromSlots(slots)
+        slots = crud.get_worker_slots(
+            s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
+        )
+        av = cls.CreateFromSlots(slots)
 
         busy_slots = crud.get_worker_slots(
             s, worker.worker_id, slot_types=[TimeSlotType.BUSY, TimeSlotType.VISIT]
@@ -316,7 +305,7 @@ def _get_client_availability(
     return worker_avs
 
 
-def visit_pick_worker_and_check(s: Session, slot: CreateSlot, *, exc: HTTPException) -> CreateSlot:
+def visit_pick_worker_or_throw(s: Session, slot: CreateSlot, *, exc: HTTPException) -> CreateSlot:
     _worker_id = slot.worker_id
     if _worker_id:
         worker_id = _worker_id
