@@ -91,10 +91,19 @@ def create_worker_weekly_slot(worker_id, schedule):
     for weekday_i, (weekday_str, timeslots) in enumerate(schedule.items()):
         for i in range(90):
             date = datetime.date.today() + datetime.timedelta(days=i)
-            if date.weekday == weekday_i:
+            if date.weekday() == weekday_i :
+                if not timeslots:
+                    continue
+                slots = []
+                for t in timeslots:
+                    _from_h, _from_m = map(int, t[0].split(':'))
+                    _to_h, _to_m = map(int, t[1].split(':'))
+                    _from = datetime.datetime(year=date.year, month=date.month, day=date.day, hour=_from_h, minute=_from_m)
+                    _to = datetime.datetime(year=date.year, month=date.month, day=date.day, hour=_to_h, minute=_to_m)
+                    slots.append({'dt_from': _from.isoformat(), 'dt_to': _to.isoformat(), 'slot_type': 'available'})
                 day = {
                     'date': str(date),
-                    'timeslots': [{'dt_from': t[0], 'dt_to': t[1], 'slot_type': 'available'} for t in timeslots]
+                    'timeslots': slots,
                 }
                 days.append(day)
 

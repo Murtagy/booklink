@@ -217,8 +217,9 @@ def delete_available_slots(
         _from = min(dates)
         _to = max(dates) + datetime.timedelta(days=1)
         stmt = (
-            delete(Slot.__tablename__)
+            delete(Slot)
             .where(Slot.client_id == client_id)
+            .where(Slot.worker_id == worker_id)
             .where(Slot.slot_type == SlotType.AVAILABLE)
             .where(Slot.from_datetime >= _from)
             .where(Slot.from_datetime < _to)

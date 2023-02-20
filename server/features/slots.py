@@ -262,6 +262,7 @@ def create_slots(
     for slot in slots:
         if slot.slot_type != SlotType.AVAILABLE:
             raise ValueError("wrong slot type")
+    crud.create_slots(s, slots)
 
 
 def public_book_visit(

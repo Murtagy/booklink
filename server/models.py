@@ -119,7 +119,7 @@ class Slot(SQLModel, table=True):
     slot_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
     slot_type: SlotType
-    status: str
+    status: str | None
 
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
