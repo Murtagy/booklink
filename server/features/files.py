@@ -5,10 +5,10 @@ from fastapi import Depends, File, UploadFile
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session  # type: ignore
 
-import crud
-import db
-import models
-from features import users
+from .. import crud
+from .. import db
+from .. import models
+from . import users
 
 
 def get_file(

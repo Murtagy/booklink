@@ -3,7 +3,7 @@ import enum
 
 from sqlalchemy import Column, LargeBinary
 from sqlalchemy.sql import func
-from sqlmodel import Relationship, Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class Client(SQLModel, table=True):
@@ -69,7 +69,10 @@ class Skill(SQLModel, table=True):
     created_at: datetime.datetime = Field(default=func.now())
 
     worker_id: int = Field(foreign_key="workers.worker_id", primary_key=True)
-    service_id: int = Field(foreign_key="services.service_id", primary_key=True,)
+    service_id: int = Field(
+        foreign_key="services.service_id",
+        primary_key=True,
+    )
 
 
 class User(SQLModel, table=True):
@@ -105,9 +108,9 @@ class VisitServices(SQLModel, table=True):
 
 
 class SlotType(enum.StrEnum):
-    AVAILABLE = 'available'
-    BUSY = 'busy'
-    VISIT = 'visit'
+    AVAILABLE = "available"
+    BUSY = "busy"
+    VISIT = "visit"
 
 
 class Slot(SQLModel, table=True):
@@ -129,5 +132,4 @@ class Slot(SQLModel, table=True):
     phone: str | None
     email: str | None
     has_notification: bool | None
-    services: list[Service] = Relationship(back_populates="heroes", link_model=VisitServices)
-
+    services: list[Service] = Relationship(link_model=VisitServices)

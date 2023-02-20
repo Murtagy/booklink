@@ -3,13 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from features import (
-    availability,
-    services,
-    skills,
-    visits,
-    workers,
-)
+from ..features import availability, slots, services, skills, workers
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -67,9 +61,8 @@ app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
 
 
 # VISITS
-app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit)
-app.post("/visit", response_model=visits.OutVisit)(visits.create_visit_slot)
-app.post("/public/visit", response_model=visits.OutVisitExtended)(visits.public_book_visit)
+app.get("/visit/{visit_id}", response_model=slots.OutVisit)(slots.get_visit)
+app.post("/public/visit", response_model=slots.OutVisitExtended)(slots.public_book_visit)
 
 
 # AVAILABILITY
@@ -81,4 +74,3 @@ app.get(
     "/client/{client_id}/availability/",
     response_model=availability.AvailabilityPerWorker,
 )(availability.get_client_availability)
-

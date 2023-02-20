@@ -1,6 +1,6 @@
 import datetime
 
-from models import Slot
+from ..models import Slot
 
 from .availability import Availability
 

@@ -7,18 +7,8 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from sqlmodel import col, delete, select
 
-from features import services, slots, users, visits, workers
-from models import (
-    Client,
-    File,
-    Service,
-    Skill,
-    Slot,
-    Token,
-    User,
-    Worker,
-    SlotType,
-)
+from .features import services, slots, users, workers
+from .models import Client, File, Service, Skill, Slot, SlotType, Token, User, Worker
 
 
 def get_visit(db: Session, visit_id: int) -> Optional[Slot]:
@@ -35,7 +25,7 @@ def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
 
 def create_customer_visit(
     db: Session,
-    visit: visits.InVisit,
+    visit: slots.InVisit,
     *,
     to_dt: datetime.datetime,
     # customer_id: Optional[int] = None,
@@ -191,6 +181,17 @@ def create_slot(db: Session, slot: slots.CreateSlot) -> Slot:
     return db_slot
 
 
+def create_slots(db: Session, slots: list[slots.CreateSlot]) -> None:
+    db_slots = []
+    for slot in slots:
+        d = slot.dict()
+        db_slot = Slot(**d)
+        db_slots.append(db_slot)
+    db.add_all(db_slots)
+    db.commit()
+    return
+
+
 def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
     db_slot = get_slot(db, slot_id)
     assert db_slot is not None
@@ -205,6 +206,22 @@ def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
 
 def delete_slot(db: Session, slot_id: int) -> None:
     stmt = delete(Slot.__tablename__).where(Slot.slot_id == slot_id)
+    db.execute(stmt)
+    return
+
+
+def delete_available_slots(
+    db: Session, client_id: int, worker_id: int, dates: list[datetime.date]
+) -> None:
+    _from = min(dates)
+    _to = max(dates) + datetime.timedelta(days=1)
+    stmt = (
+        delete(Slot.__tablename__)
+        .where(Slot.client_id == client_id)
+        .where(Slot.slot_type == SlotType.AVAILABLE)
+        .where(Slot.from_datetime >= _from)
+        .where(Slot.from_datetime < _to)
+    )
     db.execute(stmt)
     return
 

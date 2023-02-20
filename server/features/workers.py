@@ -2,31 +2,29 @@ from fastapi import Depends, Path, Query
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
-import app_exceptions
-import crud
-import db
-import models
-from features import services, skills, users
+from .. import app_exceptions
+from .. import crud
+from .. import db
+from .. import models
+from . import services, skills, users
 
 
 class CreateWorker(BM):
     name: str
     job_title: str
-    use_company_schedule: bool | None
 
 
 class UpdateWorker(BM):
     # worker_id: int
     name: None | str
     job_title: None | str
-    use_company_schedule: None | bool
 
 
 class OutWorker(BM):
+    client_id: str
     worker_id: str
     name: str
     job_title: str
-    use_company_schedule: bool
 
     class Config:
         orm_mode = True
@@ -54,13 +52,13 @@ def get_worker(
     worker_id: str = Path(regex=r"\d+"),
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
-) -> models.Worker:
+) -> OutWorker:
     db_worker = crud.get_worker(s, int(worker_id))
     assert db_worker is not None
 
     assert current_user.client_id == db_worker.client_id
 
-    return db_worker
+    return OutWorker.from_orm(db_worker)
 
 
 def get_worker_by_id(
@@ -68,6 +66,8 @@ def get_worker_by_id(
     s: Session,
 ) -> OutWorker:
     db_worker = crud.get_worker(s, int(worker_id))
+    if not db_worker:
+        raise app_exceptions.WorkerNotFound
     return OutWorker.from_orm(db_worker)
 
 
@@ -127,14 +127,17 @@ def create_worker(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> models.Worker:
-    # TODO notify user that he needs to add company schedule
-    # if worker.use_company_schedule:
-    # wl = crud.get_client_weeklyslot(s, current_user.client_id)
-    # if wl is None:
-    # raise HTTPException(428, "Schedule needs to be created first")
     client_id = current_user.client_id
     db_worker = crud.create_worker(s, worker, client_id)
     return db_worker
+
+
+def assure_worker_and_owner(s: Session, user: models.User, worker_id: int | str) -> None:
+    worker = crud.get_worker(s, int(worker_id))
+    if worker is None:
+        raise app_exceptions.WorkerNotFound
+    if worker.client_id != user.client_id:
+        raise ValueError
 
 
 def _skill_picked(s: Session, worker_id: int, service_id: int) -> bool:

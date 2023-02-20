@@ -12,10 +12,10 @@ from pydantic import BaseModel as BM
 from pydantic import Field, validator
 from sqlalchemy.orm import Session  # type: ignore
 
-import app_exceptions as exceptions
-import crud
-import db
-import models
+from .. import app_exceptions as exceptions
+from .. import crud
+from .. import db
+from .. import models
 
 oauth = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
@@ -70,15 +70,15 @@ class TokenOut(BM):
     client_id: int
 
 
-async def get_current_user_or_none(
+def get_current_user_or_none(
     token: Optional[str] = Depends(oauth), s: Session = Depends(db.get_session)
 ) -> Optional[models.User]:
     if token:
-        return await get_current_user(token, s)
+        return get_current_user(token, s)
     return None
 
 
-async def get_current_user(
+def get_current_user(
     token: Optional[str] = Depends(oauth), s: Session = Depends(db.get_session)
 ) -> models.User:
     try:
@@ -104,9 +104,7 @@ def unjwttfy_token_id(token: Optional[str]) -> Optional[str]:
     return payload.get("sub")
 
 
-async def create_user(
-    user: UserCreate, s: Session = Depends(db.get_session)
-) -> TokenOut:
+async def create_user(user: UserCreate, s: Session = Depends(db.get_session)) -> TokenOut:
     # print(user)
     # return {"access_token": 'asda', "token_type": "bearer"}
 

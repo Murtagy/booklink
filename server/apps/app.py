@@ -5,19 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 from sqlmodel import SQLModel
 
-import db
-from features import (
-    availability,
-    files,
-    services,
-    skills,
-    slots,
-    users,
-    visits,
-    workers,
-)
+from .. import db
+from ..features import availability, files, services, skills, slots, users, workers
+
 from .public_app import app as public_app
-import app_exceptions
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
@@ -52,6 +43,7 @@ logger = structlog.get_logger()
 @app.get("/ping")
 def ping() -> dict[str, str]:
     return {"message": "pong"}
+
 
 app.mount("/booking_api/", public_app)
 
@@ -94,17 +86,13 @@ app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(
 
 
 # SLOTS
-app.post("/slot", response_model=slots.OutSlot)(visits.create_slot)
+app.post("/slot", response_model=slots.OutSlot)(slots.create_slot_with_check)
 app.delete("/slot/{slot_id}", response_model=slots.OutSlot)(slots.delete_client_slot)
-app.post("/client/{client_id}/client_weekly_slot")(slots.create_client_weekly_slot)
-app.post("/worker_weekly_slot/{worker_id}")(slots.create_worker_weekly_slot)
-
-
-# VISITS
-app.get("/visit/{visit_id}", response_model=visits.OutVisit)(visits.get_visit)
-app.get("/visits")(visits.get_visits)
-app.post("/public/visit", response_model=visits.OutVisitExtended)(visits.public_book_visit)
-app.put("/visit/{visit_id}")(visits.update_visit)
+# SLOTS (visits)
+app.get("/visit/{visit_id}", response_model=slots.OutVisit)(slots.get_visit)
+app.get("/visits")(slots.get_visits)
+app.post("/public/visit", response_model=slots.OutVisitExtended)(slots.public_book_visit)
+app.put("/visit/{visit_id}")(slots.update_visit)
 
 
 # AVAILABILITY
