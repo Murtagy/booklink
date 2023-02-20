@@ -126,7 +126,6 @@ class Slot(SQLModel, table=True):
 
     worker_id: int = Field(foreign_key="workers.worker_id")
     client_id: int = Field(foreign_key="clients.client_id")
-    worker_id: int = Field(foreign_key="workers.worker_id")
     customer_id: int | None = Field(foreign_key="customers.customer_id")
 
     phone: str | None

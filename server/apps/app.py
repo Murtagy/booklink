@@ -104,6 +104,8 @@ app.get(
     "/client/{client_id}/availability/",
     response_model=availability.AvailabilityPerWorker,
 )(availability.get_client_availability)
+app.post("/worker/{worker_id}/availability")(availability.create_worker_availability)
+
 
 
 # FILES

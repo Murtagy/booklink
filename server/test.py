@@ -35,10 +35,8 @@ def login(username):
     return r
 
 
-def create_worker(*, use_company_schedule=None):
+def create_worker():
     person = {"name": "Макс", "job_title": "Разработчик"}
-    if use_company_schedule is not None:
-        person["use_company_schedule"] = use_company_schedule
 
     r = client.post(
         localhost + "worker",
@@ -88,11 +86,22 @@ def get_client_service(client_id):
     )
 
 
-def create_client_weekly_slot(client_id, schedule):
+def create_worker_weekly_slot(worker_id, schedule):
+    days = []
+    for weekday_i, (weekday_str, timeslots) in enumerate(schedule.items()):
+        for i in range(90):
+            date = datetime.date.today() + datetime.timedelta(days=i)
+            if date.weekday == weekday_i:
+                day = {
+                    'date': str(date),
+                    'timeslots': [{'dt_from': t[0], 'dt_to': t[1], 'slot_type': 'available'} for t in timeslots]
+                }
+                days.append(day)
+
     return client.post(
-        localhost + f"client/{client_id}/client_weekly_slot",
+        localhost + f"worker/{worker_id}/availability",
         headers=headers,
-        json=schedule,
+        json={'days': days},
     )
 
 
@@ -175,22 +184,14 @@ def test_portyanka():
 
     ### Create worker
     r = create_worker()
-    # print(r.text)
+    r = create_worker()
+    r = create_worker()
 
     r = get_workers()
-    # print(r.text)
-    assert len(r.json()) == 1, r.text
+    assert len(r.json()["workers"]) == 3, r.text
     WORKER_ID = r.json()["workers"][0]["worker_id"]
-    ###
-
-    ### Create worker (2)
-    r = create_worker(use_company_schedule=True)
-    # assert r.status_code == 428
-
-    ### Create worker (3)
-    r = create_worker(use_company_schedule=False)
-    # print(r.text)
-    WORKER_NO_SCHEDULE_ID = r.json()["worker_id"]
+    WORKER_ID2 = r.json()["workers"][1]["worker_id"]
+    WORKER_NO_SCHEDULE_ID = r.json()["workers"][2]["worker_id"]
 
     ### Check workers n
     r = get_workers()
@@ -240,7 +241,9 @@ def test_portyanka():
         "su": None,
     }
 
-    r = create_client_weekly_slot(CLIENT_ID, schedule)
+    r = create_worker_weekly_slot(WORKER_ID, schedule)
+    assert r.status_code == 200, r.text
+    r = create_worker_weekly_slot(WORKER_ID2, schedule)
     assert r.status_code == 200, r.text
 
     r = client.get(

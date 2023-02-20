@@ -315,4 +315,4 @@ def delete_available_slots(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> None:
-    crud.delete_available_slots(s, current_user.client_id, dates)
+    crud.delete_available_slots(s, current_user.client_id, worker_id, dates)

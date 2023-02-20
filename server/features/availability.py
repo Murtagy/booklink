@@ -293,7 +293,7 @@ def _get_client_availability(
     workers = crud.get_workers(s, client_id)
     worker_avs = []
     for worker in workers:
-        av = Availability.GetWorkerAV(s, worker, service_length=service_length)
+        av = Availability.GetWorkerAV(s, worker.worker_id, service_length=service_length)
         worker_avs.append(av)
     return worker_avs
 
@@ -360,17 +360,17 @@ def get_client_availability(
 
 
 def create_worker_availability(
-    worker_id: int,
+    worker_id: str,
     r: Availability,
-    current_user: models.User = Depends(users.get_current_user),
     s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
 ) -> None:
     # safety
     workers.assure_worker_and_owner(s, current_user, worker_id)
 
     # we delete existing av's
     dates = [d.date for d in r.days]
-    slots.delete_available_slots(dates, worker_id, s, current_user)
+    slots.delete_available_slots(dates, int(worker_id), s, current_user)
     # then create new ones
     new_slots_schemas = []
     for d in r.days:
@@ -378,7 +378,7 @@ def create_worker_availability(
             new_slots_schemas.append(
                 slots.CreateSlot.Available(
                     client_id=current_user.client_id,
-                    worker_id=worker_id,
+                    worker_id=int(worker_id),
                     from_datetime=t.dt_from,
                     to_datetime=t.dt_to,
                 )

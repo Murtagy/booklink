@@ -31,6 +31,7 @@ def create_customer_visit(
     # customer_id: Optional[int] = None,
     worker_id: Optional[int] = None,
 ) -> Slot:
+    customer_id = None
     target_worker_id = None
     if visit.worker_id:
         target_worker_id = int(visit.worker_id)
@@ -146,7 +147,6 @@ def create_worker(db: Session, worker: workers.CreateWorker, client_id: int) -> 
         name=w.name,
         job_title=w.job_title,
         client_id=client_id,
-        use_company_schedule=w.use_company_schedule if w.use_company_schedule is not None else True,
     )
     db.add(db_worker)
     db.commit()
@@ -213,16 +213,17 @@ def delete_slot(db: Session, slot_id: int) -> None:
 def delete_available_slots(
     db: Session, client_id: int, worker_id: int, dates: list[datetime.date]
 ) -> None:
-    _from = min(dates)
-    _to = max(dates) + datetime.timedelta(days=1)
-    stmt = (
-        delete(Slot.__tablename__)
-        .where(Slot.client_id == client_id)
-        .where(Slot.slot_type == SlotType.AVAILABLE)
-        .where(Slot.from_datetime >= _from)
-        .where(Slot.from_datetime < _to)
-    )
-    db.execute(stmt)
+    if dates:
+        _from = min(dates)
+        _to = max(dates) + datetime.timedelta(days=1)
+        stmt = (
+            delete(Slot.__tablename__)
+            .where(Slot.client_id == client_id)
+            .where(Slot.slot_type == SlotType.AVAILABLE)
+            .where(Slot.from_datetime >= _from)
+            .where(Slot.from_datetime < _to)
+        )
+        db.execute(stmt)
     return
 
 
