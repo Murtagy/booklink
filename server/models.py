@@ -12,7 +12,6 @@ class Client(SQLModel, table=True):
     client_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
 
-    blocked_datetime: datetime.datetime | None
     name: str
 
 
@@ -116,7 +115,6 @@ class Slot(SQLModel, table=True):
 
     slot_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
-    name: str
     slot_type: SlotType
     status: str
 

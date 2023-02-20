@@ -46,7 +46,7 @@ def create_customer_visit(
         target_worker_id = int(visit.worker_id)
     target_worker_id = target_worker_id or worker_id
     db_visit = Slot(
-        slot_type=SlotType.VISIT
+        slot_type=SlotType.VISIT,
         from_datetime=visit.from_dt,
         to_datetime=to_dt,
         client_id=visit.client_id,
@@ -60,7 +60,7 @@ def create_customer_visit(
     )
     db.add(db_visit)
     db.commit()
-    db.refresh(db_visit)  # why refresh?
+    db.refresh(db_visit)
     return db_visit
 
 
