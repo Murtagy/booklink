@@ -3,7 +3,7 @@ import random
 
 from fastapi.testclient import TestClient
 
-from app import app
+from .apps.app import app
 
 client = TestClient(app)
 
@@ -36,10 +36,8 @@ def login(username):
     return r
 
 
-def create_worker(*, use_company_schedule=None):
+def create_worker():
     person = {"name": "Макс", "job_title": "Разработчик"}
-    if use_company_schedule is not None:
-        person["use_company_schedule"] = use_company_schedule
 
     r = client.post(
         localhost + "worker",
@@ -89,11 +87,41 @@ def get_client_service(client_id):
     )
 
 
-def create_client_weekly_slot(client_id, schedule):
+def create_worker_weekly_slot(worker_id, schedule):
+    days = []
+    for weekday_i, (weekday_str, timeslots) in enumerate(schedule.items()):
+        for i in range(90):
+            date = datetime.date.today() + datetime.timedelta(days=i)
+            if date.weekday() == weekday_i:
+                if not timeslots:
+                    continue
+                slots = []
+                for t in timeslots:
+                    _from_h, _from_m = map(int, t[0].split(":"))
+                    _to_h, _to_m = map(int, t[1].split(":"))
+                    _from = datetime.datetime(
+                        year=date.year, month=date.month, day=date.day, hour=_from_h, minute=_from_m
+                    )
+                    _to = datetime.datetime(
+                        year=date.year, month=date.month, day=date.day, hour=_to_h, minute=_to_m
+                    )
+                    slots.append(
+                        {
+                            "dt_from": _from.isoformat(),
+                            "dt_to": _to.isoformat(),
+                            "slot_type": "available",
+                        }
+                    )
+                day = {
+                    "date": str(date),
+                    "timeslots": slots,
+                }
+                days.append(day)
+
     return client.post(
-        localhost + f"client/{client_id}/client_weekly_slot",
+        localhost + f"worker/{worker_id}/availability",
         headers=headers,
-        json=schedule,
+        json={"days": days},
     )
 
 
@@ -120,7 +148,7 @@ def create_slot(slot):
 
 
 def create_visit_as_a_client(slot):
-    url = localhost + f"visit"
+    url = localhost + f"slot" + "?force=false"
 
     return client.post(
         url,
@@ -176,22 +204,14 @@ def test_portyanka():
 
     ### Create worker
     r = create_worker()
-    # print(r.text)
+    r = create_worker()
+    r = create_worker()
 
     r = get_workers()
-    # print(r.text)
-    assert len(r.json()) == 1, r.text
+    assert len(r.json()["workers"]) == 3, r.text
     WORKER_ID = r.json()["workers"][0]["worker_id"]
-    ###
-
-    ### Create worker (2)
-    r = create_worker(use_company_schedule=True)
-    # assert r.status_code == 428
-
-    ### Create worker (3)
-    r = create_worker(use_company_schedule=False)
-    # print(r.text)
-    WORKER_NO_SCHEDULE_ID = r.json()["worker_id"]
+    WORKER_ID2 = r.json()["workers"][1]["worker_id"]
+    WORKER_NO_SCHEDULE_ID = r.json()["workers"][2]["worker_id"]
 
     ### Check workers n
     r = get_workers()
@@ -241,7 +261,9 @@ def test_portyanka():
         "su": None,
     }
 
-    r = create_client_weekly_slot(CLIENT_ID, schedule)
+    r = create_worker_weekly_slot(WORKER_ID, schedule)
+    assert r.status_code == 200, r.text
+    r = create_worker_weekly_slot(WORKER_ID2, schedule)
     assert r.status_code == 200, r.text
 
     r = client.get(

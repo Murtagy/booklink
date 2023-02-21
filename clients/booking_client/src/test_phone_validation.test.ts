@@ -1,4 +1,4 @@
-import { assert, expect, test } from "vitest";
+import { expect, test } from "vitest";
 import { sanitize_phone } from "@/sanitize_phone";
 import { validate_phone } from "@/validate_phone";
 

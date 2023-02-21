@@ -1,28 +1,11 @@
 import datetime
-from typing import Any
+import enum
 
 from sqlalchemy import Column, LargeBinary
 from sqlalchemy.sql import func
-from sqlmodel import JSON, Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
-
-class Visit(SQLModel, table=True):
-    __tablename__ = "visits"
-
-    visit_id: int = Field(primary_key=True, index=True, unique=True)
-    created_at: datetime.datetime = Field(default=func.now())
-
-    customer_id: int | None = Field(foreign_key="customers.customer_id")
-    client_id: int = Field(foreign_key="clients.client_id")
-    worker_id: int | None = Field(foreign_key="workers.worker_id")
-    phone: str | None
-    email: str | None
-    status: str
-    customer_description: str | None
-    has_notification: bool
-    services: list[Any] = Field(sa_column=Column(JSON))  # [ServiceId + Q + Price, ...]
-    schedule_by_day: list[dict[str, Any]] = Field(sa_column=Column(JSON), nullable=False)
-    slot_id: int = Field(foreign_key="slots.slot_id")
+from .app_exceptions import NoPermission
 
 
 class Client(SQLModel, table=True):
@@ -31,7 +14,6 @@ class Client(SQLModel, table=True):
     client_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
 
-    blocked_datetime: datetime.datetime | None
     name: str
 
 
@@ -44,8 +26,6 @@ class Worker(SQLModel, table=True):
     client_id: int = Field(foreign_key="clients.client_id")
     name: str
     job_title: str
-    use_company_schedule: bool
-    # use_company_services = Column(Boolean, nullable=False)
 
 
 class File(SQLModel, table=True):
@@ -81,7 +61,6 @@ class Service(SQLModel, table=True):
     description: str | None
     blocked_datetime: datetime.datetime | None
     client_id: int = Field(foreign_key="clients.client_id")
-    # worker_inheritance = Column(String)  # give all
 
 
 class Skill(SQLModel, table=True):
@@ -89,11 +68,13 @@ class Skill(SQLModel, table=True):
     # idea is that an owner will manually check what services each worker should have
     __tablename__ = "skills"
 
-    rel_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
 
-    worker_id: int = Field(foreign_key="workers.worker_id")
-    service_id: int = Field(foreign_key="services.service_id")
+    worker_id: int = Field(foreign_key="workers.worker_id", primary_key=True)
+    service_id: int = Field(
+        foreign_key="services.service_id",
+        primary_key=True,
+    )
 
 
 class User(SQLModel, table=True):
@@ -107,6 +88,10 @@ class User(SQLModel, table=True):
     username: str
     hashed_password: str
 
+    def assure_id(self, client_id: int) -> None:
+        if self.client_id != client_id:
+            raise NoPermission
+
 
 class Token(SQLModel, table=True):
     __tablename__ = "tokens"
@@ -117,15 +102,21 @@ class Token(SQLModel, table=True):
     user_id: int = Field(foreign_key="users.user_id", nullable=False)
 
 
-class WeeklySlot(SQLModel, table=True):
-    __tablename__ = "weekly_slots"
+class VisitServices(SQLModel, table=True):
+    # adds services to a visit' slot
+    __tablename__ = "visit_services"
 
-    active_from: datetime.datetime | None = None
-    slot_id: int = Field(primary_key=True, index=True, unique=True)
+    # rel_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
-    worker_id: int | None = Field(foreign_key="workers.worker_id")
-    client_id: int = Field(foreign_key="clients.client_id")
-    schedule_by_day: dict[str, Any] = Field(sa_column=Column(JSON), nullable=False)
+
+    slot_id: int = Field(foreign_key="slots.slot_id", primary_key=True)
+    service_id: int = Field(foreign_key="services.service_id", primary_key=True)
+
+
+class SlotType(enum.StrEnum):
+    AVAILABLE = "available"
+    BUSY = "busy"
+    VISIT = "visit"
 
 
 class Slot(SQLModel, table=True):
@@ -133,12 +124,17 @@ class Slot(SQLModel, table=True):
 
     slot_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
-    name: str
-    slot_type: str  # busy/visit/available
-    active: bool = True
+    slot_type: SlotType
+    status: str | None
 
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
 
     worker_id: int = Field(foreign_key="workers.worker_id")
     client_id: int = Field(foreign_key="clients.client_id")
+    customer_id: int | None = Field(foreign_key="customers.customer_id")
+
+    phone: str | None
+    email: str | None
+    has_notification: bool | None
+    services: list[Service] = Relationship(link_model=VisitServices)

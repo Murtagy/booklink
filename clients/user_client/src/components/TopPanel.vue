@@ -5,13 +5,17 @@
       ><img src="@/assets/menu.svg" style="height: 10px"
     /></label>
     <div class="menu-content">
+
       <a class="sized" href="#news">Визиты</a>
-      <a class="sized">
-        <router-link to="/workers">Сотрудники</router-link>
-      </a>
-      <a class="sized">
-        <router-link to="/services">Услуги</router-link>
-      </a>
+
+      <router-link to="/workers">
+        <a class="sized">Сотрудники</a>
+      </router-link>
+
+      <router-link to="/services">
+        <a class="sized">Услуги</a>
+      </router-link>
+
     </div>
     <img
       src="@/assets/worker-icon.png"

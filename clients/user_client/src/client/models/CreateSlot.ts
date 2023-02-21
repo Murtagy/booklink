@@ -5,7 +5,6 @@
 import type { TimeSlotType } from "./TimeSlotType";
 
 export type CreateSlot = {
-  name: string;
   slot_type: TimeSlotType;
   client_id: number;
   worker_id?: number;

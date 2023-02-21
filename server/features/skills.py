@@ -1,12 +1,8 @@
-from fastapi import Depends, Query
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
-import app_exceptions
-import crud
-import db
-import models
-from features import services, users
+from .. import crud
+from . import services
 
 
 class SkillOut(BM):

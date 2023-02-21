@@ -13,7 +13,6 @@ export type { Body_login_for_access_token } from "./models/Body_login_for_access
 export type { CreateService } from "./models/CreateService";
 export type { CreateServiceWithClientId } from "./models/CreateServiceWithClientId";
 export type { CreateSlot } from "./models/CreateSlot";
-export type { CreateWeeklySlot } from "./models/CreateWeeklySlot";
 export type { CreateWorker } from "./models/CreateWorker";
 export type { Day } from "./models/Day";
 export type { HTTPValidationError } from "./models/HTTPValidationError";
@@ -22,7 +21,7 @@ export { InVisit } from "./models/InVisit";
 export type { OutService } from "./models/OutService";
 export type { OutServices } from "./models/OutServices";
 export type { OutSlot } from "./models/OutSlot";
-export { OutVisit } from "./models/OutVisit";
+export type { OutVisit } from "./models/OutVisit";
 export type { OutVisitExtended } from "./models/OutVisitExtended";
 export type { OutWorker } from "./models/OutWorker";
 export type { OutWorkers } from "./models/OutWorkers";

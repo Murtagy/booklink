@@ -8,7 +8,6 @@ import type { Body_login_for_access_token } from "../models/Body_login_for_acces
 import type { CreateService } from "../models/CreateService";
 import type { CreateServiceWithClientId } from "../models/CreateServiceWithClientId";
 import type { CreateSlot } from "../models/CreateSlot";
-import type { CreateWeeklySlot } from "../models/CreateWeeklySlot";
 import type { CreateWorker } from "../models/CreateWorker";
 import type { InVisit } from "../models/InVisit";
 import type { OutService } from "../models/OutService";
@@ -440,17 +439,22 @@ export class DefaultService {
   }
 
   /**
-   * Create Slot
+   * Create Slot With Check
    * @param requestBody
+   * @param force
    * @returns OutSlot Successful Response
    * @throws ApiError
    */
-  public static createSlot(
-    requestBody: CreateSlot
+  public static createSlotWithCheck(
+    requestBody: CreateSlot,
+    force: boolean = false
   ): CancelablePromise<OutSlot> {
     return __request(OpenAPI, {
       method: "POST",
       url: "/slot",
+      query: {
+        force: force,
+      },
       body: requestBody,
       mediaType: "application/json",
       errors: {
@@ -472,56 +476,6 @@ export class DefaultService {
       path: {
         slot_id: slotId,
       },
-      errors: {
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  /**
-   * Create Client Weekly Slot
-   * @param clientId
-   * @param requestBody
-   * @returns any Successful Response
-   * @throws ApiError
-   */
-  public static createClientWeeklySlot(
-    clientId: number,
-    requestBody: CreateWeeklySlot
-  ): CancelablePromise<any> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/client/{client_id}/client_weekly_slot",
-      path: {
-        client_id: clientId,
-      },
-      body: requestBody,
-      mediaType: "application/json",
-      errors: {
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  /**
-   * Create Worker Weekly Slot
-   * @param workerId
-   * @param requestBody
-   * @returns any Successful Response
-   * @throws ApiError
-   */
-  public static createWorkerWeeklySlot(
-    workerId: number,
-    requestBody: CreateWeeklySlot
-  ): CancelablePromise<any> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/worker_weekly_slot/{worker_id}",
-      path: {
-        worker_id: workerId,
-      },
-      body: requestBody,
-      mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },
@@ -585,26 +539,6 @@ export class DefaultService {
       query: {
         worker_id: workerId,
       },
-      errors: {
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  /**
-   * Create Visit Slot
-   * @param requestBody
-   * @returns OutVisit Successful Response
-   * @throws ApiError
-   */
-  public static createVisitSlot(
-    requestBody: CreateSlot
-  ): CancelablePromise<OutVisit> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/visit",
-      body: requestBody,
-      mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },
@@ -680,6 +614,31 @@ export class DefaultService {
       query: {
         services: services,
       },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   * Create Worker Availability
+   * @param workerId
+   * @param requestBody
+   * @returns any Successful Response
+   * @throws ApiError
+   */
+  public static createWorkerAvailability(
+    workerId: string,
+    requestBody: Availability
+  ): CancelablePromise<any> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/worker/{worker_id}/availability",
+      path: {
+        worker_id: workerId,
+      },
+      body: requestBody,
+      mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },

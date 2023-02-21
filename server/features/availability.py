@@ -1,7 +1,7 @@
 import datetime
 import math
 import random
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from fastapi import Depends, Path, Query
 from fastapi.exceptions import HTTPException
@@ -10,11 +10,9 @@ from pydantic import BaseModel as BM
 # from .slot import CreateSlot
 from sqlalchemy.orm import Session  # type: ignore
 
-import app_exceptions
-import crud
-import db
-import models
-from features.slots import CreateSlot, TimeSlot, TimeSlotType
+from .. import app_exceptions, crud, db, models
+from . import slots, users, workers
+from .slots import CreateSlot, TimeSlot, TimeSlotType
 
 
 class Day(BM):
@@ -260,39 +258,20 @@ class Availability(BM):
     def GetWorkerAV(
         cls,
         s: Session,
-        worker_u: Union[int, models.Worker],
+        worker_id: int,  # assumed that id is real already
         *,
         service_length: Optional[int] = None,
     ) -> "WorkerAvailability":
-        if isinstance(worker_u, int):
-            worker = crud.get_worker(s, worker_u)
-            assert worker is not None
-        else:
-            worker = worker_u
-
-        if worker.use_company_schedule:
-            wl = crud.get_client_weeklyslot(s, worker.client_id)
-            assert wl
-            assert isinstance(wl.schedule_by_day, dict)
-            av = cls.CreateFromSchedule(wl.schedule_by_day)
-        else:
-            wl = crud.get_worker_weeklyslot(s, worker.worker_id)
-            if wl is not None:
-                assert isinstance(wl.schedule_by_day, dict)
-                av = cls.CreateFromSchedule(wl.schedule_by_day)
-            else:
-                slots = crud.get_worker_slots(
-                    s, worker_id=worker.worker_id, slot_types=[TimeSlotType.AVAILABLE]
-                )
-                av = cls.CreateFromSlots(slots)
+        slots = crud.get_worker_slots(s, worker_id=worker_id, slot_types=[TimeSlotType.AVAILABLE])
+        av = cls.CreateFromSlots(slots)
 
         busy_slots = crud.get_worker_slots(
-            s, worker.worker_id, slot_types=[TimeSlotType.BUSY, TimeSlotType.VISIT]
+            s, worker_id, slot_types=[TimeSlotType.BUSY, TimeSlotType.VISIT]
         )
         av.ReduceAvailabilityBySlots(busy_slots)
         if service_length:
             av.SplitByLengthAndTrim(length_seconds=service_length)
-        return WorkerAvailability(days=av.days, worker_id=worker.worker_id)
+        return WorkerAvailability(days=av.days, worker_id=worker_id)
 
 
 class WorkerAvailability(Availability):
@@ -311,12 +290,12 @@ def _get_client_availability(
     workers = crud.get_workers(s, client_id)
     worker_avs = []
     for worker in workers:
-        av = Availability.GetWorkerAV(s, worker, service_length=service_length)
+        av = Availability.GetWorkerAV(s, worker.worker_id, service_length=service_length)
         worker_avs.append(av)
     return worker_avs
 
 
-def visit_pick_worker_and_check(s: Session, slot: CreateSlot, *, exc: HTTPException) -> CreateSlot:
+def visit_pick_worker_or_throw(s: Session, slot: CreateSlot, *, exc: HTTPException) -> CreateSlot:
     _worker_id = slot.worker_id
     if _worker_id:
         worker_id = _worker_id
@@ -336,27 +315,24 @@ def visit_pick_worker_and_check(s: Session, slot: CreateSlot, *, exc: HTTPExcept
 
 
 def get_worker_availability(
-    client_id: str,
+    client_id: str = Path(regex=r"\d+"),
     worker_id: str = Path(regex=r"\d+"),
     services: str | None = Query(None),
     s: Session = Depends(db.get_session),
-    # current_user: models.User = Depends(users.get_current_user),
 ) -> Availability:
-    worker = crud.get_worker(s, int(worker_id))
-    assert worker is not None
 
     total_service_length: Optional[int] = None
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
         db_worker_services = crud.get_services(
-            s, client_id=worker.client_id, worker_id=int(worker_id)
+            s, client_id=int(client_id), worker_id=int(worker_id)
         )
         for service in db_services:
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled
         total_service_length = sum([s.seconds for s in db_services])
-    av = Availability.GetWorkerAV(s, worker, service_length=total_service_length)
+    av = Availability.GetWorkerAV(s, int(worker_id), service_length=total_service_length)
     return av
 
 
@@ -374,3 +350,30 @@ def get_client_availability(
 
     d = _get_client_availability(client_id, total_service_length, s)
     return AvailabilityPerWorker(availability=d)
+
+
+def create_worker_availability(
+    worker_id: str,
+    r: Availability,
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> None:
+    # safety
+    workers.assure_worker_and_owner(s, current_user, worker_id)
+
+    # we delete existing av's
+    dates = [d.date for d in r.days]
+    slots.delete_available_slots(dates, int(worker_id), s, current_user)
+    # then create new ones
+    new_slots_schemas = []
+    for d in r.days:
+        for t in d.timeslots:
+            new_slots_schemas.append(
+                slots.CreateSlot.Available(
+                    client_id=current_user.client_id,
+                    worker_id=int(worker_id),
+                    from_datetime=t.dt_from,
+                    to_datetime=t.dt_to,
+                )
+            )
+    slots.create_slots(new_slots_schemas, s)

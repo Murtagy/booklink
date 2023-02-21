@@ -4,10 +4,8 @@ from fastapi import Depends, Query
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
-import crud
-import db
-import models
-from features import users
+from .. import crud, db, models
+from . import users
 
 
 class CreateService(BM):

@@ -7,82 +7,53 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from sqlmodel import col, delete, select
 
-from features import services, slots, users, visits, workers
-from models import (
-    Client,
-    File,
-    Service,
-    Skill,
-    Slot,
-    Token,
-    User,
-    Visit,
-    WeeklySlot,
-    Worker,
-)
+from .features import services, slots, users, workers
+from .models import Client, File, Service, Skill, Slot, SlotType, Token, User, Worker
 
 
-def get_visit(db: Session, visit_id: int) -> Optional[Visit]:
-    stmt = select(Visit).where(Visit.visit_id == visit_id)
+def get_visit(db: Session, visit_id: int) -> Optional[Slot]:
+    stmt = select(Slot).where(Slot.slot_id == visit_id).where(Slot.status == SlotType.VISIT)
     return db.execute(stmt).scalar_one_or_none()
 
 
 def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
-    q = select(Visit).where(Visit.client_id == client_id)
+    q = select(Slot).where(Slot.client_id == client_id).where(Slot.status == SlotType.VISIT)
     if worker_id:
-        q = q.where(Visit.worker_id == worker_id)
+        q = q.where(Slot.worker_id == worker_id)
     return db.execute(q).scalars().all()
-
-
-def create_visit(
-    db: Session,
-    *,
-    client_id: Optional[int] = None,
-    customer_id: Optional[int] = None,
-    slot_id: Optional[int] = None,
-    worker_id: Optional[int] = None,
-) -> Visit:
-    db_visit = Visit(
-        client_id=client_id,
-        customer_id=customer_id,
-        has_notification=False,
-        status="submitted",
-        # services=[s.service_id for s in visit.services],
-        slot_id=slot_id,
-        worker_id=worker_id,
-    )
-    db.add(db_visit)
-    db.commit()
-    db.refresh(db_visit)
-    return db_visit
 
 
 def create_customer_visit(
     db: Session,
-    visit: visits.InVisit,
+    visit: slots.InVisit,
     *,
-    customer_id: Optional[int] = None,
-    slot_id: Optional[int] = None,
+    to_dt: datetime.datetime,
+    # customer_id: Optional[int] = None,
     worker_id: Optional[int] = None,
-) -> Visit:
+) -> Slot:
+    customer_id = None
     target_worker_id = None
     if visit.worker_id:
         target_worker_id = int(visit.worker_id)
     target_worker_id = target_worker_id or worker_id
-    db_visit = Visit(
+    service_ids = [s.service_id for s in visit.services]
+    services = get_services_by_ids(db, service_ids)
+    db_visit = Slot(
+        slot_type=SlotType.VISIT,
+        from_datetime=visit.from_dt,
+        to_datetime=to_dt,
         client_id=visit.client_id,
         customer_id=customer_id,
         email=visit.email,
         has_notification=visit.remind_me,
         phone=visit.phone,
         status="submitted",
-        services=[s.service_id for s in visit.services],
-        slot_id=slot_id,
+        services=services,
         worker_id=target_worker_id,
     )
     db.add(db_visit)
     db.commit()
-    db.refresh(db_visit)  # why refresh?
+    db.refresh(db_visit)
     return db_visit
 
 
@@ -178,7 +149,6 @@ def create_worker(db: Session, worker: workers.CreateWorker, client_id: int) -> 
         name=w.name,
         job_title=w.job_title,
         client_id=client_id,
-        use_company_schedule=w.use_company_schedule if w.use_company_schedule is not None else True,
     )
     db.add(db_worker)
     db.commit()
@@ -213,6 +183,17 @@ def create_slot(db: Session, slot: slots.CreateSlot) -> Slot:
     return db_slot
 
 
+def create_slots(db: Session, slots: list[slots.CreateSlot]) -> None:
+    db_slots = []
+    for slot in slots:
+        d = slot.dict()
+        db_slot = Slot(**d)
+        db_slots.append(db_slot)
+    db.add_all(db_slots)
+    db.commit()
+    return
+
+
 def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
     db_slot = get_slot(db, slot_id)
     assert db_slot is not None
@@ -226,8 +207,27 @@ def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
 
 
 def delete_slot(db: Session, slot_id: int) -> None:
-    stmt = delete(Slot.__tablename__).where(Slot.slot_id == slot_id)
+    stmt = delete(Slot)  # type: ignore[arg-type]
+    stmt = stmt.where(Slot.slot_id == slot_id)
     db.execute(stmt)
+    return
+
+
+def delete_available_slots(
+    db: Session, client_id: int, worker_id: int, dates: list[datetime.date]
+) -> None:
+    if dates:
+        _from = min(dates)
+        _to = max(dates) + datetime.timedelta(days=1)
+        stmt = delete(Slot)  # type: ignore[arg-type]
+        stmt = (
+            stmt.where(Slot.client_id == client_id)
+            .where(Slot.worker_id == worker_id)
+            .where(Slot.slot_type == SlotType.AVAILABLE)
+            .where(Slot.from_datetime >= _from)
+            .where(Slot.from_datetime < _to)
+        )
+        db.execute(stmt)
     return
 
 
@@ -239,43 +239,12 @@ def get_client_slots(db: Session, client_id: int, *, slot_types: Optional[List[s
     return db.execute(q).scalars().all()
 
 
-def get_client_weeklyslot(db: Session, client_id: int) -> Optional[WeeklySlot]:
-    # add filtering
-    stmt = (
-        select(WeeklySlot)
-        .where(WeeklySlot.client_id == client_id)
-        .where(WeeklySlot.worker_id == None)
-    )
-    return db.execute(stmt).scalar_one_or_none()
-
-
-def get_worker_weeklyslot(db: Session, worker_id: int) -> Optional[WeeklySlot]:
-    # add filtering
-    stmt = select(WeeklySlot).where(WeeklySlot.worker_id == worker_id)
-    return db.execute(stmt).scalar_one_or_none()
-
-
 def get_worker_slots(db: Session, worker_id: int, *, slot_types: Optional[List[str]]) -> List[Slot]:
     # add filtering
     q = select(Slot).where(Slot.worker_id == worker_id)
     if slot_types:
         q = q.where(col(Slot.slot_type).in_(slot_types))
     return db.execute(q).scalars().all()
-
-
-def create_weekly_slot(
-    db: Session,
-    slot: slots.CreateWeeklySlot,
-    client_id: int,
-    *,
-    worker_id: Optional[int] = None,
-) -> WeeklySlot:
-    schedule = slot.dict()
-    db_slot = WeeklySlot(client_id=client_id, schedule_by_day=schedule, worker_id=worker_id)
-    db.add(db_slot)
-    db.commit()
-    db.refresh(db_slot)
-    return db_slot
 
 
 def create_service(
