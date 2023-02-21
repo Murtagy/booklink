@@ -36,6 +36,8 @@ def create_customer_visit(
     if visit.worker_id:
         target_worker_id = int(visit.worker_id)
     target_worker_id = target_worker_id or worker_id
+    service_ids = [s.service_id for s in visit.services]
+    services = get_services_by_ids(db, service_ids)
     db_visit = Slot(
         slot_type=SlotType.VISIT,
         from_datetime=visit.from_dt,
@@ -46,7 +48,7 @@ def create_customer_visit(
         has_notification=visit.remind_me,
         phone=visit.phone,
         status="submitted",
-        services=[s.service_id for s in visit.services],
+        services=services,
         worker_id=target_worker_id,
     )
     db.add(db_visit)

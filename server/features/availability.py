@@ -315,29 +315,24 @@ def visit_pick_worker_or_throw(s: Session, slot: CreateSlot, *, exc: HTTPExcepti
 
 
 def get_worker_availability(
-    client_id: str,
+    client_id: str = Path(regex=r"\d+"),
     worker_id: str = Path(regex=r"\d+"),
     services: str | None = Query(None),
     s: Session = Depends(db.get_session),
-    current_user: models.User = Depends(users.get_current_user),
 ) -> Availability:
-    worker = workers.get_worker(str(worker_id), s, current_user)
-
-    # TODO - put back, test.py was failing
-    # assert client_id == current_user.client_id
 
     total_service_length: Optional[int] = None
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
         db_worker_services = crud.get_services(
-            s, client_id=current_user.client_id, worker_id=int(worker_id)
+            s, client_id=int(client_id), worker_id=int(worker_id)
         )
         for service in db_services:
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled
         total_service_length = sum([s.seconds for s in db_services])
-    av = Availability.GetWorkerAV(s, int(worker.worker_id), service_length=total_service_length)
+    av = Availability.GetWorkerAV(s, int(worker_id), service_length=total_service_length)
     return av
 
 
