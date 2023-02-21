@@ -5,7 +5,7 @@ export default {
     // test data for now
     {
       worker_id: String(id++),
-      use_company_schedule: false,
+      client_id: "1",
       name: "Анастасия Ковалева",
       job_title: "Мастер-бровист",
       description:
@@ -13,7 +13,7 @@ export default {
     },
     {
       worker_id: String(id++),
-      use_company_schedule: false,
+      client_id: "1",
       name: "Анастасия Ковалева",
       job_title: "Мастер-бровист",
       description:
@@ -21,7 +21,7 @@ export default {
     },
     {
       worker_id: String(id++),
-      use_company_schedule: false,
+      client_id: "1",
       name: "Анастасия Ковалева",
       job_title: "Мастер-бровист",
       description:
@@ -29,7 +29,7 @@ export default {
     },
     {
       worker_id: String(id++),
-      use_company_schedule: false,
+      client_id: "1",
       name: "Анастасия Ковалева",
       job_title: "Мастер-бровист",
       description:
@@ -37,7 +37,7 @@ export default {
     },
     {
       worker_id: String(id++),
-      use_company_schedule: false,
+      client_id: "1",
       name: "Анастасия Ковалева",
       job_title: "Мастер-бровист",
       description:
@@ -45,7 +45,7 @@ export default {
     },
     {
       worker_id: String(id++),
-      use_company_schedule: false,
+      client_id: "1",
       name: "Анастасия Ковалева",
       job_title: "Мастер-бровист",
       description:
