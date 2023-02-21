@@ -137,7 +137,7 @@ def create_slot(slot):
 
 
 def create_visit_as_a_client(slot):
-    url = localhost + f"visit"
+    url = localhost + f"slot" + "?force=false"
 
     return client.post(
         url,

@@ -4,7 +4,7 @@ import enum
 from sqlalchemy import Column, LargeBinary
 from sqlalchemy.sql import func
 from sqlmodel import Field, Relationship, SQLModel
-
+from .app_exceptions import NoPermission
 
 class Client(SQLModel, table=True):
     __tablename__ = "clients"
@@ -85,6 +85,10 @@ class User(SQLModel, table=True):
     email: str
     username: str
     hashed_password: str
+
+    def assure_id(self, client_id: int) -> None:
+        if self.client_id != client_id:
+            raise NoPermission  
 
 
 class Token(SQLModel, table=True):

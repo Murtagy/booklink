@@ -2,7 +2,7 @@ import datetime
 import enum
 from typing import List, Literal, Optional
 
-from fastapi import Depends
+from fastapi import Depends, Query
 from pydantic import BaseModel as BM
 from pydantic import validator
 from sqlalchemy.orm import Session  # type: ignore
@@ -238,13 +238,19 @@ def get_visit(
 
 def create_slot_with_check(
     slot: CreateSlot,
+    force: bool = Query(False),
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> OutSlot:
-    if slot.slot_type == TimeSlotType.VISIT:
+    if slot.slot_type == TimeSlotType.VISIT and not force:
         # in case slot is a visit - check for collision
         slot = availability.visit_pick_worker_or_throw(s, slot, exc=app_exceptions.SlotNotAvailable)
     # others we let to duplicate
+
+    current_user.assure_id(slot.client_id)
+    if slot.worker_id:
+        workers.assure_worker_and_owner(s, current_user, slot.worker_id)
+
     db_slot = crud.create_slot(s, slot)
     return OutSlot.from_orm(db_slot)
 
