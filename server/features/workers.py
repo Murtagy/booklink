@@ -2,10 +2,7 @@ from fastapi import Depends, Path, Query
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
-from .. import app_exceptions
-from .. import crud
-from .. import db
-from .. import models
+from .. import app_exceptions, crud, db, models
 from . import services, skills, users
 
 

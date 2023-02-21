@@ -7,7 +7,6 @@ from sqlmodel import SQLModel
 
 from .. import db
 from ..features import availability, files, services, skills, slots, users, workers
-
 from .public_app import app as public_app
 
 # docs_kwargs = {}
@@ -105,7 +104,6 @@ app.get(
     response_model=availability.AvailabilityPerWorker,
 )(availability.get_client_availability)
 app.post("/worker/{worker_id}/availability")(availability.create_worker_availability)
-
 
 
 # FILES

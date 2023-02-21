@@ -205,7 +205,8 @@ def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
 
 
 def delete_slot(db: Session, slot_id: int) -> None:
-    stmt = delete(Slot.__tablename__).where(Slot.slot_id == slot_id)
+    stmt = delete(Slot)  # type: ignore[arg-type]
+    stmt = stmt.where(Slot.slot_id == slot_id)
     db.execute(stmt)
     return
 
@@ -216,9 +217,9 @@ def delete_available_slots(
     if dates:
         _from = min(dates)
         _to = max(dates) + datetime.timedelta(days=1)
+        stmt = delete(Slot)  # type: ignore[arg-type]
         stmt = (
-            delete(Slot)
-            .where(Slot.client_id == client_id)
+            stmt.where(Slot.client_id == client_id)
             .where(Slot.worker_id == worker_id)
             .where(Slot.slot_type == SlotType.AVAILABLE)
             .where(Slot.from_datetime >= _from)

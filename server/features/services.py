@@ -4,9 +4,7 @@ from fastapi import Depends, Query
 from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
-from .. import crud
-from .. import db
-from .. import models
+from .. import crud, db, models
 from . import users
 
 

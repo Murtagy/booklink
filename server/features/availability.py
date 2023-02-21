@@ -10,10 +10,7 @@ from pydantic import BaseModel as BM
 # from .slot import CreateSlot
 from sqlalchemy.orm import Session  # type: ignore
 
-from .. import app_exceptions
-from .. import crud
-from .. import db
-from .. import models
+from .. import app_exceptions, crud, db, models
 from . import slots, users, workers
 from .slots import CreateSlot, TimeSlot, TimeSlotType
 

@@ -1,18 +1,16 @@
 import datetime
 import enum
-from typing import List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from fastapi import Depends, Query
 from pydantic import BaseModel as BM
 from pydantic import validator
 from sqlalchemy.orm import Session  # type: ignore
 
-from .. import app_exceptions
-from .. import crud
-from ..import db
-from ..import models
-from . import availability, services, users, workers
 from server.models import SlotType
+
+from .. import app_exceptions, crud, db, models
+from . import availability, services, users, workers
 
 
 class TimeSlotType(str, enum.Enum):
@@ -154,7 +152,7 @@ class InVisit(BM):
     first_name: str
     last_name: str
     email: str
-    services: List[InServiceToVisit]
+    services: list[InServiceToVisit]
     phone: str
     remind_me: bool
     version: Literal[1] = 1
@@ -176,7 +174,7 @@ class VisitsByDaysRQ(BM):
     date_to: datetime.date
 
     @validator("date_to")
-    def date_to_check(cls, v, values):
+    def date_to_check(cls, v: datetime.date, values: dict[str, Any]):
         if v < values["date_from"]:
             raise ValueError("to should be greater than from")
         delta: datetime.timedelta = v - values["date_from"]

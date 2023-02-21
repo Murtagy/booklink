@@ -1,7 +1,6 @@
 import datetime
 
 from ..models import Slot
-
 from .availability import Availability
 
 hour = datetime.timedelta(hours=1)

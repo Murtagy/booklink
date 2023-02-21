@@ -13,9 +13,7 @@ from pydantic import Field, validator
 from sqlalchemy.orm import Session  # type: ignore
 
 from .. import app_exceptions as exceptions
-from .. import crud
-from .. import db
-from .. import models
+from .. import crud, db, models
 
 oauth = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 

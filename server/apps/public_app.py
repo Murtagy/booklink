@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from ..features import availability, slots, services, skills, workers
+from ..features import availability, services, skills, slots, workers
 
 # docs_kwargs = {}
 # if settings.ENVIRONMENT == 'production':
