@@ -12,14 +12,19 @@ from .models import Client, File, Service, Skill, Slot, SlotType, Token, User, W
 
 
 def get_visit(db: Session, visit_id: int) -> Optional[Slot]:
-    stmt = select(Slot).where(Slot.slot_id == visit_id).where(Slot.status == SlotType.VISIT)
+    stmt = select(Slot).where(Slot.slot_id == visit_id).where(Slot.slot_type == SlotType.VISIT)
     return db.execute(stmt).scalar_one_or_none()
 
 
-def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None):
-    q = select(Slot).where(Slot.client_id == client_id).where(Slot.status == SlotType.VISIT)
+def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None, *, _from: datetime.date | None = None, _to: datetime.date | None = None) -> list[Slot]:
+    q = select(Slot).where(Slot.client_id == client_id).where(Slot.slot_type == SlotType.VISIT)
     if worker_id:
         q = q.where(Slot.worker_id == worker_id)
+    if _from:
+        q = q.where(Slot.from_datetime >= _from)
+    if _to:
+        _to = _to + datetime.timedelta(days=1)
+        q = q.where(Slot.from_datetime <= _to)
     return db.execute(q).scalars().all()
 
 

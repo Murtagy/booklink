@@ -90,9 +90,10 @@ app.delete("/slot/{slot_id}", response_model=slots.OutSlot)(slots.delete_client_
 # SLOTS (visits)
 app.get("/visit/{visit_id}", response_model=slots.OutVisit)(slots.get_visit)
 app.get("/visits")(slots.get_visits)
-app.post("/public/visit", response_model=slots.OutVisitExtended)(slots.public_book_visit)
 app.put("/visit/{visit_id}")(slots.update_visit)
-
+app.post("/visits/by_days", response_model=slots.VisitsByDays)(slots.get_visits_days)
+# tmp:
+app.post("/public/visit", response_model=slots.OutVisitExtended)(slots.public_book_visit)
 
 # AVAILABILITY
 app.get(

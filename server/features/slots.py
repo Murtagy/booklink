@@ -1,6 +1,7 @@
 import datetime
 import enum
 from typing import Any, Literal, Optional
+from collections import defaultdict
 
 from fastapi import Depends, Query
 from pydantic import BaseModel as BM
@@ -25,6 +26,8 @@ class CreateSlot(BM):
     worker_id: int | None
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
+    has_notification = False
+    status = 'submitted'
 
     @classmethod
     def Available(
@@ -130,6 +133,9 @@ class OutVisit(BM):
     status: str
     slot_id: int
     worker_id: int | None
+    created_at: datetime.datetime
+    from_datetime: datetime.datetime
+    to_datetime: datetime.datetime
 
     class Config:
         orm_mode = True
@@ -210,8 +216,16 @@ def get_visits_days(
 ) -> VisitsByDays:
     client_id = current_user.client_id
 
-    visits = crud.get_visits(s, client_id, worker_id=worker_id)
-    return VisitsByDays(days=[])
+    visits = crud.get_visits(s, client_id, worker_id=worker_id, _from=rq.date_from, _to=rq.date_to)
+    visits_by_days: defaultdict[datetime.date, list[models.Slot]] = defaultdict(list)
+    for visit in visits:
+        visits_by_days[visit.from_datetime.date()].append(visit)
+    days = []
+    for date, visits in visits_by_days.items():
+        days.append(
+            VisitDay(date=date, visits_n=len(visits), visits=[OutVisit.from_orm(v) for v in visits])
+        )
+    return VisitsByDays(days=days)
 
 
 def update_visit(

@@ -8,7 +8,7 @@ from .apps.app import app
 client = TestClient(app)
 
 localhost = "http://127.0.0.1:8000/"
-
+today = datetime.date.today()
 ### Actions code
 
 
@@ -91,7 +91,7 @@ def create_worker_weekly_slot(worker_id, schedule):
     days = []
     for weekday_i, (weekday_str, timeslots) in enumerate(schedule.items()):
         for i in range(90):
-            date = datetime.date.today() + datetime.timedelta(days=i)
+            date = today + datetime.timedelta(days=i)
             if date.weekday() == weekday_i:
                 if not timeslots:
                     continue
@@ -166,6 +166,13 @@ def create_visit_as_a_customer(slot):
         json=slot,
     )
 
+def get_visits_days(_from, _to):
+    url = localhost + f"visits/by_days"
+    return client.post(
+        url,
+        headers=headers,
+        json={'date_from': str(_from), 'date_to': str(_to)}
+    )
 
 def get_me():
     return client.get(localhost + "users/me", headers=headers)
@@ -330,8 +337,8 @@ def test_portyanka():
         "slot_type": "available",
         "client_id": CLIENT_ID,
         "worker_id": WORKER_NO_SCHEDULE_ID,
-        "from_datetime": "2022-01-01T08:00:00",
-        "to_datetime": "2022-01-01T18:00:00",
+        "from_datetime": f"{today}T08:00:00",
+        "to_datetime": f"{today}T18:00:00",
     }
     r = create_slot(slot)
 
@@ -342,8 +349,8 @@ def test_portyanka():
         "slot_type": "visit",
         "client_id": CLIENT_ID,
         "worker_id": WORKER_NO_SCHEDULE_ID,
-        "from_datetime": "2022-01-01T09:00:00",
-        "to_datetime": "2022-01-01T10:00:00",
+        "from_datetime": f"{today}T09:00:00",
+        "to_datetime": f"{today}T10:00:00",
     }
     r = create_visit_as_a_client(visit)
 
@@ -364,30 +371,14 @@ def test_portyanka():
         "slot_type": "visit",
         "client_id": CLIENT_ID,
         "worker_id": WORKER_NO_SCHEDULE_ID,
-        "from_datetime": "2022-01-01T09:45:00",
-        "to_datetime": "2022-01-01T10:00:00",
+        "from_datetime": f"{today}T09:45:00",
+        "to_datetime": f"{today}T10:00:00",
     }
 
     r = create_visit_as_a_client(visit)
     assert r.status_code == 409, r.text
 
-    ##
-
-    # r = client.post(
-    #     localhost + "worker_weekly_slot/1",
-    #     headers=headers,
-    #     json={
-    #         "mo": [["03:01:01", "05:01:01"]],
-    #         "tu": None,
-    #         "we": None,
-    #         "th": None,
-    #         "fr": None,
-    #         "st": None,
-    #         "su": None,
-    #     },
-    # )
-    # print(r.text)
-
-    print("*" * 20)
-    print(" " * 5, "SUCCESS")
-    print("*" * 20)
+    r = get_visits_days(today, today)
+    assert r.status_code == 200
+    assert len(r.json()['days']) == 1
+    assert r.json()['days'][0]['date'] == f'{today}'
