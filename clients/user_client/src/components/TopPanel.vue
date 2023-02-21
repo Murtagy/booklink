@@ -5,7 +5,6 @@
       ><img src="@/assets/menu.svg" style="height: 10px"
     /></label>
     <div class="menu-content">
-
       <a class="sized" href="#news">Визиты</a>
 
       <router-link to="/workers">
@@ -15,7 +14,6 @@
       <router-link to="/services">
         <a class="sized">Услуги</a>
       </router-link>
-
     </div>
     <img
       src="@/assets/worker-icon.png"
