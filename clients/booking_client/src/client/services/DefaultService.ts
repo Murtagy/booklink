@@ -3,7 +3,6 @@
 /* eslint-disable */
 import type { Availability } from "../models/Availability";
 import type { AvailabilityPerWorker } from "../models/AvailabilityPerWorker";
-import type { CreateSlot } from "../models/CreateSlot";
 import type { InVisit } from "../models/InVisit";
 import type { OutService } from "../models/OutService";
 import type { OutServices } from "../models/OutServices";
@@ -195,26 +194,6 @@ export class DefaultService {
       path: {
         visit_id: visitId,
       },
-      errors: {
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  /**
-   * Create Visit Slot
-   * @param requestBody
-   * @returns OutVisit Successful Response
-   * @throws ApiError
-   */
-  public static createVisitSlot(
-    requestBody: CreateSlot
-  ): CancelablePromise<OutVisit> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/visit",
-      body: requestBody,
-      mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },
