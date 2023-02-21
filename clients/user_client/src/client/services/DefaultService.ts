@@ -25,6 +25,8 @@ import type { TokenOut } from "../models/TokenOut";
 import type { UpdateWorker } from "../models/UpdateWorker";
 import type { UserCreate } from "../models/UserCreate";
 import type { UserOut } from "../models/UserOut";
+import type { VisitsByDays } from "../models/VisitsByDays";
+import type { VisitsByDaysRQ } from "../models/VisitsByDaysRQ";
 
 import type { CancelablePromise } from "../core/CancelablePromise";
 import { OpenAPI } from "../core/OpenAPI";
@@ -539,6 +541,31 @@ export class DefaultService {
       query: {
         worker_id: workerId,
       },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   * Get Visits Days
+   * @param requestBody
+   * @param workerId
+   * @returns VisitsByDays Successful Response
+   * @throws ApiError
+   */
+  public static getVisitsDays(
+    requestBody: VisitsByDaysRQ,
+    workerId?: number
+  ): CancelablePromise<VisitsByDays> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/visits/by_days",
+      query: {
+        worker_id: workerId,
+      },
+      body: requestBody,
+      mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },

@@ -10,4 +10,6 @@ export type CreateSlot = {
   worker_id?: number;
   from_datetime: string;
   to_datetime: string;
+  has_notification?: boolean;
+  status?: string;
 };

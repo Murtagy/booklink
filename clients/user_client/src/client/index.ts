@@ -37,6 +37,9 @@ export type { UpdateWorker } from "./models/UpdateWorker";
 export type { UserCreate } from "./models/UserCreate";
 export type { UserOut } from "./models/UserOut";
 export type { ValidationError } from "./models/ValidationError";
+export type { VisitDay } from "./models/VisitDay";
+export type { VisitsByDays } from "./models/VisitsByDays";
+export type { VisitsByDaysRQ } from "./models/VisitsByDaysRQ";
 export type { WorkerAvailability } from "./models/WorkerAvailability";
 
 export { DefaultService } from "./services/DefaultService";
