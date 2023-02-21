@@ -24,10 +24,10 @@
       "type": "python",
       "request": "launch",
       "module": "uvicorn",
-      "args": ["app:app"],
+      "args": ["server.apps.app:app"],
       "jinja": true,
       "justMyCode": true,
-      "cwd": "${workspaceFolder}/server"
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

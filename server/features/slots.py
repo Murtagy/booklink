@@ -272,7 +272,6 @@ def create_slots(
 def public_book_visit(
     visit: InVisit,
     s: Session = Depends(db.get_session),
-    # TODO: visitor
 ) -> OutVisitExtended:
     if visit.from_dt < datetime.datetime.now():
         raise app_exceptions.SlotNotAvailable
