@@ -6,7 +6,7 @@
         id="name"
         class="wide"
         v-model.trim="name"
-        placeholder="Название (например: Мойка)" 
+        placeholder="Название (например: Мойка)"
         required
       />
       <p class="bold"><label for="minutes">Длительность в минутах</label></p>
@@ -20,28 +20,18 @@
         step="5"
         required
       />
-      <br>
-      <input
-        id="minutes"
-        v-model="minutes"
-        type="number"
-        required
-      />
+      <br />
+      <input id="minutes" v-model="minutes" type="number" required />
       <p class="bold"><label for="price">Стоимость</label></p>
-      <input
-        id="price"
-        v-model="price"
-        type="number"
-        required
-      />
-      <p class="bold"><label for="price_to">Верхняя стоимость (если услуга оценивается диапазоном от-до)</label></p>
-      <input
-        id="price_to"
-        v-model="price_to"
-        type="number"
-      />
-      (необязательно) 
-      <div style="margin-top:1em; float: right;">
+      <input id="price" v-model="price" type="number" required />
+      <p class="bold">
+        <label for="price_to"
+          >Верхняя стоимость (если услуга оценивается диапазоном от-до)</label
+        >
+      </p>
+      <input id="price_to" v-model="price_to" type="number" />
+      (необязательно)
+      <div style="margin-top: 1em; float: right">
         <button type="submit">Создать</button>
       </div>
     </form>
@@ -49,7 +39,6 @@
 </template>
 
 <style scoped>
-
 input {
   width: 5em;
 }
