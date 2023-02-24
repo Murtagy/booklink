@@ -190,7 +190,7 @@ class Availability(BM):
 
         self.days = days
 
-    def SplitByLengthAndTrim(self, length_seconds: int) -> None:
+    def SplitByLengthAndTrim(self, length_minutes: int) -> None:
         for iday, day in enumerate(self.days):
             day.date
             timeslots = day.timeslots
@@ -198,7 +198,6 @@ class Availability(BM):
             new_timeslots: list[TimeSlot] = []
             for timeslot in timeslots:
                 delta = (timeslot.dt_to - timeslot.dt_from).total_seconds() / 60
-                length_minutes = length_seconds / 60
                 n_by_len = delta / length_minutes
                 n_by_len = math.floor(n_by_len)
                 for n in range(n_by_len):
@@ -260,7 +259,7 @@ class Availability(BM):
         s: Session,
         worker_id: int,  # assumed that id is real already
         *,
-        service_length: Optional[int] = None,
+        visit_length: Optional[int] = None,
     ) -> "WorkerAvailability":
         slots = crud.get_worker_slots(s, worker_id=worker_id, slot_types=[TimeSlotType.AVAILABLE])
         av = cls.CreateFromSlots(slots)
@@ -269,8 +268,8 @@ class Availability(BM):
             s, worker_id, slot_types=[TimeSlotType.BUSY, TimeSlotType.VISIT]
         )
         av.ReduceAvailabilityBySlots(busy_slots)
-        if service_length:
-            av.SplitByLengthAndTrim(length_seconds=service_length)
+        if visit_length:
+            av.SplitByLengthAndTrim(length_minutes=visit_length)
         return WorkerAvailability(days=av.days, worker_id=worker_id)
 
 
@@ -290,7 +289,7 @@ def _get_client_availability(
     workers = crud.get_workers(s, client_id)
     worker_avs = []
     for worker in workers:
-        av = Availability.GetWorkerAV(s, worker.worker_id, service_length=service_length)
+        av = Availability.GetWorkerAV(s, worker.worker_id, visit_length=service_length)
         worker_avs.append(av)
     return worker_avs
 
@@ -331,8 +330,8 @@ def get_worker_availability(
         for service in db_services:
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled
-        total_service_length = sum([s.seconds for s in db_services])
-    av = Availability.GetWorkerAV(s, int(worker_id), service_length=total_service_length)
+        total_service_length = sum([s.minutes for s in db_services])
+    av = Availability.GetWorkerAV(s, int(worker_id), visit_length=total_service_length)
     return av
 
 
@@ -346,7 +345,7 @@ def get_client_availability(
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
-        total_service_length = sum([s.seconds for s in db_services])
+        total_service_length = sum([s.minutes for s in db_services])
 
     d = _get_client_availability(client_id, total_service_length, s)
     return AvailabilityPerWorker(availability=d)

@@ -297,14 +297,14 @@ def public_book_visit(
     service_ids = [s.service_id for s in visit.services]
     visit_services = services.get_services_by_ids(service_ids, s=s)
     assert len(visit_services) > 0
-    visit_len_seconds: int = sum([service.seconds for service in visit_services])
+    visit_len_minutes: int = sum([service.minutes for service in visit_services])
 
     potential_slot = CreateSlot(
         slot_type=TimeSlotType.VISIT,
         client_id=visit.client_id,
         worker_id=visit.worker_id,
         from_datetime=visit.from_dt,
-        to_datetime=visit.from_dt + datetime.timedelta(seconds=visit_len_seconds),
+        to_datetime=visit.from_dt + datetime.timedelta(minutes=visit_len_minutes),
     )
     potential_slot = availability.visit_pick_worker_or_throw(
         s, potential_slot, exc=app_exceptions.SlotNotAvailable

@@ -231,7 +231,7 @@ def test_portyanka():
         {
             "name": "Стрижка",
             "price": 13.1,
-            "seconds": 45 * 60,
+            "minutes": 45,
             "description": "Ножницы, все такое",
         }
     )
@@ -245,7 +245,7 @@ def test_portyanka():
         {
             "name": "Стрижка",
             "price": 13.1,
-            "seconds": 45 * 60,
+            "minutes": 45,
             "description": "Ножницы, все такое",
         }
     )

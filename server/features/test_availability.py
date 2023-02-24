@@ -158,7 +158,7 @@ def test_av_split():
     assert len(av.days[0].timeslots) == 1
 
     # full fill test - 5h services
-    av.SplitByLengthAndTrim(5 * 60 * 60)
+    av.SplitByLengthAndTrim(5 * 60)
     assert len(av.days[0].timeslots) == 1
     assert av.days[0].timeslots[0].dt_from == time
     assert av.days[0].timeslots[0].dt_to == time + (5 * hour)
@@ -176,7 +176,7 @@ def test_av_split():
         client_id=1,
     )
     av.ReduceAvailabilityBySlots(slots=[visit_1h])
-    av.SplitByLengthAndTrim(45 * 60)
+    av.SplitByLengthAndTrim(45)
     assert av.days[0].timeslots[0].dt_from == time + (1 * hour)
     assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (45 * minute)
 
@@ -192,7 +192,7 @@ def test_av_split():
         client_id=1,
     )
     av.ReduceAvailabilityBySlots(slots=[visit_1h, visit_44min])
-    av.SplitByLengthAndTrim(45 * 60)
+    av.SplitByLengthAndTrim(45)
     assert av.days[0].timeslots[0].dt_from == time + (1 * hour) + (44 * minute)
     assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (44 * minute) + (45 * minute)
 
@@ -201,7 +201,7 @@ def test_av_split():
     visit_44min.from_datetime = time + (1 * hour) + (44 * minute)
     visit_44min.to_datetime = time + (1 * hour) + (44 * minute) + (45 * minute)
     av.ReduceAvailabilityBySlots(slots=[visit_1h, visit_44min])
-    av.SplitByLengthAndTrim(45 * 60)
+    av.SplitByLengthAndTrim(45)
     assert av.days[0].timeslots[0].dt_from == time + (1 * hour) + (44 * minute) + (45 * minute)
     assert av.days[0].timeslots[0].dt_to == time + (1 * hour) + (44 * minute) + (45 * minute) + (
         45 * minute
@@ -245,7 +245,7 @@ def test_av_split_():
     assert av.days[0].timeslots[0].dt_from == time
     assert av.days[0].timeslots[0].dt_to == time + (5 * hour)
     assert len(av.days[0].timeslots) == 1
-    av.SplitByLengthAndTrim(45 * 60)
+    av.SplitByLengthAndTrim(45)
     assert av.days[0].timeslots[0].dt_from == time
     assert av.days[0].timeslots[0].dt_to == time + (45 * minute)
     assert len(av.days[0].timeslots) == 6

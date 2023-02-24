@@ -57,7 +57,7 @@ class Service(SQLModel, table=True):
     name: str
     price: float | None
     price_to: float | None
-    seconds: int
+    minutes: int
     description: str | None
     blocked_datetime: datetime.datetime | None
     client_id: int = Field(foreign_key="clients.client_id")
