@@ -28,7 +28,7 @@
       <input id="minutes" v-model="service.minutes" type="number" required />
 
       <p class="bold"><label for="price">Стоимость</label></p>
-      <input id="price" v-model="service.price" type="number" required />
+      <input id="price" v-model="service.price" type="number" step="0.01" required />
       <p class="bold">
         <label for="price_to"
           >Верхняя стоимость (если услуга оценивается диапазоном от-до)</label
