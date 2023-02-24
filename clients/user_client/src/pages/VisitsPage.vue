@@ -8,7 +8,6 @@
 
 <script lang="ts">
 import VisitsCarusel from "@/components/VisitsCarusel.vue";
-import VisitsDay from "@/components/VisitsDay.vue";
 
 declare interface Data {
   date_from: Date;
@@ -16,7 +15,7 @@ declare interface Data {
 }
 
 export default {
-  components: { VisitsCarusel, VisitsDay },
+  components: { VisitsCarusel },
   data(): Data {
     const today = new Date();
     const today_plus_7 = new Date(today.getTime() + 1000 * 60 * 60 * 24 * 7);
