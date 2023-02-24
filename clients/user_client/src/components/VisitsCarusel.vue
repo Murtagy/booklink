@@ -1,5 +1,5 @@
 <template>
-  <div class="box" style="flex-flow: row wrap;">
+  <div class="box" style="display: flex; flex-flow: row wrap; width:100%">
     <VisitsDayCaruselDay v-for="day in days" :key="day.date" :day="day" />
   </div>
 </template>

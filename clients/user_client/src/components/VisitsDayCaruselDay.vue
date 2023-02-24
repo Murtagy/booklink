@@ -1,8 +1,9 @@
 <template>
-    <span class="border_main1">
-        День {{ day.date }}.
+    <div class="border_main1" style="">
+        {{ day.date }}
+        <br/>
         Визитов {{ day.visits_n }}
-    </span>
+    </div>
 </template>
 
 <script lang="ts">
