@@ -61,7 +61,6 @@ app.get("/client/{client_id}/workers", response_model=workers.OutWorkers)(
     workers.get_workers_by_client
 )
 app.get("/workers", response_model=workers.OutWorkers)(workers.get_workers)
-app.get("/worker", response_model=workers.OutWorker)(workers.get_worker)
 app.post("/worker", response_model=workers.OutWorker)(workers.create_worker)
 
 
