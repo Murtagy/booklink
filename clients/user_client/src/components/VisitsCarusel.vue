@@ -1,15 +1,17 @@
 <template>
-  <div class="box" style="display: flex; flex-flow: row wrap; width:100%">
-      <VisitsDayCaruselDay 
-        v-for="day in days" :key="day.date" :day="day" 
-        @click="$router.push(`/visits/day/${day.date}`)"
-      />
+  <div class="box" style="display: flex; flex-flow: row wrap; width: 100%">
+    <VisitsDayCaruselDay
+      v-for="day in days"
+      :key="day.date"
+      :day="day"
+      @click="$router.push(`/visits/day/${day.date}`)"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { DefaultService, type VisitDay } from "@/client";
-import VisitsDayCaruselDay from "@/components/VisitsDayCaruselDay.vue"
+import VisitsDayCaruselDay from "@/components/VisitsDayCaruselDay.vue";
 
 export default {
   components: { VisitsDayCaruselDay },
