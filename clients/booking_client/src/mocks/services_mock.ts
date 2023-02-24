@@ -7,7 +7,7 @@ export default {
       currency: "бел.руб",
       service_id: 1,
       client_id: 1,
-      seconds: 600,
+      minutes: 10,
     },
     {
       name: "Услуга Y",
@@ -15,7 +15,7 @@ export default {
       currency: "бел.руб",
       service_id: 2,
       client_id: 1,
-      seconds: 600,
+      minutes: 10,
     },
     {
       name: "Услуга Z",
@@ -23,7 +23,7 @@ export default {
       currency: "бел.руб",
       service_id: 3,
       client_id: 1,
-      seconds: 600,
+      minutes: 10,
     },
     {
       name: "Услуга A",
@@ -31,7 +31,7 @@ export default {
       currency: "бел.руб",
       service_id: 4,
       client_id: 1,
-      seconds: 600,
+      minutes: 10,
     },
     {
       name: "Услуга B",
@@ -39,7 +39,7 @@ export default {
       currency: "бел.руб",
       service_id: 5,
       client_id: 1,
-      seconds: 1200,
+      minutes: 20,
     },
     {
       name: "Услуга C",
@@ -47,7 +47,7 @@ export default {
       currency: "бел.руб",
       service_id: 6,
       client_id: 1,
-      seconds: 1800,
+      minutes: 20,
     },
   ],
 };
