@@ -8,8 +8,8 @@
   />
   <input
     type="button"
-    value="Создать сотрудника"
-    @click="show_createWorker = true"
+    :value='show_createWorker ? "Закрыть" : "Создать сотрудника"'
+    @click="show_createWorker = !show_createWorker"
   />
   <div>
     <WorkersCardMin
