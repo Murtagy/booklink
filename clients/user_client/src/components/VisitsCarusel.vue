@@ -1,9 +1,9 @@
 <template>
   <div class="box" style="display: flex; flex-flow: row wrap; width:100%">
-    <VisitsDayCaruselDay 
-      v-for="day in days" :key="day.date" :day="day" 
-      @click="day.visits_n ? $emit('dayPicked', day): null"
-    />
+      <VisitsDayCaruselDay 
+        v-for="day in days" :key="day.date" :day="day" 
+        @click="$router.push(`/visits/day/${day.date}`)"
+      />
   </div>
 </template>
 
@@ -18,15 +18,6 @@ export default {
     return {
       days: days,
     };
-  },
-  emits: {
-    dayPicked(payload: VisitDay) {
-      // if (payload.day.visits_n == 0) { 
-      //   console.log('Here')
-      //   return false 
-      // }
-      return true
-    }
   },
   mounted() {
     this.fetchDays();
