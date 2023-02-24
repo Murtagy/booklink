@@ -33,6 +33,12 @@ const router = createRouter({
       component: () => import("../pages/WorkersPage.vue"),
     },
     {
+      path: "/worker/:worker_id",
+      name: "worker",
+      component: () => import("../pages/WorkerPage.vue"),
+      props: true,
+    },
+    {
       path: "/visits",
       name: "Visits",
       component: () => import("../pages/VisitsPage.vue"),
@@ -41,7 +47,7 @@ const router = createRouter({
       path: "/visits/day/:date",
       name: "visits.day",
       component: () => import("../components/VisitsDay.vue"),
-      props: true
+      props: true,
     },
     {
       path: "/visit",

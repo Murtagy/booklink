@@ -16,6 +16,7 @@
       v-for="worker in workers"
       :worker="worker"
       :key="worker.worker_id"
+      @click="$router.push(`/worker/${worker.worker_id}`)"
     >
     </WorkersCardMin>
   </div>
