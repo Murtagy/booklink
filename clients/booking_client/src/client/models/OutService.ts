@@ -8,7 +8,7 @@ export type OutService = {
   name: string;
   price?: number;
   price_to?: number;
-  seconds: number;
+  minutes: number;
   description?: string;
   currency?: string;
 };
