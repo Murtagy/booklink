@@ -2,7 +2,7 @@
   <div class="box" style="display: flex; flex-flow: row wrap; width:100%">
     <VisitsDayCaruselDay 
       v-for="day in days" :key="day.date" :day="day" 
-      @click="$emit('dayPicked', day)"
+      @click="day.visits_n ? $emit('dayPicked', day): null"
     />
   </div>
 </template>
@@ -21,9 +21,10 @@ export default {
   },
   emits: {
     dayPicked(payload: VisitDay) {
-      if (payload.visits_n == 0) { 
-        return false 
-      }
+      // if (payload.day.visits_n == 0) { 
+      //   console.log('Here')
+      //   return false 
+      // }
       return true
     }
   },

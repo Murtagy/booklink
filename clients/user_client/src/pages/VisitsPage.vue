@@ -49,7 +49,7 @@ export default {
     focusOnDay(x: VisitDay) {
       this.show_carusel = false;
       this.show_day = true;
-      this.day = x;
+      this.day = x
     }
   },
 };
