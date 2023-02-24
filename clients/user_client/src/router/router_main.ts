@@ -38,6 +38,12 @@ const router = createRouter({
       component: () => import("../pages/VisitsPage.vue"),
     },
     {
+      path: "/visits/day/:date",
+      name: "visits.day",
+      component: () => import("../components/VisitsDay.vue"),
+      props: true
+    },
+    {
       path: "/visit",
       name: "Visit",
       component: () => import("../pages/VisitPage.vue"),
