@@ -16,6 +16,7 @@
       v-for="service in services"
       :service="service"
       :key="service.service_id"
+      @click="$router.push(`/service/${service.service_id}`)"
     />
   </div>
 </template>
