@@ -29,7 +29,7 @@ class OutService(BM):
     service_id: int
     client_id: int
     name: str
-    price: Optional[float]
+    price: float
     price_to: Optional[float]
     minutes: int
     description: str | None

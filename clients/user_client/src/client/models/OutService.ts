@@ -6,7 +6,7 @@ export type OutService = {
   service_id: number;
   client_id: number;
   name: string;
-  price?: number;
+  price: number;
   price_to?: number;
   minutes: number;
   description?: string;
