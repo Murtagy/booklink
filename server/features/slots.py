@@ -1,7 +1,7 @@
 import datetime
 import enum
-from typing import Any, Literal, Optional
 from collections import defaultdict
+from typing import Any, Literal, Optional
 
 from fastapi import Depends, Query
 from pydantic import BaseModel as BM
@@ -27,7 +27,7 @@ class CreateSlot(BM):
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
     has_notification = False
-    status = 'submitted'
+    status = "submitted"
 
     @classmethod
     def Available(

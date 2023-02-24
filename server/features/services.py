@@ -5,8 +5,8 @@ from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
 from .. import crud, db, models
-from . import users
 from ..app_exceptions import ServiceNotFound
+from . import users
 
 
 class CreateService(BM):
@@ -15,6 +15,10 @@ class CreateService(BM):
     price_to: Optional[float]
     minutes: int
     description: Optional[str]
+
+
+class UpdateService(CreateService):
+    pass
 
 
 class CreateServiceWithClientId(CreateService):
@@ -122,3 +126,15 @@ def get_services_by_user(
     client_id = current_user.client_id
     services = get_services(client_id, worker_id=worker_id, s=s)
     return services
+
+
+def update_service(
+    service_id: int,
+    r: UpdateService,
+    current_user: models.User = Depends(users.get_current_user),
+    s: Session = Depends(db.get_session),
+) -> OutService:
+    service = crud.get_service(s, service_id, not_found=ServiceNotFound)
+    service.assure_id(current_user.client_id)
+    db_service = crud.update_service(s, service_id, r)
+    return OutService.from_orm(db_service)

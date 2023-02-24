@@ -17,8 +17,8 @@ def signup(username):
         localhost + "signup",
         json={
             "company": "Comp",
-            "username": username,
-            "password": "123",
+            "username": "nn",
+            "password": "nn",
             "email": str(random.randint(0, 1000)) + "example@example12.com",
         },
     )
@@ -29,8 +29,8 @@ def login(username):
     r = client.post(
         localhost + "token",
         data={
-            "username": username,
-            "password": "123",
+            "username": "nn",
+            "password": "nn",
         },
     )
     return r
@@ -58,6 +58,15 @@ def get_workers():
 def create_service(service):
     r = client.post(
         localhost + f"service",
+        headers=headers,
+        json=service,
+    )
+    return r
+
+
+def update_service(service, service_id):
+    r = client.post(
+        localhost + f"service/{service_id}",
         headers=headers,
         json=service,
     )
@@ -166,13 +175,11 @@ def create_visit_as_a_customer(slot):
         json=slot,
     )
 
+
 def get_visits_days(_from, _to):
     url = localhost + f"visits/by_days"
-    return client.post(
-        url,
-        headers=headers,
-        json={'date_from': str(_from), 'date_to': str(_to)}
-    )
+    return client.post(url, headers=headers, json={"date_from": str(_from), "date_to": str(_to)})
+
 
 def get_me():
     return client.get(localhost + "users/me", headers=headers)
@@ -254,6 +261,18 @@ def test_portyanka():
     r = get_client_service(CLIENT_ID)
     j = r.json()
     assert len(j) == 1, r.text
+
+    r = update_service(
+        {
+            "name": "Стрижка2",
+            "price": 13.1,
+            "minutes": 45,
+            "description": "Ножницы, все такое",
+        },
+        SERVICE_ID2,
+    )
+    r = get_service(SERVICE_ID2)
+    assert r.json()["name"] == "Стрижка2", r.text
 
     ###
 
@@ -380,5 +399,5 @@ def test_portyanka():
 
     r = get_visits_days(today, today)
     assert r.status_code == 200
-    assert len(r.json()['days']) == 1
-    assert r.json()['days'][0]['date'] == f'{today}'
+    assert len(r.json()["days"]) == 1
+    assert r.json()["days"][0]["date"] == f"{today}"

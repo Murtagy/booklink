@@ -1,7 +1,7 @@
 import datetime
 import uuid
 from datetime import timedelta
-from typing import List, Optional, Union
+from typing import List, Optional, Union, overload
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -16,7 +16,14 @@ def get_visit(db: Session, visit_id: int) -> Optional[Slot]:
     return db.execute(stmt).scalar_one_or_none()
 
 
-def get_visits(db: Session, client_id: int, worker_id: Optional[int] = None, *, _from: datetime.date | None = None, _to: datetime.date | None = None) -> list[Slot]:
+def get_visits(
+    db: Session,
+    client_id: int,
+    worker_id: Optional[int] = None,
+    *,
+    _from: datetime.date | None = None,
+    _to: datetime.date | None = None,
+) -> list[Slot]:
     q = select(Slot).where(Slot.client_id == client_id).where(Slot.slot_type == SlotType.VISIT)
     if worker_id:
         q = q.where(Slot.worker_id == worker_id)
@@ -263,6 +270,33 @@ def create_service(
     db.commit()
     db.refresh(db_service)
     return db_service
+
+
+def update_service(
+    db: Session,
+    service_id: int,
+    update: services.UpdateService,
+) -> Service:
+    db_service = get_service(db, service_id)
+    if not db_service:
+        raise KeyError(f"not found {service_id}")
+
+    for field, value in update.dict().items():
+        setattr(db_service, field, value)
+
+    db.add(db_service)
+    db.commit()
+    return db_service
+
+
+@overload
+def get_service(db: Session, service_id: int, *, not_found: None = None) -> Optional[Service]:
+    ...
+
+
+@overload
+def get_service(db: Session, service_id: int, *, not_found: HTTPException) -> Service:
+    ...
 
 
 def get_service(

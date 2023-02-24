@@ -62,6 +62,10 @@ class Service(SQLModel, table=True):
     blocked_datetime: datetime.datetime | None
     client_id: int = Field(foreign_key="clients.client_id")
 
+    def assure_id(self, client_id: int) -> None:
+        if self.client_id != client_id:
+            raise NoPermission
+
 
 class Skill(SQLModel, table=True):
     # abilities of worker
