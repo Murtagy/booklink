@@ -62,7 +62,7 @@ def my_create_service(
     return db_service
 
 
-def get_service(
+def get_service_optional(
     service_id: int,
     s: Session = Depends(db.get_session),
 ) -> Optional[OutService]:
@@ -72,7 +72,7 @@ def get_service(
     return None
 
 
-def get_service_must(
+def get_service(
     service_id: int,
     s: Session = Depends(db.get_session),
 ) -> OutService:

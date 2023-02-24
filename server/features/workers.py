@@ -155,7 +155,7 @@ def add_skill(
     service_id = skill.service_id
 
     db_worker = crud.get_worker(s, worker_id)
-    service = services.get_service(service_id, s)
+    service = services.get_service_optional(service_id, s)
 
     if db_worker is None:
         raise app_exceptions.WorkerNotFound
@@ -182,7 +182,7 @@ def add_skills(
 
     for updated_service in skills_in.services:
         service_id = updated_service.service_id
-        service = services.get_service_must(service_id, s)
+        service = services.get_service(service_id, s)
 
         assert service.client_id == current_user.client_id
         assert current_user.client_id == db_worker.client_id

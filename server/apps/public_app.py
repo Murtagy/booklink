@@ -48,7 +48,7 @@ app.get("/workers", response_model=workers.OutWorkers)(workers.get_workers)
 
 
 # SERVICES
-app.get("/service/{service_id}", response_model=services.OutService)(services.get_service)
+app.get("/service/{service_id}", response_model=services.OutService)(services.get_service_optional)
 app.get("/client/{client_id}/service/{service_id}", response_model=services.OutService)(
     services.get_service_by_client
 )
