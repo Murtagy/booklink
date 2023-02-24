@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session  # type: ignore
 
 from .. import crud, db, models
 from . import users
+from ..app_exceptions import ServiceNotFound
 
 
 class CreateService(BM):
@@ -73,7 +74,7 @@ def get_service_must(
 ) -> OutService:
     db_service = crud.get_service(s, service_id)
     if db_service is None:
-        raise AssertionError(f"Must have service {service_id}")
+        raise ServiceNotFound
     return OutService.from_orm(db_service)
 
 
