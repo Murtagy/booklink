@@ -1,6 +1,9 @@
 <template>
   <div class="box" style="display: flex; flex-flow: row wrap; width:100%">
-    <VisitsDayCaruselDay v-for="day in days" :key="day.date" :day="day" />
+    <VisitsDayCaruselDay 
+      v-for="day in days" :key="day.date" :day="day" 
+      @click="$emit('dayPicked', day)"
+    />
   </div>
 </template>
 
@@ -15,6 +18,14 @@ export default {
     return {
       days: days,
     };
+  },
+  emits: {
+    dayPicked(payload: VisitDay) {
+      if (payload.visits_n == 0) { 
+        return false 
+      }
+      return true
+    }
   },
   mounted() {
     this.fetchDays();
