@@ -33,6 +33,7 @@ export type { SkillsOut } from "./models/SkillsOut";
 export type { TimeSlot } from "./models/TimeSlot";
 export { TimeSlotType } from "./models/TimeSlotType";
 export type { TokenOut } from "./models/TokenOut";
+export type { UpdateService } from "./models/UpdateService";
 export type { UpdateWorker } from "./models/UpdateWorker";
 export type { UserCreate } from "./models/UserCreate";
 export type { UserOut } from "./models/UserOut";

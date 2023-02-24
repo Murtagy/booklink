@@ -22,6 +22,7 @@ import type { SkillIn } from "../models/SkillIn";
 import type { SkillsIn } from "../models/SkillsIn";
 import type { SkillsOut } from "../models/SkillsOut";
 import type { TokenOut } from "../models/TokenOut";
+import type { UpdateService } from "../models/UpdateService";
 import type { UpdateWorker } from "../models/UpdateWorker";
 import type { UserCreate } from "../models/UserCreate";
 import type { UserOut } from "../models/UserOut";
@@ -292,18 +293,45 @@ export class DefaultService {
   }
 
   /**
-   * Get Service
+   * Get Service Must
    * @param serviceId
    * @returns OutService Successful Response
    * @throws ApiError
    */
-  public static getService(serviceId: number): CancelablePromise<OutService> {
+  public static getServiceMust(
+    serviceId: number
+  ): CancelablePromise<OutService> {
     return __request(OpenAPI, {
       method: "GET",
       url: "/service/{service_id}",
       path: {
         service_id: serviceId,
       },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   * Update Service
+   * @param serviceId
+   * @param requestBody
+   * @returns OutService Successful Response
+   * @throws ApiError
+   */
+  public static updateService(
+    serviceId: number,
+    requestBody: UpdateService
+  ): CancelablePromise<OutService> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/service/{service_id}",
+      path: {
+        service_id: serviceId,
+      },
+      body: requestBody,
+      mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },
