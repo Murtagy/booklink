@@ -216,8 +216,12 @@ def get_visits_days(
 ) -> VisitsByDays:
     client_id = current_user.client_id
 
+    visits_by_days: dict[datetime.date, list[models.Slot]] = {}
+    for d in range((rq.date_to - rq.date_from).days + 1):
+        date = rq.date_from + datetime.timedelta(days=d)
+        visits_by_days[date] = []
+
     visits = crud.get_visits(s, client_id, worker_id=worker_id, _from=rq.date_from, _to=rq.date_to)
-    visits_by_days: defaultdict[datetime.date, list[models.Slot]] = defaultdict(list)
     for visit in visits:
         visits_by_days[visit.from_datetime.date()].append(visit)
     days = []
