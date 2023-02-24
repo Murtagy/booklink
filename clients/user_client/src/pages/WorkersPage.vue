@@ -8,7 +8,7 @@
   />
   <input
     type="button"
-    :value='show_createWorker ? "Закрыть" : "Создать сотрудника"'
+    :value="show_createWorker ? 'Закрыть' : 'Создать сотрудника'"
     @click="show_createWorker = !show_createWorker"
   />
   <div>
