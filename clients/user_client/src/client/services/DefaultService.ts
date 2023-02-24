@@ -293,14 +293,12 @@ export class DefaultService {
   }
 
   /**
-   * Get Service Must
+   * Get Service
    * @param serviceId
    * @returns OutService Successful Response
    * @throws ApiError
    */
-  public static getServiceMust(
-    serviceId: number
-  ): CancelablePromise<OutService> {
+  public static getService(serviceId: number): CancelablePromise<OutService> {
     return __request(OpenAPI, {
       method: "GET",
       url: "/service/{service_id}",
