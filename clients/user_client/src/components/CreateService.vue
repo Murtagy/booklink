@@ -83,7 +83,7 @@ export default {
         name: this.name,
         price: this.price,
         price_to: this.price_to,
-        seconds: this.minutes * 60,
+        minutes: this.minutes,
       });
       this.$emit("createdService", { service: service });
     },

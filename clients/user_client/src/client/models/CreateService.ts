@@ -6,6 +6,6 @@ export type CreateService = {
   name: string;
   price: number;
   price_to?: number;
-  seconds: number;
+  minutes: number;
   description?: string;
 };

@@ -211,25 +211,6 @@ export class DefaultService {
   }
 
   /**
-   * Get Worker
-   * @param workerId
-   * @returns OutWorker Successful Response
-   * @throws ApiError
-   */
-  public static getWorker1(workerId: string): CancelablePromise<OutWorker> {
-    return __request(OpenAPI, {
-      method: "GET",
-      url: "/worker",
-      path: {
-        worker_id: workerId,
-      },
-      errors: {
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  /**
    * Create Worker
    * @param requestBody
    * @returns OutWorker Successful Response

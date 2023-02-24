@@ -16,8 +16,7 @@
       <!-- seconds are multiplied ! -->
       <input
         id="minutes"
-        :value="service.seconds / 60"
-        @input="(event) => (service.seconds = event.target.value)"
+        v-model="service.minutes"
         type="range"
         class="wide"
         min="0"
@@ -26,7 +25,7 @@
         required
       />
       <br />
-      <input id="minutes" v-model="service.seconds" type="number" required />
+      <input id="minutes" v-model="service.minutes" type="number" required />
 
       <p class="bold"><label for="price">Стоимость</label></p>
       <input id="price" v-model="service.price" type="number" required />
@@ -58,8 +57,8 @@ export default {
   components: {},
 
   data(): Data {
-    return { 
-      service: undefined 
+    return {
+      service: undefined,
     };
   },
   methods: {
