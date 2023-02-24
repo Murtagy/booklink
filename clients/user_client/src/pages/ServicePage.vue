@@ -28,7 +28,13 @@
       <input id="minutes" v-model="service.minutes" type="number" required />
 
       <p class="bold"><label for="price">Стоимость</label></p>
-      <input id="price" v-model="service.price" type="number" step="0.01" required />
+      <input
+        id="price"
+        v-model="service.price"
+        type="number"
+        step="0.01"
+        required
+      />
       <p class="bold">
         <label for="price_to"
           >Верхняя стоимость (если услуга оценивается диапазоном от-до)</label
@@ -69,9 +75,12 @@ export default {
       if (!this.service) {
         return;
       }
-      // const worker = this.service;
-      // this.service = undefined;
-      // this.service = await DefaultService.updateWorker(this.service_id, {name: worker.name, job_title: worker?.job_title})
+      const service = this.service;
+      this.service = undefined;
+      this.service = await DefaultService.updateService(
+        this.service_id,
+        service
+      );
     },
   },
   mounted() {
