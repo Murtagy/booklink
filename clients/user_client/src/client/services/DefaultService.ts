@@ -337,6 +337,25 @@ export class DefaultService {
   }
 
   /**
+   * Delete Service
+   * @param serviceId
+   * @returns any Successful Response
+   * @throws ApiError
+   */
+  public static deleteService(serviceId: number): CancelablePromise<any> {
+    return __request(OpenAPI, {
+      method: "DELETE",
+      url: "/service/{service_id}",
+      path: {
+        service_id: serviceId,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
    * Get Service By Client
    * @param clientId
    * @param serviceId
