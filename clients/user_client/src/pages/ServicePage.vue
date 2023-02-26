@@ -48,11 +48,11 @@
       >
         Сохранить
       </button>
-      <input v-if="!show_deleteService" type="button" value="Удалить" @click="show_deleteService=!show_deleteService" /> 
-      <div v-if="show_deleteService">
+      <input v-if="!show_delete" type="button" value="Удалить" @click="show_delete=!show_delete" /> 
+      <div v-if="show_delete">
         <p class="bold">Вы уверены?</p>
         <input type="button" value="Да, удалить услугу" @click="deleteService" /> 
-        <input type="button" value="Нет, не удалять" @click="show_deleteService=!show_deleteService"  /> 
+        <input type="button" value="Нет, не удалять" @click="show_delete=!show_delete"  /> 
         </div>
     </form>
   </div>
@@ -62,7 +62,7 @@
 import { DefaultService, type OutService } from "@/client";
 
 declare interface Data {
-  show_deleteService: boolean,
+  show_delete: boolean,
   service?: OutService;
 }
 
@@ -71,7 +71,7 @@ export default {
 
   data(): Data {
     return {
-      show_deleteService: false,
+      show_delete: false,
       service: undefined,
     };
   },
