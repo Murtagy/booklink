@@ -2,6 +2,19 @@
 
 <template>
   <div v-if="service">
+      <button
+        v-if="!show_delete"
+        @click="show_delete=!show_delete" 
+        style="margin-top: 1em; margin-bottom: 1em; float: right"
+        type="submit"
+      >
+        Удалить
+      </button>
+      <div v-if="show_delete">
+        <p class="bold">Вы уверены?</p>
+        <input type="button" value="Да, удалить услугу" @click="deleteService" /> 
+        <input type="button" value="Нет, не удалять" @click="show_delete=!show_delete"  /> 
+        </div>
     <form @submit.prevent="updateService" class="border_main1">
       <p class="bold"><label for="name">Название</label></p>
       <input
@@ -48,12 +61,7 @@
       >
         Сохранить
       </button>
-      <input v-if="!show_delete" type="button" value="Удалить" @click="show_delete=!show_delete" /> 
-      <div v-if="show_delete">
-        <p class="bold">Вы уверены?</p>
-        <input type="button" value="Да, удалить услугу" @click="deleteService" /> 
-        <input type="button" value="Нет, не удалять" @click="show_delete=!show_delete"  /> 
-        </div>
+
     </form>
   </div>
 </template>
