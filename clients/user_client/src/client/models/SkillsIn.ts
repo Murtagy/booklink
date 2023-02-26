@@ -5,5 +5,5 @@
 import type { SkillIn } from "./SkillIn";
 
 export type SkillsIn = {
-  services: Array<SkillIn>;
+  skills: Array<SkillIn>;
 };

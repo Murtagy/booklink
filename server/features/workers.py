@@ -39,7 +39,7 @@ class SkillIn(BM):
 
 
 class SkillsIn(BM):
-    services: list[SkillIn]
+    skills: list[SkillIn]
 
 
 class Received(BM):
