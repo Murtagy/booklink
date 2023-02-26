@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session  # type: ignore
 
 from .. import app_exceptions, crud, db, models
 from . import services, skills, users
+from ..app_exceptions import WorkerNotFound 
 
 
 class CreateWorker(BM):
@@ -64,7 +65,7 @@ def get_worker_by_id(
 ) -> OutWorker:
     db_worker = crud.get_worker(s, int(worker_id))
     if not db_worker:
-        raise app_exceptions.WorkerNotFound
+        raise WorkerNotFound
     return OutWorker.from_orm(db_worker)
 
 
@@ -84,7 +85,14 @@ def update_worker(
 
 def delete_worker(
     worker_id: str = Path(regex=r"\d+"),
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
 ) -> None:
+    worker = crud.get_worker(s, int(worker_id))
+    if not worker:
+        raise WorkerNotFound
+    worker.assure_id(current_user.client_id)
+    crud.delete_worker(s, int(worker_id))
     return None
 
 
@@ -132,7 +140,7 @@ def create_worker(
 def assure_worker_and_owner(s: Session, user: models.User, worker_id: int | str) -> None:
     worker = crud.get_worker(s, int(worker_id))
     if worker is None:
-        raise app_exceptions.WorkerNotFound
+        raise WorkerNotFound
     if worker.client_id != user.client_id:
         raise ValueError
 
@@ -158,7 +166,7 @@ def add_skill(
     service = services.get_service_optional(service_id, s)
 
     if db_worker is None:
-        raise app_exceptions.WorkerNotFound
+        raise WorkerNotFound
     if service is None:
         raise app_exceptions.ServiceNotFound
 
@@ -178,7 +186,7 @@ def add_skills(
 
     db_worker = crud.get_worker(s, worker_id)
     if db_worker is None:
-        raise app_exceptions.WorkerNotFound
+        raise WorkerNotFound
 
     for updated_service in skills_in.services:
         service_id = updated_service.service_id
@@ -216,7 +224,7 @@ def my_add_skill(
     db_service = crud.get_service(s, service_id)
 
     if db_worker is None:
-        raise app_exceptions.WorkerNotFound
+        raise WorkerNotFound
     if db_service is None:
         raise app_exceptions.ServiceNotFound
 

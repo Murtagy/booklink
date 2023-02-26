@@ -202,6 +202,13 @@ def update_worker(db: Session, worker: workers.UpdateWorker, worker_id: int) -> 
     return db_worker
 
 
+def delete_worker(db: Session, worker_id: int) -> None:
+    stmt = delete(Worker)  # type: ignore[arg-type]
+    stmt = stmt.where(Worker.worker_id == worker_id)
+    db.execute(stmt)
+    db.commit()
+    return
+
 def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
     stmt = select(Slot).where(Slot.slot_id == slot_id)
     return db.execute(stmt).scalars().one_or_none()
@@ -244,6 +251,7 @@ def delete_slot(db: Session, slot_id: int) -> None:
     stmt = delete(Slot)  # type: ignore[arg-type]
     stmt = stmt.where(Slot.slot_id == slot_id)
     db.execute(stmt)
+    db.commit()
     return
 
 
@@ -315,6 +323,7 @@ def delete_service(db: Session, service_id: int) -> None:
     stmt = delete(Service)  # type: ignore[arg-type]
     stmt = stmt.where(Service.service_id == service_id)
     db.execute(stmt)
+    db.commit()
 
 
 @overload

@@ -29,6 +29,10 @@ class Worker(SQLModel, table=True):
 
     slots: list["Slot"] = Relationship(back_populates="worker_owner")
 
+    def assure_id(self, client_id: int) -> None:
+        if self.client_id != client_id:
+            raise NoPermission
+
 
 class VisitWorker(SQLModel, table=True):
     __tablename__ = "visit_workers"
