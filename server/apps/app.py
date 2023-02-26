@@ -70,6 +70,7 @@ app.get("/services", response_model=services.OutServices)(services.get_services_
 app.post("/my_service", response_model=services.OutService)(services.my_create_service)
 app.get("/service/{service_id}", response_model=services.OutService)(services.get_service)
 app.post("/service/{service_id}", response_model=services.OutService)(services.update_service)
+app.delete("/service/{service_id}")(services.delete_service)
 app.get("/client/{client_id}/service/{service_id}", response_model=services.OutService)(
     services.get_service_by_client
 )

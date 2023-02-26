@@ -138,3 +138,12 @@ def update_service(
     service.assure_id(current_user.client_id)
     db_service = crud.update_service(s, service_id, r)
     return OutService.from_orm(db_service)
+
+def delete_service(
+    service_id: int,
+    current_user: models.User = Depends(users.get_current_user),
+    s: Session = Depends(db.get_session),
+) -> None:
+    service = crud.get_service(s, service_id, not_found=ServiceNotFound)
+    service.assure_id(current_user.client_id)
+    crud.delete_service(s, service_id)

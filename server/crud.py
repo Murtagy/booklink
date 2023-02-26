@@ -311,6 +311,12 @@ def update_service(
     return db_service
 
 
+def delete_service(db: Session, service_id: int) -> None:
+    stmt = delete(Service)  # type: ignore[arg-type]
+    stmt = stmt.where(Service.service_id == service_id)
+    db.execute(stmt)
+
+
 @overload
 def get_service(db: Session, service_id: int, *, not_found: None = None) -> Optional[Service]:
     ...
