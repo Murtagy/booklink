@@ -10,6 +10,7 @@ client = TestClient(app)
 localhost = "http://127.0.0.1:8000/"
 tmrw = datetime.date.today() + datetime.timedelta(days=1)
 username = f"nn{random.randint(0, 100000000)}"
+username = "nn"
 ### Actions code
 
 
@@ -193,12 +194,6 @@ def test_portyanka():
     global headers
 
     ### CREATE NEW CLIENT
-    username = (
-        str(random.randint(0, 1000))
-        + str(random.randint(0, 1000))
-        + str(random.randint(0, 1000))
-        + "test2"
-    )
     r = signup(username)
     assert r.status_code == 200, r.text
     signup_json = r.json()
