@@ -1,17 +1,21 @@
 <template>
   <div v-if="worker">
-      <button
-        style="margin-top: 1em; margin-bottom: 1em; float: right"
-        @click="show_delete=true"
-        v-if="!show_delete"
-      >
-        Удалить
-      </button>
-      <div v-if="show_delete">
-        <p class="bold">Вы уверены?</p>
-        <input type="button" :value=deleteYes @click="deleteWorker" /> 
-        <input type="button" value="Нет, не удалять" @click="show_delete=!show_delete"  /> 
-      </div>
+    <button
+      style="margin-top: 1em; margin-bottom: 1em; float: right"
+      @click="show_delete = true"
+      v-if="!show_delete"
+    >
+      Удалить
+    </button>
+    <div v-if="show_delete">
+      <p class="bold">Вы уверены?</p>
+      <input type="button" :value="deleteYes" @click="deleteWorker" />
+      <input
+        type="button"
+        value="Нет, не удалять"
+        @click="show_delete = !show_delete"
+      />
+    </div>
 
     <form @submit.prevent="updateWorker" class="border_main1">
       <p class="bold">Имя / Название</p>
@@ -32,7 +36,7 @@
 import { DefaultService, type OutWorker } from "@/client";
 
 declare interface Data {
-  show_delete: boolean
+  show_delete: boolean;
   worker?: OutWorker;
 }
 
@@ -41,15 +45,15 @@ export default {
   computed: {
     deleteYes(): string {
       if (!this.worker) {
-        return ''
+        return "";
       }
-      return `Да, удалить ${this.worker.name}`
-    }
+      return `Да, удалить ${this.worker.name}`;
+    },
   },
   data(): Data {
     return {
       show_delete: false,
-      worker: undefined
+      worker: undefined,
     };
   },
   methods: {
@@ -57,9 +61,9 @@ export default {
       this.worker = await DefaultService.getWorker(this.worker_id);
     },
     async deleteWorker() {
-      this.worker = undefined
-      await DefaultService.deleteWorker(this.worker_id)
-      this.$router.back()
+      this.worker = undefined;
+      await DefaultService.deleteWorker(this.worker_id);
+      this.$router.back();
     },
     async updateWorker() {
       if (!this.worker) {
