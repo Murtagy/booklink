@@ -83,9 +83,8 @@ export default {
       if (!this.service) {
         return
       }
-      const service_id = this.service.service_id
       this.service = undefined
-      await DefaultService.deleteService(service_id)
+      await DefaultService.deleteService(parseInt(this.service_id))
       this.$router.back()
     },
     async updateService() {
