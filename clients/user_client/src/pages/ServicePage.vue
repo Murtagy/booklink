@@ -12,9 +12,9 @@
       </button>
       <div v-if="show_delete">
         <p class="bold">Вы уверены?</p>
-        <input type="button" value="Да, удалить услугу" @click="deleteService" /> 
+        <input type="button" :value=deleteYes @click="deleteService" /> 
         <input type="button" value="Нет, не удалять" @click="show_delete=!show_delete"  /> 
-        </div>
+      </div>
     <form @submit.prevent="updateService" class="border_main1">
       <p class="bold"><label for="name">Название</label></p>
       <input
@@ -76,7 +76,14 @@ declare interface Data {
 
 export default {
   components: {},
-
+  computed: {
+    deleteYes(): string {
+      if (!this.service) {
+        return ''
+      }
+      return `Да, удалить ${this.service.name}`
+    }
+  },
   data(): Data {
     return {
       show_delete: false,
