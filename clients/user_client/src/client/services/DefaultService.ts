@@ -467,16 +467,14 @@ export class DefaultService {
    * @throws ApiError
    */
   public static getSkills(
-    clientId: number,
+    clientId?: number,
     workerId?: number
   ): CancelablePromise<SkillsOut> {
     return __request(OpenAPI, {
       method: "GET",
-      url: "/client/{client_id}/picker/services",
-      path: {
-        client_id: clientId,
-      },
+      url: "/skills",
       query: {
+        client_id: clientId,
         worker_id: workerId,
       },
       errors: {

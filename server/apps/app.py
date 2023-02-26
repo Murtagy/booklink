@@ -83,7 +83,7 @@ app.post("/worker_services", response_model=workers.Received)(workers.add_skills
 app.post("/worker_service", response_model=workers.Received)(workers.add_skill)
 
 app.post("/my_worker_services", response_model=workers.Received)(workers.my_add_skill)
-app.get("/client/{client_id}/picker/services", response_model=skills.SkillsOut)(workers.get_skills)
+app.get("/skills", response_model=skills.SkillsOut)(workers.get_skills)
 
 
 # SLOTS

@@ -205,11 +205,12 @@ def add_skills(
 
 
 def get_skills(
-    client_id: int,
+    client_id: int | None = Query(None),
     worker_id: int | None = Query(None),
     s: Session = Depends(db.get_session),
-    # current_user: models.User = Depends(users.get_current_user),
+    current_user: models.User = Depends(users.get_current_user),
 ) -> skills.SkillsOut:
+    client_id = current_user.client_id
     return skills.get_worker_skills_including_not_picked(s, client_id, worker_id)
 
 
