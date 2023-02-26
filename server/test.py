@@ -8,7 +8,8 @@ from .apps.app import app
 client = TestClient(app)
 
 localhost = "http://127.0.0.1:8000/"
-today = datetime.date.today()
+tmrw = datetime.date.today() + datetime.timedelta(days=1)
+username = f"nn{random.randint(0, 100000000)}"
 ### Actions code
 
 
@@ -17,7 +18,7 @@ def signup(username):
         localhost + "signup",
         json={
             "company": "Comp",
-            "username": "nn",
+            "username": username,
             "password": "nn",
             "email": str(random.randint(0, 1000)) + "example@example12.com",
         },
@@ -29,7 +30,7 @@ def login(username):
     r = client.post(
         localhost + "token",
         data={
-            "username": "nn",
+            "username": username,
             "password": "nn",
         },
     )
@@ -100,7 +101,7 @@ def create_worker_weekly_slot(worker_id, schedule):
     days = []
     for weekday_i, (weekday_str, timeslots) in enumerate(schedule.items()):
         for i in range(90):
-            date = today + datetime.timedelta(days=i)
+            date = tmrw + datetime.timedelta(days=i)
             if date.weekday() == weekday_i:
                 if not timeslots:
                     continue
@@ -156,7 +157,7 @@ def create_slot(slot):
     )
 
 
-def create_visit_as_a_client(slot):
+def create_visit(slot):
     url = localhost + f"slot" + "?force=false"
 
     return client.post(
@@ -356,8 +357,8 @@ def test_portyanka():
         "slot_type": "available",
         "client_id": CLIENT_ID,
         "worker_id": WORKER_NO_SCHEDULE_ID,
-        "from_datetime": f"{today}T08:00:00",
-        "to_datetime": f"{today}T18:00:00",
+        "from_datetime": f"{tmrw}T08:00:00",
+        "to_datetime": f"{tmrw}T18:00:00",
     }
     r = create_slot(slot)
 
@@ -368,10 +369,10 @@ def test_portyanka():
         "slot_type": "visit",
         "client_id": CLIENT_ID,
         "worker_id": WORKER_NO_SCHEDULE_ID,
-        "from_datetime": f"{today}T09:00:00",
-        "to_datetime": f"{today}T10:00:00",
+        "from_datetime": f"{tmrw}T09:00:00",
+        "to_datetime": f"{tmrw}T10:00:00",
     }
-    r = create_visit_as_a_client(visit)
+    r = create_visit(visit)
 
     assert r.status_code == 200, r.text
 
@@ -390,14 +391,28 @@ def test_portyanka():
         "slot_type": "visit",
         "client_id": CLIENT_ID,
         "worker_id": WORKER_NO_SCHEDULE_ID,
-        "from_datetime": f"{today}T09:45:00",
-        "to_datetime": f"{today}T10:00:00",
+        "from_datetime": f"{tmrw}T09:45:00",
+        "to_datetime": f"{tmrw}T10:00:00",
     }
 
-    r = create_visit_as_a_client(visit)
+    r = create_visit(visit)
     assert r.status_code == 409, r.text
 
-    r = get_visits_days(today, today)
+    r = get_visits_days(tmrw, tmrw)
     assert r.status_code == 200
     assert len(r.json()["days"]) == 1
-    assert r.json()["days"][0]["date"] == f"{today}"
+    assert r.json()["days"][0]["date"] == f"{tmrw}"
+
+    visit_details = {
+        "email": "example@example.com",
+        "phone": 123,
+        "first_name": "f",
+        "last_name": "l",
+        "client_id": CLIENT_ID,
+        "worker_id": WORKER_NO_SCHEDULE_ID,
+        "remind_me": False,
+        "from_dt": f"{tmrw}T10:30:00",
+        "services": [{"service_id": SERVICE_ID}]
+    }
+    r = create_visit_as_a_customer(visit_details)
+    assert r.status_code == 200, r.text

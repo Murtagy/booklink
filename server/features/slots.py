@@ -1,6 +1,5 @@
 import datetime
 import enum
-from collections import defaultdict
 from typing import Any, Literal, Optional
 
 from fastapi import Depends, Query

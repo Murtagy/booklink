@@ -27,6 +27,22 @@ class Worker(SQLModel, table=True):
     name: str
     job_title: str
 
+    slots: list["Slot"] = Relationship(back_populates="worker_owner")
+
+
+class VisitWorker(SQLModel, table=True):
+    __tablename__ = "visit_workers"
+
+    id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+
+    name: str
+    job_title: str
+    client_id: int = Field(foreign_key="clients.client_id")
+    # ^ Worker +
+    slot_id: int = Field(foreign_key="slots.slot_id", unique=True)
+    slot: "Slot" = Relationship(back_populates="worker")
+
 
 class File(SQLModel, table=True):
     __tablename__ = "files"
@@ -59,8 +75,29 @@ class Service(SQLModel, table=True):
     price_to: float | None
     minutes: int
     description: str | None
-    blocked_datetime: datetime.datetime | None
     client_id: int = Field(foreign_key="clients.client_id")
+
+    def assure_id(self, client_id: int) -> None:
+        if self.client_id != client_id:
+            raise NoPermission
+
+
+class VisitService(SQLModel, table=True):
+    __tablename__ = "visit_services"
+
+    id: int = Field(primary_key=True, index=True, unique=True)
+    created_at: datetime.datetime = Field(default=func.now())
+
+    name: str
+    price: float | None
+    price_to: float | None
+    minutes: int
+    description: str | None
+    client_id: int = Field(foreign_key="clients.client_id")
+
+    # ^ Service +
+    slot_id: int = Field(foreign_key="slots.slot_id")
+    slot: "Slot" = Relationship(back_populates="services")
 
     def assure_id(self, client_id: int) -> None:
         if self.client_id != client_id:
@@ -106,17 +143,6 @@ class Token(SQLModel, table=True):
     user_id: int = Field(foreign_key="users.user_id", nullable=False)
 
 
-class VisitServices(SQLModel, table=True):
-    # adds services to a visit' slot
-    __tablename__ = "visit_services"
-
-    # rel_id: int = Field(primary_key=True, index=True, unique=True)
-    created_at: datetime.datetime = Field(default=func.now())
-
-    slot_id: int = Field(foreign_key="slots.slot_id", primary_key=True)
-    service_id: int = Field(foreign_key="services.service_id", primary_key=True)
-
-
 class SlotType(enum.StrEnum):
     AVAILABLE = "available"
     BUSY = "busy"
@@ -134,11 +160,16 @@ class Slot(SQLModel, table=True):
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
 
-    worker_id: int = Field(foreign_key="workers.worker_id")
     client_id: int = Field(foreign_key="clients.client_id")
     customer_id: int | None = Field(foreign_key="customers.customer_id")
 
     phone: str | None
     email: str | None
     has_notification: bool | None
-    services: list[Service] = Relationship(link_model=VisitServices)
+
+
+    worker_id: int = Field(foreign_key="workers.worker_id")  # owner (e.g. for "my visits today")
+    worker_owner: Worker = Relationship(back_populates="slots")
+
+    services: list[VisitService] = Relationship(back_populates="slot")
+    worker: "VisitWorker" = Relationship(back_populates="slot")

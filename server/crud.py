@@ -8,7 +8,19 @@ from sqlalchemy.orm import Session
 from sqlmodel import col, delete, select
 
 from .features import services, slots, users, workers
-from .models import Client, File, Service, Skill, Slot, SlotType, Token, User, Worker
+from .models import (
+    Client,
+    File,
+    Service,
+    Skill,
+    Slot,
+    SlotType,
+    Token,
+    User,
+    VisitService,
+    VisitWorker,
+    Worker,
+)
 
 
 def get_visit(db: Session, visit_id: int) -> Optional[Slot]:
@@ -48,8 +60,6 @@ def create_customer_visit(
     if visit.worker_id:
         target_worker_id = int(visit.worker_id)
     target_worker_id = target_worker_id or worker_id
-    service_ids = [s.service_id for s in visit.services]
-    services = get_services_by_ids(db, service_ids)
     db_visit = Slot(
         slot_type=SlotType.VISIT,
         from_datetime=visit.from_dt,
@@ -60,9 +70,21 @@ def create_customer_visit(
         has_notification=visit.remind_me,
         phone=visit.phone,
         status="submitted",
-        services=services,
         worker_id=target_worker_id,
     )
+
+    service_ids = [s.service_id for s in visit.services]
+    if service_ids:
+        services = get_services_by_ids(db, service_ids)
+        visit_services = [create_visit_service(s, db_visit.slot_id) for s in services]
+        db_visit.services = visit_services
+
+    if db_visit.worker_id:
+        worker = get_worker(db, db_visit.worker_id)
+        if worker:
+            visit_worker = create_visit_worker(worker, db_visit)
+            db.add(visit_worker)
+
     db.add(db_visit)
     db.commit()
     db.refresh(db_visit)
@@ -355,3 +377,15 @@ def _get_worker_skills(db: Session, worker_id: int) -> List[Service]:
     skills_ids = select(Skill.service_id).where(Skill.worker_id == worker_id)
     q = select(Service).where(col(Service.service_id).in_(skills_ids))  # todo: test
     return db.execute(q).scalars().all()
+
+
+def create_visit_service(s: Service, slot_id: int) -> VisitService:
+    d = s.dict()
+    d.pop("service_id", None)
+    return VisitService(**d, slot_id=slot_id)
+
+
+def create_visit_worker(w: Worker, slot: Slot) -> VisitWorker:
+    d = w.dict()
+    d.pop("worker_id", None)
+    return VisitWorker(**d, slot=slot)
