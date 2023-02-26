@@ -11,7 +11,7 @@ class SkillOut(BM):
 
 
 class SkillsOut(BM):
-    services: list[SkillOut]
+    skills: list[SkillOut]
 
 
 def get_worker_skills_including_not_picked(
@@ -26,7 +26,7 @@ def get_worker_skills_including_not_picked(
         service_out = SkillOut(picked=worker_picked_service, service=cs)
         skills_out.append(service_out)
 
-    return SkillsOut(services=skills_out)
+    return SkillsOut(skills=skills_out)
 
 
 def create_skill(s: Session, worker_id: int, service_id: int) -> None:
