@@ -171,7 +171,6 @@ class Slot(SQLModel, table=True):
     email: str | None
     has_notification: bool | None
 
-
     worker_id: int = Field(foreign_key="workers.worker_id")  # owner (e.g. for "my visits today")
     worker_owner: Worker = Relationship(back_populates="slots")
 

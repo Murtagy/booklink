@@ -3,8 +3,8 @@ from pydantic import BaseModel as BM
 from sqlalchemy.orm import Session  # type: ignore
 
 from .. import app_exceptions, crud, db, models
+from ..app_exceptions import WorkerNotFound
 from . import services, skills, users
-from ..app_exceptions import WorkerNotFound 
 
 
 class CreateWorker(BM):
@@ -181,24 +181,25 @@ def add_skills(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> Received:
-    assert len(set((w.worker_id for w in skills_in.services)))
-    worker_id = skills_in.services[0].worker_id
+    picked_skills = skills_in.skills
+    assert len(set((w.worker_id for w in picked_skills)))
+    worker_id = picked_skills[0].worker_id
 
     db_worker = crud.get_worker(s, worker_id)
     if db_worker is None:
         raise WorkerNotFound
 
-    for updated_service in skills_in.services:
-        service_id = updated_service.service_id
+    for skill in picked_skills:
+        service_id = skill.service_id
         service = services.get_service(service_id, s)
 
         assert service.client_id == current_user.client_id
         assert current_user.client_id == db_worker.client_id
 
         picked_in_db = _skill_picked(s, worker_id, service_id)
-        if picked_in_db and not updated_service.picked:
+        if picked_in_db and not skill.picked:
             crud.delete_skill(s, worker_id, service_id)
-        if not picked_in_db and updated_service.picked:
+        if not picked_in_db and skill.picked:
             skills.create_skill(s, worker_id, service_id)
 
     return Received()

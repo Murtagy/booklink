@@ -29,11 +29,13 @@
         Сохранить
       </button>
     </form>
+    <WorkerSkills v-if="worker" :worker_id="worker_id"/>
   </div>
 </template>
 
 <script lang="ts">
 import { DefaultService, type OutWorker } from "@/client";
+import WorkerSkills from "@/components/WorkerSkills.vue"
 
 declare interface Data {
   show_delete: boolean;
@@ -41,7 +43,7 @@ declare interface Data {
 }
 
 export default {
-  components: {},
+  components: {WorkerSkills},
   computed: {
     deleteYes(): string {
       if (!this.worker) {

@@ -209,6 +209,7 @@ def delete_worker(db: Session, worker_id: int) -> None:
     db.commit()
     return
 
+
 def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
     stmt = select(Slot).where(Slot.slot_id == slot_id)
     return db.execute(stmt).scalars().one_or_none()
@@ -370,10 +371,11 @@ def create_skill(db: Session, worker_id: int, service_id: int) -> None:
 
 def delete_skill(db: Session, worker_id: int, service_id: int) -> None:
     db.execute(
-        delete(Skill.__tablename__)
+        delete(Skill)  # type: ignore[arg-type]
         .where(Skill.worker_id == worker_id)
         .where(Skill.service_id == service_id)
     )
+    db.commit()
 
 
 def get_skill(db: Session, worker_id: int, service_id: int) -> Skill | None:

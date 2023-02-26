@@ -407,7 +407,7 @@ def test_portyanka():
         "worker_id": WORKER_NO_SCHEDULE_ID,
         "remind_me": False,
         "from_dt": f"{tmrw}T10:30:00",
-        "services": [{"service_id": SERVICE_ID}]
+        "services": [{"service_id": SERVICE_ID}],
     }
     r = create_visit_as_a_customer(visit_details)
     assert r.status_code == 200, r.text

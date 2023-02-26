@@ -139,6 +139,7 @@ def update_service(
     db_service = crud.update_service(s, service_id, r)
     return OutService.from_orm(db_service)
 
+
 def delete_service(
     service_id: int,
     current_user: models.User = Depends(users.get_current_user),
