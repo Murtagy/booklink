@@ -48,6 +48,12 @@
       >
         Сохранить
       </button>
+      <input v-if="!show_deleteService" type="button" value="Удалить" @click="show_deleteService=!show_deleteService" /> 
+      <div v-if="show_deleteService">
+        <p class="bold">Вы уверены?</p>
+        <input type="button" value="Да, удалить услугу" @click="deleteService" /> 
+        <input type="button" value="Нет, не удалять" @click="show_deleteService=!show_deleteService"  /> 
+        </div>
     </form>
   </div>
 </template>
@@ -56,6 +62,7 @@
 import { DefaultService, type OutService } from "@/client";
 
 declare interface Data {
+  show_deleteService: boolean,
   service?: OutService;
 }
 
@@ -64,12 +71,22 @@ export default {
 
   data(): Data {
     return {
+      show_deleteService: false,
       service: undefined,
     };
   },
   methods: {
     async fetchService() {
-      this.service = await DefaultService.getService(this.service_id);
+      this.service = await DefaultService.getService(parseInt(this.service_id));
+    },
+    async deleteService() {
+      if (!this.service) {
+        return
+      }
+      const service_id = this.service.service_id
+      this.service = undefined
+      await DefaultService.deleteService(service_id)
+      this.$router.back()
     },
     async updateService() {
       if (!this.service) {
@@ -78,7 +95,7 @@ export default {
       const service = this.service;
       this.service = undefined;
       this.service = await DefaultService.updateService(
-        this.service_id,
+        parseInt(this.service_id),
         service
       );
     },
@@ -88,7 +105,7 @@ export default {
   },
   props: {
     service_id: {
-      type: Number,
+      type: String,
       required: true,
     },
   },
