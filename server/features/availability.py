@@ -260,8 +260,11 @@ class Availability(BM):
         worker_id: int,  # assumed that id is real already
         *,
         visit_length: Optional[int] = None,
+        _from: datetime.date | None = None
     ) -> "WorkerAvailability":
-        slots = crud.get_worker_slots(s, worker_id=worker_id, slot_types=[TimeSlotType.AVAILABLE])
+        _from = _from or datetime.date.today()
+
+        slots = crud.get_worker_slots(s, worker_id=worker_id, slot_types=[TimeSlotType.AVAILABLE], _from=_from)
         av = cls.CreateFromSlots(slots)
 
         busy_slots = crud.get_worker_slots(
@@ -316,6 +319,7 @@ def visit_pick_worker_or_throw(s: Session, slot: CreateSlot, *, exc: HTTPExcepti
 def get_worker_availability(
     client_id: str = Path(regex=r"\d+"),
     worker_id: str = Path(regex=r"\d+"),
+    from_date: datetime.date | None = Query(None),
     services: str | None = Query(None),
     s: Session = Depends(db.get_session),
 ) -> Availability:
@@ -331,7 +335,7 @@ def get_worker_availability(
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled
         total_service_length = sum([s.minutes for s in db_services])
-    av = Availability.GetWorkerAV(s, int(worker_id), visit_length=total_service_length)
+    av = Availability.GetWorkerAV(s, int(worker_id), visit_length=total_service_length, _from=from_date)
     return av
 
 

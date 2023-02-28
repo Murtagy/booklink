@@ -226,6 +226,7 @@ export class DefaultService {
    * Get Worker Availability
    * @param clientId
    * @param workerId
+   * @param fromDate
    * @param services
    * @returns Availability Successful Response
    * @throws ApiError
@@ -233,6 +234,7 @@ export class DefaultService {
   public static getWorkerAvailability(
     clientId: string,
     workerId: string,
+    fromDate?: string,
     services?: string
   ): CancelablePromise<Availability> {
     return __request(OpenAPI, {
@@ -243,6 +245,7 @@ export class DefaultService {
         worker_id: workerId,
       },
       query: {
+        from_date: fromDate,
         services: services,
       },
       errors: {

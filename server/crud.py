@@ -282,11 +282,13 @@ def get_client_slots(db: Session, client_id: int, *, slot_types: Optional[List[s
     return db.execute(q).scalars().all()
 
 
-def get_worker_slots(db: Session, worker_id: int, *, slot_types: Optional[List[str]]) -> List[Slot]:
+def get_worker_slots(db: Session, worker_id: int, *, slot_types: Optional[List[str]], _from: datetime.date | None = None) -> List[Slot]:
     # add filtering
     q = select(Slot).where(Slot.worker_id == worker_id)
     if slot_types:
         q = q.where(col(Slot.slot_type).in_(slot_types))
+    if _from:
+        q = q.where(Slot.from_datetime > _from )
     return db.execute(q).scalars().all()
 
 
