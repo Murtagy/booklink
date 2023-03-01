@@ -1,27 +1,25 @@
 <template>
   <div class="box; border_main1">
-    <div v-if="skills" style="overflow:hidden">
-      <p class="bold">
-        Выбрать услуги для сотрудника
-      </p>
+    <div v-if="skills" style="overflow: hidden">
+      <p class="bold">Выбрать услуги для сотрудника</p>
       <li v-for="skill in skills" :key="skill.service.service_id">
-        <input type="checkbox" id="String(skill.service.service_id)" :value=skill.picked v-model="skill.picked" />
-        <label :for="String(skill.service.service_id)" >{{ skill.service.name }}</label>
+        <input
+          type="checkbox"
+          id="String(skill.service.service_id)"
+          :value="skill.picked"
+          v-model="skill.picked"
+        />
+        <label :for="String(skill.service.service_id)">{{
+          skill.service.name
+        }}</label>
       </li>
-      <button
-        style="float: right"
-        @click="updateSkills"
-      >
-        Сохранить
-      </button>
+      <button style="float: right" @click="updateSkills">Сохранить</button>
     </div>
     <div v-if="!skills">
-      <p class="bold">Нет услуг для выбора </p>
+      <p class="bold">Нет услуг для выбора</p>
       <p class="bold">
         <router-link to="services">
-          <a> 
-            Перейти к услугам
-          </a>
+          <a> Перейти к услугам </a>
         </router-link>
       </p>
     </div>
@@ -39,15 +37,15 @@ export default {
   components: {},
   computed: {
     updatedSkills(): SkillIn[] {
-      const updatedSkills: SkillIn[] = this.skills.map(s => { 
+      const updatedSkills: SkillIn[] = this.skills.map((s) => {
         return {
           picked: s.picked,
           worker_id: parseInt(this.worker_id),
           service_id: s.service.service_id,
-        }
-      })
-      return updatedSkills
-    }
+        };
+      });
+      return updatedSkills;
+    },
   },
   data(): Data {
     return {
@@ -61,10 +59,10 @@ export default {
       ).skills;
     },
     async updateSkills() {
-      await DefaultService.addSkills({skills: this.updatedSkills})
+      await DefaultService.addSkills({ skills: this.updatedSkills });
       this.skills = [];
       await this.fetchSkills();
-    }
+    },
   },
   mounted() {
     this.fetchSkills();
