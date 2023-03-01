@@ -323,7 +323,36 @@ def get_worker_availability(
     services: str | None = Query(None),
     s: Session = Depends(db.get_session),
 ) -> Availability:
+    return _get_worker_availability(
+        client_id,
+        worker_id,
+        from_date,
+        services,
+        s
+    )
 
+def get_worker_availability_by_user(
+    worker_id: str = Path(regex=r"\d+"),
+    from_date: datetime.date | None = Query(None),
+    services: str | None = Query(None),
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> Availability:
+    return _get_worker_availability(
+        str(current_user.client_id),
+        worker_id,
+        from_date,
+        services,
+        s
+    )
+
+def _get_worker_availability(
+    client_id: str,
+    worker_id: str, 
+    from_date: datetime.date | None,
+    services: str | None,
+    s: Session,
+) -> Availability:
     total_service_length: Optional[int] = None
     if services:
         service_ids = [int(s) for s in services.split(",")]

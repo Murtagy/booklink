@@ -639,6 +639,7 @@ export class DefaultService {
    * Get Worker Availability
    * @param clientId
    * @param workerId
+   * @param fromDate
    * @param services
    * @returns Availability Successful Response
    * @throws ApiError
@@ -646,6 +647,7 @@ export class DefaultService {
   public static getWorkerAvailability(
     clientId: string,
     workerId: string,
+    fromDate?: string,
     services?: string
   ): CancelablePromise<Availability> {
     return __request(OpenAPI, {
@@ -656,6 +658,7 @@ export class DefaultService {
         worker_id: workerId,
       },
       query: {
+        from_date: fromDate,
         services: services,
       },
       errors: {
@@ -665,23 +668,26 @@ export class DefaultService {
   }
 
   /**
-   * Get Client Availability
-   * @param clientId
+   * Get Worker Availability By User
+   * @param workerId
+   * @param fromDate
    * @param services
-   * @returns AvailabilityPerWorker Successful Response
+   * @returns Availability Successful Response
    * @throws ApiError
    */
-  public static getClientAvailability(
-    clientId: number,
+  public static getWorkerAvailabilityByUser(
+    workerId: string,
+    fromDate?: string,
     services?: string
-  ): CancelablePromise<AvailabilityPerWorker> {
+  ): CancelablePromise<Availability> {
     return __request(OpenAPI, {
       method: "GET",
-      url: "/client/{client_id}/availability/",
+      url: "/worker/{worker_id}/availability",
       path: {
-        client_id: clientId,
+        worker_id: workerId,
       },
       query: {
+        from_date: fromDate,
         services: services,
       },
       errors: {
@@ -709,6 +715,32 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: "application/json",
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   * Get Client Availability
+   * @param clientId
+   * @param services
+   * @returns AvailabilityPerWorker Successful Response
+   * @throws ApiError
+   */
+  public static getClientAvailability(
+    clientId: number,
+    services?: string
+  ): CancelablePromise<AvailabilityPerWorker> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/client/{client_id}/availability/",
+      path: {
+        client_id: clientId,
+      },
+      query: {
+        services: services,
+      },
       errors: {
         422: `Validation Error`,
       },

@@ -103,6 +103,10 @@ app.get(
     response_model=availability.Availability,
 )(availability.get_worker_availability)
 app.get(
+    "/worker/{worker_id}/availability",
+    response_model=availability.Availability,
+)(availability.get_worker_availability_by_user)
+app.get(
     "/client/{client_id}/availability/",
     response_model=availability.AvailabilityPerWorker,
 )(availability.get_client_availability)
