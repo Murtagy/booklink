@@ -2,6 +2,7 @@ import datetime
 import math
 import random
 from typing import Any, Optional
+from dateutil.relativedelta import relativedelta
 
 from fastapi import Depends, Path, Query
 from fastapi.exceptions import HTTPException
@@ -275,6 +276,37 @@ class Availability(BM):
             av.SplitByLengthAndTrim(length_minutes=visit_length)
         return WorkerAvailability(days=av.days, worker_id=worker_id)
 
+    def EnsureEmptyDays(
+        self,
+        _from: datetime.date,
+        _to: datetime.date,
+    ) -> None:
+        while _from <= _to:
+            date = _from 
+            _from += datetime.timedelta(days=1)
+
+            empty = Day(date=date, timeslots=[])
+
+            for i_day, day in enumerate(self.days):
+                if date == day.date:
+                    break
+                if day.date > date:
+                    self.days.insert(i_day, empty)
+                    break
+            else:
+                self.days.append(empty)
+
+    def TrimTo(
+        self,
+        _to: datetime.date,
+    ) -> None:
+        new_days = []
+        for day in self.days:
+            if day.date > _to:
+                continue
+            new_days.append(day)
+        self.days = new_days 
+
 
 class WorkerAvailability(Availability):
     worker_id: int
@@ -365,8 +397,25 @@ def _get_worker_availability(
                 raise app_exceptions.WorkerNotSkilled
         total_service_length = sum([s.minutes for s in db_services])
     av = Availability.GetWorkerAV(s, int(worker_id), visit_length=total_service_length, _from=from_date)
+    if not services:
+        # when requesting for availability we populate empty days for calendar
+        _from = from_date or datetime.date.today()
+        _from_monday = _prev_monday(_from)
+        _end_of_month_monday = _next_monday(_from + relativedelta(months=1) - datetime.timedelta(days=1))
+        av.TrimTo(_end_of_month_monday)
+        av.EnsureEmptyDays(_from_monday, _end_of_month_monday)
     return av
 
+
+def _prev_monday(d: datetime.date) -> datetime.date:
+    while d.isoweekday() != 1:
+        d -= datetime.timedelta(days=1)
+    return d
+
+def _next_monday(d: datetime.date) -> datetime.date:
+    while d.isoweekday() != 1:
+        d += datetime.timedelta(days=1)
+    return d
 
 def get_client_availability(
     client_id: int,

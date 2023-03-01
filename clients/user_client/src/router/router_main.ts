@@ -45,6 +45,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/worker/:worker_id/job_hours",
+      name: "worker.job_hours",
+      component: () => import("../pages/WorkerAvailabilityPage.vue"),
+      props: true,
+    },
+    {
       path: "/visits",
       name: "Visits",
       component: () => import("../pages/VisitsPage.vue"),
