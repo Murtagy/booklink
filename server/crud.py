@@ -271,6 +271,7 @@ def delete_available_slots(
             .where(Slot.from_datetime < _to)
         )
         db.execute(stmt)
+        db.commit()
     return
 
 

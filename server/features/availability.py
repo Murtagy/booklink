@@ -281,6 +281,7 @@ class Availability(BM):
         _from: datetime.date,
         _to: datetime.date,
     ) -> None:
+        self.days.sort(key=(lambda day: day.date))
         while _from <= _to:
             date = _from 
             _from += datetime.timedelta(days=1)
@@ -385,7 +386,6 @@ def _get_worker_availability(
     services: str | None,
     s: Session,
 ) -> Availability:
-    total_service_length: Optional[int] = None
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
@@ -396,12 +396,13 @@ def _get_worker_availability(
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled
         total_service_length = sum([s.minutes for s in db_services])
-    av = Availability.GetWorkerAV(s, int(worker_id), visit_length=total_service_length, _from=from_date)
-    if not services:
+        av = Availability.GetWorkerAV(s, int(worker_id), visit_length=total_service_length, _from=from_date)
+    else:
         # when requesting for availability we populate empty days for calendar
         _from = from_date or datetime.date.today()
         _from_monday = _prev_monday(_from)
         _end_of_month_monday = _next_monday(_from + relativedelta(months=1) - datetime.timedelta(days=1))
+        av = Availability.GetWorkerAV(s, int(worker_id), visit_length=None, _from=_from_monday)
         av.TrimTo(_end_of_month_monday)
         av.EnsureEmptyDays(_from_monday, _end_of_month_monday)
     return av
