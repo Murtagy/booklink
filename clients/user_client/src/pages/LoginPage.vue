@@ -25,14 +25,21 @@
         </li>
         <input
           type="button"
-          value="Создать пользователя"
+          value="Войти"
           @click="Login"
           id="submit"
         />
       </ul>
+      <p style="margin-left:3em;"> 
+        <router-link to="/registration" >
+        (Перейти к регистрации)
+        </router-link>
+      </p>
     </form>
   </div>
 </template>
+
+<style scoped src="@/assets/styles/registration.css"></style>
 
 <script lang="ts">
 import type { TokenOut } from "@/client";
@@ -96,5 +103,3 @@ export default {
   },
 };
 </script>
-
-<style scoped src="@/assets/styles/registration.css"></style>

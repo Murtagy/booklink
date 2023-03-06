@@ -9,7 +9,7 @@
             type="text"
             v-model="company"
             id="company"
-            placeholder="Введите наименование юр. лица"
+            placeholder="Название компании"
             required
           />
         </li>
@@ -19,7 +19,7 @@
             type="email"
             v-model="email"
             id="email"
-            placeholder="Введите адрес электронной почты"
+            placeholder="Адрес электронной почты"
             required
           />
         </li>
@@ -29,7 +29,7 @@
             type="text"
             v-model="username"
             id="username"
-            placeholder="Введите имя пользователя"
+            placeholder="Имя пользователя"
             required
           />
         </li>
@@ -39,7 +39,7 @@
             type="password"
             v-model="password"
             id="password"
-            placeholder="Введите пароль"
+            placeholder="Пароль"
             required
           />
         </li>
@@ -49,7 +49,7 @@
             type="password"
             v-model="password_confirmation"
             id="password-confirmation"
-            placeholder="Введите пароль"
+            placeholder="Пароль"
             required
           />
         </li>

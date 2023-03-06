@@ -55,7 +55,7 @@ li input:focus {
   border-radius: 20px;
   font-size: 25px;
   width: 40%;
-  height: 11%;
+  height: 2em;
   margin: 40px auto;
   background-color: var(--color2);
   color: white;
@@ -96,7 +96,6 @@ div ::selection {
   #submit {
     font-size: 20px;
     width: 40%;
-    height: 11%;
     margin: 40px auto;
     right: 20px;
   }
@@ -129,7 +128,6 @@ div ::selection {
   #submit {
     font-size: 17px;
     width: 45%;
-    height: 12%;
     margin: 40px auto;
     position: absolute;
     right: 10px;
@@ -163,7 +161,6 @@ div ::selection {
   #submit {
     font-size: 14px;
     width: 45%;
-    height: 12%;
     margin: 40px auto;
     position: absolute;
     right: 10px;
