@@ -108,7 +108,7 @@ export default {
           OpenAPI.TOKEN = token;
           this.$router.push("/my_user");
         } catch (e: any) {
-          let msg = 'Ошибка соединения с сервером'
+          let msg = "Ошибка соединения с сервером";
           if (e.response) {
             const details = e.response.data.detail;
             if (details) {

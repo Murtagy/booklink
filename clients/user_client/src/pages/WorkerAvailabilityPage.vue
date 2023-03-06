@@ -1,7 +1,7 @@
 <template>
   <div class="box">
-    <p class="bold"> Время работы </p>
-    <div style="margin-left: 1em;">
+    <p class="bold">Время работы</p>
+    <div style="margin-left: 1em">
       <div v-for="slot in slots">
         <input
           :value="formatTime(slot.dt_from)"
