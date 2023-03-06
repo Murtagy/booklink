@@ -30,6 +30,11 @@
       </button>
     </form>
     <WorkerSkills v-if="worker" :worker_id="worker_id" />
+    <div class="border_main1">
+      <router-link :to="{ name: 'worker.job_hours', params: { worker_id: worker_id }}">
+        Расписание <img src="/src/assets/calendar-icon.png" style="weight: 2em; height: 2em;"/>
+      </router-link>
+    </div>
   </div>
 </template>
 
