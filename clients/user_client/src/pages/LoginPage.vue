@@ -23,17 +23,10 @@
             required
           />
         </li>
-        <input
-          type="button"
-          value="Войти"
-          @click="Login"
-          id="submit"
-        />
+        <input type="button" value="Войти" @click="Login" id="submit" />
       </ul>
-      <p style="margin-left:3em;"> 
-        <router-link to="/registration" >
-        (Перейти к регистрации)
-        </router-link>
+      <p style="margin-left: 3em">
+        <router-link to="/registration"> (Перейти к регистрации) </router-link>
       </p>
     </form>
   </div>
@@ -77,27 +70,21 @@ export default {
           OpenAPI.TOKEN = token;
           this.$router.push("/my_user");
         } catch (e: any) {
+          let msg = "Ошибка соединения с сервером";
           if (e.response) {
-            this.DisplayErrorFromResponse(e.response);
-          } else {
-            console.log(e);
-            throw e;
+            let details = e.response.data.detail;
+            if (details) {
+              switch (details) {
+                case "Incorrect username or password":
+                  msg = "Неверный логин или пароль";
+                  break;
+                default:
+                  msg = details;
+              }
+              alert(msg);
+            }
           }
         }
-      }
-    },
-    DisplayError(e: any) {
-      alert("Произошла ошибка" + e);
-    },
-    DisplayErrorFromResponse(response: any) {
-      let details = response.data.detail;
-      let msg;
-      if (details) {
-        switch (details) {
-          default:
-            msg = details;
-        }
-        alert(msg);
       }
     },
   },
