@@ -104,38 +104,25 @@ export default {
             password: this.password,
           });
           let token = response.access_token;
-          if (token) {
-            this.$authStore.setJwt(token);
-            OpenAPI.TOKEN = token;
-            this.$router.push("/my_user");
-          } else {
-            this.DisplayError("Произошла ошибка");
-          }
+          this.$authStore.setJwt(token);
+          OpenAPI.TOKEN = token;
+          this.$router.push("/my_user");
         } catch (e: any) {
+          let msg = 'Ошибка соединения с сервером'
           if (e.response) {
-            this.DisplayErrorFromResponse(e.response);
-          } else {
-            this.DisplayError(e);
+            const details = e.response.data.detail;
+            if (details) {
+              switch (details) {
+                case "Username already exists":
+                  msg = "Логин уже используется";
+                  break;
+                default:
+                  msg = details;
+              }
+              alert(msg);
+            }
           }
-          throw e;
         }
-      }
-    },
-    DisplayError(e: any) {
-      alert("Произошла ошибка" + e);
-    },
-    DisplayErrorFromResponse(response: AxiosResponse<any>) {
-      let details = response.data.detail;
-      let msg;
-      if (details) {
-        switch (details) {
-          case "User email already exists":
-            msg = "User email already exists";
-            break;
-          default:
-            msg = details;
-        }
-        alert(msg);
       }
     },
   },

@@ -103,18 +103,11 @@ def unjwttfy_token_id(token: Optional[str]) -> Optional[str]:
 
 
 async def create_user(user: UserCreate, s: Session = Depends(db.get_session)) -> TokenOut:
-    # print(user)
-    # return {"access_token": 'asda', "token_type": "bearer"}
-
-    db_user = crud.get_user_by_email(s, user.email)
-    if db_user:
-        raise exceptions.EmailExists
     db_user = crud.get_user_by_username(s, user.username)
     if db_user:
         raise exceptions.UsernameExists
     db_client = crud.create_client(s, user.company)
     db_user = crud.create_user(s, user, db_client.client_id)
-    # TODO add to client created_by user
     access_token = crud.create_user_token(s, db_user.user_id)
     jwt = jwtfy(access_token)
     return TokenOut(
