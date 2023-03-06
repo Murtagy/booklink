@@ -1,35 +1,37 @@
 <template>
   <div class="box">
-    Время работы
-    <div v-for="slot in slots">
-      <input
-        :value="formatTime(slot.dt_from)"
-        style="max-width: 4em"
-        disabled="true"
-      />
-      -
-      <input
-        :value="formatTime(slot.dt_to)"
-        style="max-width: 4em"
-        disabled="true"
-      />
-      <input type="button" value="-" @click="removeSlot(slot)" />
-    </div>
-    <form id="potential_slot" @submit.prevent="submitPotentialSlot">
-      <input v-model="potential_slot.dt_from" style="max-width: 4em" /> -
-      <input v-model="potential_slot.dt_to" style="max-width: 4em" />
-      <input type="submit" value="+" />
-    </form>
-    <div>
-      <input type="button" :value="save_text" @click="save" />
-    </div>
-    <div>
-      <input
-        type="button"
-        value="Применить ко дням"
-        @click="manyMode = !manyMode"
-        :class="{ activeButton: manyMode }"
-      />
+    <p class="bold"> Время работы </p>
+    <div style="margin-left: 1em;">
+      <div v-for="slot in slots">
+        <input
+          :value="formatTime(slot.dt_from)"
+          style="max-width: 4em"
+          disabled="true"
+        />
+        -
+        <input
+          :value="formatTime(slot.dt_to)"
+          style="max-width: 4em"
+          disabled="true"
+        />
+        <input type="button" value="-" @click="removeSlot(slot)" />
+      </div>
+      <form id="potential_slot" @submit.prevent="submitPotentialSlot">
+        <input v-model="potential_slot.dt_from" style="max-width: 4em" /> -
+        <input v-model="potential_slot.dt_to" style="max-width: 4em" />
+        <input type="submit" value="+" />
+      </form>
+      <div>
+        <input type="button" :value="save_text" @click="save" />
+      </div>
+      <div>
+        <input
+          type="button"
+          value="Применить ко дням"
+          @click="manyMode = !manyMode"
+          :class="{ activeButton: manyMode }"
+        />
+      </div>
     </div>
   </div>
   <div class="box">
