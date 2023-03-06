@@ -2,7 +2,7 @@
   <div class="box">
     <p class="bold">Время работы</p>
     <div style="margin-left: 1em">
-      <div v-for="slot in slots">
+      <div v-for="slot in slots" :key="slot.dt_from">
         <input
           :value="formatTime(slot.dt_from)"
           style="max-width: 4em"
@@ -37,6 +37,7 @@
   <div class="box">
     <div
       v-for="week in days_by_week"
+      :key="week[0].date"
       style="display: flex; flex-flow: row wrap; width: 100%"
     >
       <div
