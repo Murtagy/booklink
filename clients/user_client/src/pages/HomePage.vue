@@ -11,7 +11,6 @@
       <router-link to="/time">Time</router-link>
     </div>
     <h1>Home page</h1>
-    }
     <br />
     <span>Multiline message is:</span>
     <p style="white-space: pre-line">{{ message }}</p>
