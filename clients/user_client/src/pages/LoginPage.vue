@@ -1,7 +1,7 @@
 <template>
   <div>
     <wide-header title="Войти"></wide-header>
-    <form>
+    <form @submit.prevent="Login">
       <ul>
         <li>
           <label for="username">Логин</label>
@@ -23,9 +23,10 @@
             required
           />
         </li>
-        <input type="button" value="Войти" @click="Login" id="submit" />
+      <button type="submit" id="submit"> Войти</button>
+
       </ul>
-      <p style="margin-left: 3em">
+      <p style="margin-left: 3em; float: left">
         <router-link to="/registration"> (Перейти к регистрации) </router-link>
       </p>
     </form>
@@ -81,9 +82,9 @@ export default {
                 default:
                   msg = details;
               }
-              alert(msg);
             }
           }
+          alert(msg);
         }
       }
     },
