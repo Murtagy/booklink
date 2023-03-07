@@ -62,6 +62,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/visits/create/:date",
+      name: "visit.create",
+      component: () => import("../pages/CreateVisitPage.vue"),
+      props: true,
+    },
+    {
       path: "/visit",
       name: "Visit",
       component: () => import("../pages/VisitPage.vue"),

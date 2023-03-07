@@ -2,6 +2,7 @@
   <div class="border_main1" style="" v-if="day">
     {{ day.date }}
     Визитов {{ day.visits_n }}
+    <div style="float: right" @click="redirectToCreateDay"> + Визит </div>
     <VisitCard
       v-for="visit in day.visits"
       :visit="visit"
@@ -36,6 +37,12 @@ export default {
       });
       this.day = r.days[0];
     },
+    redirectToCreateDay() {
+      if (this.day?.date) {
+        this.$router.push(`visit/create/${this.day.date}`)
+      }
+
+    }
   },
   props: {
     _day: {
