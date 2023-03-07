@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "axios": "^0.23.0",
+    "datejs": "^1.0.0-rc3",
     "pinia": "^2.0.23",
     "vue": "^3.2.41",
     "vue-router": "^4.0.14"
