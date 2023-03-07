@@ -62,7 +62,7 @@ const router = createRouter({
       props: true,
     },
     {
-      path: "/visits/create/:date",
+      path: "/visit/create/:date",
       name: "visit.create",
       component: () => import("../pages/CreateVisitPage.vue"),
       props: true,

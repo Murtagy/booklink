@@ -39,7 +39,7 @@ export default {
     },
     redirectToCreateDay() {
       if (this.day?.date) {
-        this.$router.push(`visit/create/${this.day.date}`)
+        this.$router.push(`/visit/create/${this.day.date}`)
       }
 
     }
