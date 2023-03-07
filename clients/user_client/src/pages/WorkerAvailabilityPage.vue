@@ -17,8 +17,8 @@
         <input type="button" value="-" @click="removeSlot(slot)" />
       </div>
       <form id="potential_slot" @submit.prevent="submitPotentialSlot">
-        <input v-model="potential_slot.dt_from" style="max-width: 4em" /> -
-        <input v-model="potential_slot.dt_to" style="max-width: 4em" />
+        <input type="time" v-model="potential_slot.dt_from"  /> -
+        <input type="time" v-model="potential_slot.dt_to"  />
         <input type="submit" value="+" />
       </form>
       <div>
@@ -35,9 +35,9 @@
     </div>
   </div>
   <div class="box">
+    <!-- todo: solve :key -->
     <div
       v-for="week in days_by_week"
-      :key="week[0].date"
       style="display: flex; flex-flow: row wrap; width: 100%"
     >
       <div
