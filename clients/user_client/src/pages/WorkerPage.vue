@@ -47,6 +47,7 @@
 <script lang="ts">
 import { DefaultService, type OutWorker } from "@/client";
 import WorkerSkills from "@/components/WorkerSkills.vue";
+import type { PropType } from "vue";
 
 declare interface Data {
   show_delete: boolean;
@@ -71,7 +72,13 @@ export default {
   },
   methods: {
     async fetchWorker() {
-      this.worker = await DefaultService.getWorker(this.worker_id);
+      if (this.workerCached != undefined && !this.worker) {
+        console.log(this.workerCached)
+        this.worker = this.workerCached
+      } else {
+        console.log(this.workerCached)
+        this.worker = await DefaultService.getWorker(this.worker_id);
+      }
     },
     async deleteWorker() {
       this.worker = undefined;
@@ -97,6 +104,9 @@ export default {
     worker_id: {
       type: String,
       required: true,
+    },
+    workerCached: {
+      type: Object as PropType<OutWorker>,
     },
   },
 };

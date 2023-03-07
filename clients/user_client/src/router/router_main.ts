@@ -42,7 +42,16 @@ const router = createRouter({
       path: "/worker/:worker_id",
       name: "worker",
       component: () => import("../pages/WorkerPage.vue"),
-      props: true,
+      props: (route) => {
+        let workerCached = undefined
+        if (route.params.workerCached) {
+          workerCached = JSON.parse(route.params.workerCached as string)
+        }
+        return {
+          worker_id: route.params.worker_id,
+          workerCached: workerCached
+        }
+      }
     },
     {
       path: "/worker/:worker_id/job_hours",
