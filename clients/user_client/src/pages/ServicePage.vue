@@ -60,7 +60,7 @@
       <input id="price_to" v-model="service.price_to" type="number" />
       (необязательно)
       <button
-        style="margin-top: 1em; margin-bottom: 1em; float: right"
+        class="save"
         type="submit"
       >
         Сохранить

@@ -1,7 +1,7 @@
 <!-- TODO: DRY with Service Page -->
 <template>
   <div>
-    <form @submit.prevent="createService" class="border_main1">
+    <form @submit.prevent="createService" class="border_main1" style="display: flow-root">
       <p class="bold"><label for="name">Название</label></p>
       <input
         id="name"
@@ -32,9 +32,7 @@
       </p>
       <input id="price_to" v-model="price_to" type="number" />
       (необязательно)
-      <div style="margin-top: 1em; float: right">
-        <button type="submit">Создать</button>
-      </div>
+      <button class="save" type="submit">Создать</button>
     </form>
   </div>
 </template>
