@@ -59,12 +59,7 @@
       </p>
       <input id="price_to" v-model="service.price_to" type="number" />
       (необязательно)
-      <button
-        class="save"
-        type="submit"
-      >
-        Сохранить
-      </button>
+      <button class="save" type="submit">Сохранить</button>
     </form>
   </div>
 </template>

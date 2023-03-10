@@ -16,13 +16,15 @@
       v-for="worker in workers"
       :worker="worker"
       :key="worker.worker_id"
-      @click="$router.push({
-        name: 'worker',
-        params: {
-          worker_id: worker.worker_id,
-          workerCached: JSON.stringify(worker)
-        }
-      })"
+      @click="
+        $router.push({
+          name: 'worker',
+          params: {
+            worker_id: worker.worker_id,
+            workerCached: JSON.stringify(worker),
+          },
+        })
+      "
     >
     </WorkersCardMin>
   </div>

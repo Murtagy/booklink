@@ -1,7 +1,11 @@
 <!-- TODO: DRY with Service Page -->
 <template>
   <div>
-    <form @submit.prevent="createService" class="border_main1" style="display: flow-root">
+    <form
+      @submit.prevent="createService"
+      class="border_main1"
+      style="display: flow-root"
+    >
       <p class="bold"><label for="name">Название</label></p>
       <input
         id="name"

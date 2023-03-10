@@ -23,8 +23,7 @@
             required
           />
         </li>
-      <button type="submit" id="submit"> Войти</button>
-
+        <button type="submit" id="submit">Войти</button>
       </ul>
       <p style="margin-left: 3em; float: left">
         <router-link to="/registration"> (Перейти к регистрации) </router-link>

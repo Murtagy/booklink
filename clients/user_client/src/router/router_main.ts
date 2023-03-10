@@ -43,15 +43,15 @@ const router = createRouter({
       name: "worker",
       component: () => import("../pages/WorkerPage.vue"),
       props: (route) => {
-        let workerCached = undefined
+        let workerCached = undefined;
         if (route.params.workerCached) {
-          workerCached = JSON.parse(route.params.workerCached as string)
+          workerCached = JSON.parse(route.params.workerCached as string);
         }
         return {
           worker_id: route.params.worker_id,
-          workerCached: workerCached
-        }
-      }
+          workerCached: workerCached,
+        };
+      },
     },
     {
       path: "/worker/:worker_id/job_hours",

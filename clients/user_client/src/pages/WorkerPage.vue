@@ -73,10 +73,10 @@ export default {
   methods: {
     async fetchWorker() {
       if (this.workerCached != undefined && !this.worker) {
-        console.log(this.workerCached)
-        this.worker = this.workerCached
+        console.log(this.workerCached);
+        this.worker = this.workerCached;
       } else {
-        console.log(this.workerCached)
+        console.log(this.workerCached);
         this.worker = await DefaultService.getWorker(this.worker_id);
       }
     },

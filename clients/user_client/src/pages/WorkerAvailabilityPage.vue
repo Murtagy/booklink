@@ -17,8 +17,8 @@
         <input type="button" value="-" @click="removeSlot(slot)" />
       </div>
       <form id="potential_slot" @submit.prevent="submitPotentialSlot">
-        <input type="time" v-model="potential_slot.dt_from"  /> -
-        <input type="time" v-model="potential_slot.dt_to"  />
+        <input type="time" v-model="potential_slot.dt_from" /> -
+        <input type="time" v-model="potential_slot.dt_to" />
         <input type="submit" value="+" />
       </form>
       <div>

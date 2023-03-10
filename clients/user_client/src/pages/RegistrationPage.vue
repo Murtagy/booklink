@@ -54,7 +54,9 @@
           />
         </li>
         <p style="margin-left: 3em">
-          <router-link to="/login"> (Перейти ко входу в учетную запись) </router-link>
+          <router-link to="/login">
+            (Перейти ко входу в учетную запись)
+          </router-link>
         </p>
         <input
           type="button"
