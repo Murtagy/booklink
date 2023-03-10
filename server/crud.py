@@ -215,21 +215,25 @@ def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
     return db.execute(stmt).scalars().one_or_none()
 
 
-def create_slot(db: Session, slot: slots.CreateSlot) -> Slot:
+def create_slot(db: Session, slot: slots.CreateSlot, client_id: int) -> Slot:
     d = slot.dict()
 
-    db_slot = Slot(**d)
+    # TODO
+    services = d.pop('services')
+    customer_info = d.pop('customer_info')
+
+    db_slot = Slot(**d, client_id=client_id)
     db.add(db_slot)
     db.commit()
     db.refresh(db_slot)
     return db_slot
 
 
-def create_slots(db: Session, slots: list[slots.CreateSlot]) -> None:
+def create_slots(db: Session, slots: list[slots.CreateSlot], client_id: int) -> None:
     db_slots = []
     for slot in slots:
         d = slot.dict()
-        db_slot = Slot(**d)
+        db_slot = Slot(**d, client_id=client_id)
         db_slots.append(db_slot)
     db.add_all(db_slots)
     db.commit()

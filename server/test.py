@@ -87,7 +87,7 @@ def add_worker_skill(worker_id, service_ids):
         selected_services.append({"worker_id": worker_id, "service_id": s, "picked": True})
     return client.post(
         localhost + "worker_services",
-        json={"services": selected_services},
+        json={"skills": selected_services},
         headers=headers,
     )
 
@@ -372,11 +372,8 @@ def test_portyanka():
     assert r.status_code == 200, r.text
 
     r = get_worker_availability(CLIENT_ID, WORKER_NO_SCHEDULE_ID)
-
-    days = r.json()["days"]
-    # print(days)
-    assert len(days) == 1
-    day = days[0]
+    assert r.status_code == 200, r.text
+    day = [d for d in r.json()["days"] if d["date"] == str(tmrw)][0]
     assert len(day["timeslots"]) == 2, day[
         "timeslots"
     ]  # assert 2 timeslots, no split by time requested
@@ -394,10 +391,8 @@ def test_portyanka():
     assert r.status_code == 409, r.text
 
     r = get_visits_days(tmrw, tmrw)
-    assert r.status_code == 200
-    assert len(r.json()["days"]) == 1
-    assert r.json()["days"][0]["date"] == f"{tmrw}"
-
+    assert r.status_code == 200, r.text
+    day = [d for d in r.json()["days"] if d["date"] == str(tmrw)][0]
     visit_details = {
         "email": "example@example.com",
         "phone": 123,

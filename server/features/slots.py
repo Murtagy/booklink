@@ -10,7 +10,11 @@ from sqlalchemy.orm import Session  # type: ignore
 from server.models import SlotType
 
 from .. import app_exceptions, crud, db, models
-from . import availability, services, users, workers
+from . import availability, services, users, workers, customers
+
+
+class InServiceToVisit(BM):
+    service_id: int
 
 
 class TimeSlotType(str, enum.Enum):
@@ -21,25 +25,25 @@ class TimeSlotType(str, enum.Enum):
 
 class CreateSlot(BM):
     slot_type: TimeSlotType
-    client_id: int
     worker_id: int | None
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
     has_notification = False
     status = "submitted"
+    customer_info: customers.CustomerInfoIn | None = None
+    services: list[InServiceToVisit] = []
+
 
     @classmethod
     def Available(
         cls,
         *,
-        client_id: int,
         worker_id: int | None,
         from_datetime: datetime.datetime,
         to_datetime: datetime.datetime,
     ):
         return cls(
             slot_type=TimeSlotType.AVAILABLE,
-            client_id=client_id,
             worker_id=worker_id,
             from_datetime=from_datetime,
             to_datetime=to_datetime,
@@ -121,10 +125,6 @@ def delete_client_slot(
     return "OK"
 
 
-class InServiceToVisit(BM):
-    service_id: int
-
-
 class OutVisit(BM):
     email: str | None
     has_notification: bool
@@ -154,14 +154,16 @@ class Received(BM):
 class InVisit(BM):
     client_id: int
     from_dt: datetime.datetime
-    first_name: str
-    last_name: str
-    email: str
     services: list[InServiceToVisit]
-    phone: str
     remind_me: bool
     version: Literal[1] = 1
     worker_id: str | None
+
+    # change to customer info?
+    phone: str
+    email: str
+    first_name: str
+    last_name: str
 
 
 class VisitDay(BM):
@@ -259,23 +261,23 @@ def create_slot_with_check(
 ) -> OutSlot:
     if slot.slot_type == TimeSlotType.VISIT and not force:
         # in case slot is a visit - check for collision
-        slot = availability.visit_pick_worker_or_throw(s, slot, exc=app_exceptions.SlotNotAvailable)
+        slot = availability.visit_pick_worker_or_throw(s, slot, current_user.client_id, exc=app_exceptions.SlotNotAvailable)
     # others we let to duplicate
 
-    current_user.assure_id(slot.client_id)
     if slot.worker_id:
         workers.assure_worker_and_owner(s, current_user, slot.worker_id)
 
-    db_slot = crud.create_slot(s, slot)
+    db_slot = crud.create_slot(s, slot, current_user.client_id)
     return OutSlot.from_orm(db_slot)
 
 
-def create_slot(slot: CreateSlot, s: Session) -> OutSlot:
-    db_slot = crud.create_slot(s, slot)
+def create_slot(slot: CreateSlot, s: Session, client_id: int) -> OutSlot:
+    db_slot = crud.create_slot(s, slot, client_id)
     return OutSlot.from_orm(db_slot)
 
 
 def create_slots(
+    client_id: int,
     slots: list[CreateSlot],
     s: Session,
 ) -> None:
@@ -283,7 +285,7 @@ def create_slots(
     for slot in slots:
         if slot.slot_type != SlotType.AVAILABLE:
             raise ValueError("wrong slot type")
-    crud.create_slots(s, slots)
+    crud.create_slots(s, slots, client_id)
 
 
 def public_book_visit(
@@ -300,15 +302,14 @@ def public_book_visit(
 
     potential_slot = CreateSlot(
         slot_type=TimeSlotType.VISIT,
-        client_id=visit.client_id,
         worker_id=visit.worker_id,
         from_datetime=visit.from_dt,
         to_datetime=visit.from_dt + datetime.timedelta(minutes=visit_len_minutes),
     )
     potential_slot = availability.visit_pick_worker_or_throw(
-        s, potential_slot, exc=app_exceptions.SlotNotAvailable
+        s, potential_slot, visit.client_id, exc=app_exceptions.SlotNotAvailable
     )
-    slot = create_slot(potential_slot, s)
+    slot = create_slot(potential_slot, s, visit.client_id)
 
     db_visit = crud.create_customer_visit(
         s,

@@ -330,7 +330,7 @@ def _get_client_availability(
     return worker_avs
 
 
-def visit_pick_worker_or_throw(s: Session, slot: CreateSlot, *, exc: HTTPException) -> CreateSlot:
+def visit_pick_worker_or_throw(s: Session, slot: CreateSlot, client_id: int, *, exc: HTTPException) -> CreateSlot:
     _worker_id = slot.worker_id
     if _worker_id:
         worker_id = _worker_id
@@ -339,7 +339,7 @@ def visit_pick_worker_or_throw(s: Session, slot: CreateSlot, *, exc: HTTPExcepti
             raise exc
 
     else:
-        client_av = _get_client_availability(slot.client_id, None, s)
+        client_av = _get_client_availability(client_id, None, s)
         available_workers_av = [av for av in client_av if av.CheckSlot(slot)]
         if len(available_workers_av) == 0:
             raise exc
@@ -452,10 +452,9 @@ def create_worker_availability(
         for t in d.timeslots:
             new_slots_schemas.append(
                 slots.CreateSlot.Available(
-                    client_id=current_user.client_id,
                     worker_id=int(worker_id),
                     from_datetime=t.dt_from,
                     to_datetime=t.dt_to,
                 )
             )
-    slots.create_slots(new_slots_schemas, s)
+    slots.create_slots(current_user.client_id, new_slots_schemas, s)
