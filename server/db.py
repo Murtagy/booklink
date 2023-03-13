@@ -1,5 +1,4 @@
-from typing import Generator
-
+# from typing import Generator
 # from sqlalchemy.orm import declarative_base  # 2.0 style
 from sqlalchemy.orm import Session, sessionmaker
 from sqlmodel import create_engine
@@ -12,9 +11,10 @@ engine = create_engine(DB_URL, connect_args={"check_same_thread": False}, future
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def get_session() -> Generator[Session, None, None]:
-    session = SessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
+def get_session() -> Session:
+    return SessionLocal()
+    # using the generator
+    # try:
+    # yield session
+    # finally:
+    # session.close()

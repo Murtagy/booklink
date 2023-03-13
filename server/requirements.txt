@@ -29,3 +29,11 @@ sqlalchemy-stubs==0.4
 isort==5.12.0
 
 pre-commit
+
+
+sentry_sdk
+orjson
+rich
+pytz
+types-pytz
+types-python-dateutil

@@ -1,4 +1,5 @@
-import structlog
+import logging
+
 import uvicorn  # type: ignore
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +7,7 @@ from fastapi.routing import APIRoute
 from sqlmodel import SQLModel
 
 from .. import db
+from ..app_logging import ServerErrorMiddleware, log_request
 from ..features import availability, files, services, skills, slots, users, workers
 from .public_app import app as public_app
 
@@ -17,7 +19,7 @@ from .public_app import app as public_app
 # app = FastAPI(**docs_kwargs)
 ORIGINS = [
     "http://127.0.0.1:5173",  # localhost
-    "http://10.0.0.3:5173",   # over wireguard
+    "http://10.0.0.3:5173",  # over wireguard
 ]
 
 
@@ -26,6 +28,15 @@ def custom_generate_unique_id(route: APIRoute):
     # function name and method is enough IMO
     return f"{route.name}"
 
+
+# import sentry_sdk
+# sentry_sdk.init(
+#     dsn="https://c1eba737d6d94d41a730b8dc150fa377@o1278629.ingest.sentry.io/6478409",
+#     # Set traces_sample_rate to 1.0 to capture 100%
+#     # of transactions for performance monitoring.
+#     # We recommend adjusting this value in production.
+#     traces_sample_rate=1.0
+# )
 
 app = FastAPI(generate_unique_id_function=custom_generate_unique_id)
 
@@ -36,8 +47,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(ServerErrorMiddleware, handler=log_request)
 SQLModel.metadata.create_all(db.engine)
-logger = structlog.get_logger()
 
 
 @app.get("/ping")
@@ -120,4 +131,5 @@ app.get("/file/{file_name}")(files.get_file)
 
 
 if __name__ == "__main__":
+    # logging.getLogger("uvicorn").handlers.clear()
     uvicorn.run(app, host="0.0.0.0", port=8000)

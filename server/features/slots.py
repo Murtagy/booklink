@@ -10,7 +10,8 @@ from sqlalchemy.orm import Session  # type: ignore
 from server.models import SlotType
 
 from .. import app_exceptions, crud, db, models
-from . import availability, services, users, workers, customers
+from ..dates import localize
+from . import availability, customers, services, users, workers
 
 
 class InServiceToVisit(BM):
@@ -33,6 +34,18 @@ class CreateSlot(BM):
     customer_info: customers.CustomerInfoIn | None = None
     services: list[InServiceToVisit] = []
 
+    @validator("to_datetime", "from_datetime")
+    def localize(cls, v: datetime.datetime):
+        return localize(v)
+
+    @validator("to_datetime", always=True)
+    def date_to_check(cls, v: datetime.date, values: dict[str, Any]):
+        if v < values["from_datetime"]:
+            raise ValueError("to should be greater than from")
+        delta: datetime.timedelta = v - values["from_datetime"]
+        if delta > datetime.timedelta(days=1):
+            raise ValueError("range is too big")
+        return v
 
     @classmethod
     def Available(
@@ -68,9 +81,15 @@ class OutSlot(BM):
 
 
 class TimeSlot(BM):
+    """Both in and Out"""
+
     dt_from: datetime.datetime
     dt_to: datetime.datetime
     slot_type: TimeSlotType
+
+    @validator("dt_from", "dt_to")
+    def localize(cls, v):
+        return localize(v)
 
     def __str__(self) -> str:
         return str(self.dt_from) + ":::" + str(self.dt_to) + " " + str(self.slot_type)
@@ -164,6 +183,10 @@ class InVisit(BM):
     email: str
     first_name: str
     last_name: str
+
+    @validator("from_dt")
+    def localize(cls, v):
+        return localize(v)
 
 
 class VisitDay(BM):
@@ -261,7 +284,9 @@ def create_slot_with_check(
 ) -> OutSlot:
     if slot.slot_type == TimeSlotType.VISIT and not force:
         # in case slot is a visit - check for collision
-        slot = availability.visit_pick_worker_or_throw(s, slot, current_user.client_id, exc=app_exceptions.SlotNotAvailable)
+        slot = availability.visit_pick_worker_or_throw(
+            s, slot, current_user.client_id, exc=app_exceptions.SlotNotAvailable
+        )
     # others we let to duplicate
 
     if slot.worker_id:

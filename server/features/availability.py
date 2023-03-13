@@ -2,11 +2,12 @@ import datetime
 import math
 import random
 from typing import Any, Optional
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from fastapi import Depends, Path, Query
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel as BM
+from pydantic import validator
 
 # from .slot import CreateSlot
 from sqlalchemy.orm import Session  # type: ignore
@@ -17,6 +18,8 @@ from .slots import CreateSlot, TimeSlot, TimeSlotType
 
 
 class Day(BM):
+    """Both in and Out"""
+
     date: datetime.date
     timeslots: list[TimeSlot]
 
@@ -265,7 +268,9 @@ class Availability(BM):
     ) -> "WorkerAvailability":
         _from = _from or datetime.date.today()
 
-        slots = crud.get_worker_slots(s, worker_id=worker_id, slot_types=[TimeSlotType.AVAILABLE], _from=_from)
+        slots = crud.get_worker_slots(
+            s, worker_id=worker_id, slot_types=[TimeSlotType.AVAILABLE], _from=_from
+        )
         av = cls.CreateFromSlots(slots)
 
         busy_slots = crud.get_worker_slots(
@@ -283,7 +288,7 @@ class Availability(BM):
     ) -> None:
         self.days.sort(key=(lambda day: day.date))
         while _from <= _to:
-            date = _from 
+            date = _from
             _from += datetime.timedelta(days=1)
 
             empty = Day(date=date, timeslots=[])
@@ -306,7 +311,7 @@ class Availability(BM):
             if day.date > _to:
                 continue
             new_days.append(day)
-        self.days = new_days 
+        self.days = new_days
 
 
 class WorkerAvailability(Availability):
@@ -330,22 +335,31 @@ def _get_client_availability(
     return worker_avs
 
 
-def visit_pick_worker_or_throw(s: Session, slot: CreateSlot, client_id: int, *, exc: HTTPException) -> CreateSlot:
+def visit_pick_worker_or_throw(
+    s: Session, slot: CreateSlot, client_id: int, *, exc: HTTPException, force: bool = False
+) -> CreateSlot:
     _worker_id = slot.worker_id
     if _worker_id:
         worker_id = _worker_id
         av = Availability.GetWorkerAV(s, worker_id)
         if not av.CheckSlot(slot):
-            raise exc
-
+            if not force:
+                raise exc
     else:
+        # TODO: pick skilled only!
         client_av = _get_client_availability(client_id, None, s)
         available_workers_av = [av for av in client_av if av.CheckSlot(slot)]
         if len(available_workers_av) == 0:
-            raise exc
-
+            if not force:
+                raise exc
         worker_av = random.choice(available_workers_av)
+        if force and not worker_av:
+            random.choice(client_av)
         slot.worker_id = worker_av.worker_id
+
+    if not slot.worker_id:
+        raise ValueError("worker id was not set")
+
     return slot
 
 
@@ -356,13 +370,8 @@ def get_worker_availability(
     services: str | None = Query(None),
     s: Session = Depends(db.get_session),
 ) -> Availability:
-    return _get_worker_availability(
-        client_id,
-        worker_id,
-        from_date,
-        services,
-        s
-    )
+    return _get_worker_availability(client_id, worker_id, from_date, services, s)
+
 
 def get_worker_availability_by_user(
     worker_id: str = Path(regex=r"\d+"),
@@ -371,17 +380,12 @@ def get_worker_availability_by_user(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> Availability:
-    return _get_worker_availability(
-        str(current_user.client_id),
-        worker_id,
-        from_date,
-        services,
-        s
-    )
+    return _get_worker_availability(str(current_user.client_id), worker_id, from_date, services, s)
+
 
 def _get_worker_availability(
     client_id: str,
-    worker_id: str, 
+    worker_id: str,
     from_date: datetime.date | None,
     services: str | None,
     s: Session,
@@ -396,12 +400,16 @@ def _get_worker_availability(
             if service not in db_worker_services:
                 raise app_exceptions.WorkerNotSkilled
         total_service_length = sum([s.minutes for s in db_services])
-        av = Availability.GetWorkerAV(s, int(worker_id), visit_length=total_service_length, _from=from_date)
+        av = Availability.GetWorkerAV(
+            s, int(worker_id), visit_length=total_service_length, _from=from_date
+        )
     else:
         # when requesting for availability we populate empty days for calendar
         _from = from_date or datetime.date.today()
         _from_monday = _prev_monday(_from)
-        _end_of_month_monday = _next_monday(_from + relativedelta(months=1) - datetime.timedelta(days=1))
+        _end_of_month_monday = _next_monday(
+            _from + relativedelta(months=1) - datetime.timedelta(days=1)
+        )
         av = Availability.GetWorkerAV(s, int(worker_id), visit_length=None, _from=_from_monday)
         av.TrimTo(_end_of_month_monday)
         av.EnsureEmptyDays(_from_monday, _end_of_month_monday)
@@ -413,10 +421,12 @@ def _prev_monday(d: datetime.date) -> datetime.date:
         d -= datetime.timedelta(days=1)
     return d
 
+
 def _next_monday(d: datetime.date) -> datetime.date:
     while d.isoweekday() != 1:
         d += datetime.timedelta(days=1)
     return d
+
 
 def get_client_availability(
     client_id: int,
