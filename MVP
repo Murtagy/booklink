@@ -1,5 +1,5 @@
 Plan:
-    - make a simple online-booking
+    - make a simple online-booking specially for autobusiness
         - an app for online-booking
         - an app for administration
         - a separate SSR web page for website
@@ -7,8 +7,8 @@ Plan:
     - make payment for extra usage
 Reasoning:
     - there seems to be strong competitors in notifications and CRM space
-      yclients and online-zapis are pretty expensive, so it should be easy to gain customers through cheaper pricing
-
+      though those competitors are not really specialized on auto
+      by more narrow marketing niche I can get some future market share
 
 Admin app:
     register +
