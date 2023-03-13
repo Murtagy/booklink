@@ -150,8 +150,9 @@ export default {
           },
           this.force
         )
+        this.$router.back()
       } catch (e: any) {
-        if (e.response?.status === 409) {
+        if (e.status && e.status == 409) {
           this.SlotIsOccupiedAreYouSure()
         }
       }
