@@ -10,7 +10,7 @@
       </router-link>
 
       <router-link to="/workers">
-        <a class="sized">Сотрудники</a>
+        <a class="sized">Юниты</a>
       </router-link>
 
       <router-link to="/services">

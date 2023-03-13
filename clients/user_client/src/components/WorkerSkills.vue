@@ -1,7 +1,7 @@
 <template>
   <div class="box; border_main1">
     <div v-if="skills" style="overflow: hidden">
-      <p class="bold">Выбрать услуги для сотрудника</p>
+      <p class="bold">Реализуемые услуги</p>
       <li v-for="skill in skills" :key="skill.service.service_id">
         <input
           type="checkbox"
