@@ -5,8 +5,9 @@
     <div style="float: right" @click="redirectToCreateDay">+ Визит</div>
     <VisitCard
       v-for="visit in day.visits"
-      :visit="visit"
-      :key="visit.from_datetime"
+      :visit="visit.visit"
+      :worker="visit.worker"
+      :key="visit.visit.from_datetime"
     />
   </div>
 </template>

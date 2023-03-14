@@ -91,11 +91,8 @@
             {{ parse_date() }}
           </p>
           <p class="bold">Выбранные услуги:</p>
-          <li
-            v-for="service in booked_visit.services"
-            :key="service.service_id"
-          >
-            <label :for="String(service.service_id)">{{ service.name }}</label>
+          <li v-for="service in booked_visit.services" :key="String(service)">
+            <label :for="String(service)">{{ service.name }}</label>
             <span class="price"
               >{{ service.price }} {{ service.currency }}</span
             >

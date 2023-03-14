@@ -160,7 +160,7 @@ class OutVisit(BM):
 
 
 class OutVisitExtended(BM):
-    services: list[services.OutVisitServiceSmall]
+    services: list[services.OutService]
     visit: OutVisit
     worker: workers.OutWorker | None
 
