@@ -7,6 +7,7 @@
       v-for="visit in day.visits"
       :visit="visit.visit"
       :worker="visit.worker"
+      :services="visit.services"
       :key="visit.visit.from_datetime"
     />
   </div>

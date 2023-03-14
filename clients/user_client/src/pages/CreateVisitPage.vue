@@ -13,7 +13,11 @@
 
     <div style="border: 1px solid var(--color1)">
       <div style="overflow-y: scroll; height: 5em">
-        <div v-for="service in services" @click="selectService(service)">
+        <div
+          v-for="service in services"
+          @click="selectService(service)"
+          :key="service.service_id"
+        >
           <input
             type="checkbox"
             v-bind:checked="selected_services.includes(service)"
@@ -55,7 +59,7 @@
     <br />
     Юнит
     <select v-model="selected_worker">
-      <option v-for="worker in workers" :value="worker">
+      <option v-for="worker in workers" :key="worker.worker_id" :value="worker">
         {{ worker.name }}
       </option>
     </select>

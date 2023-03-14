@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import type { OutVisit, OutWorker } from "@/client";
+import type { OutService, OutVisit, OutWorker } from "@/client";
 import type { PropType } from "vue";
 
 export default {
@@ -19,6 +19,10 @@ export default {
     },
     worker: {
       type: Object as PropType<OutWorker>,
+      required: true,
+    },
+    services: {
+      type: Array<OutService>,
       required: true,
     },
   },

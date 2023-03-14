@@ -38,6 +38,7 @@
     <!-- todo: solve :key -->
     <div
       v-for="week in days_by_week"
+      :key="String(week)"
       style="display: flex; flex-flow: row wrap; width: 100%"
     >
       <div

@@ -150,7 +150,7 @@ class OutVisit(BM):
     phone: str | None
     status: str
     slot_id: int
-    worker_id: int | None
+    worker_id: int
     created_at: datetime.datetime
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
@@ -162,7 +162,7 @@ class OutVisit(BM):
 class OutVisitExtended(BM):
     services: list[services.OutService]
     visit: OutVisit
-    worker: workers.OutWorker | None
+    worker: workers.OutWorker
 
 
 class Received(BM):

@@ -9,5 +9,5 @@ import type { OutWorker } from "./OutWorker";
 export type OutVisitExtended = {
   services: Array<OutService>;
   visit: OutVisit;
-  worker?: OutWorker;
+  worker: OutWorker;
 };
