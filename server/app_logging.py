@@ -1,13 +1,14 @@
 # from starlette.middleware.exceptions import ExceptionMiddleware as ExceptionMiddleware
 import logging
 import sys
+from typing import Callable
 
 import orjson
 import structlog
 from fastapi import Request
 from starlette.middleware.errors import ServerErrorMiddleware as ServerErrorMiddleware
 
-shared_processors = []
+shared_processors: list[Callable] = []
 if sys.stderr.isatty():
     processors = shared_processors + [
         structlog.dev.ConsoleRenderer(),

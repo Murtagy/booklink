@@ -213,9 +213,9 @@ def test_portyanka():
     ###
 
     ### Create worker
-    r = create_worker('Машиноместо 1')
-    r = create_worker('Машиноместо 2')
-    r = create_worker('Машиноместо 3')
+    r = create_worker("Машиноместо 1")
+    r = create_worker("Машиноместо 2")
+    r = create_worker("Машиноместо 3")
 
     r = get_workers()
     assert len(r.json()["workers"]) == 3, r.text
@@ -234,7 +234,7 @@ def test_portyanka():
         {
             "name": "Шиномонтажные работы 1-2 колеса",
             "price": 13.1,
-            "minutes": 25,
+            "minutes": 45,
             "description": "Шины, все такое",
         }
     )
