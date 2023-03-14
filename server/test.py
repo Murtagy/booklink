@@ -38,8 +38,8 @@ def login(username):
     return r
 
 
-def create_worker():
-    person = {"name": "Макс", "job_title": "Разработчик"}
+def create_worker(name: str):
+    person = {"name": name, "job_title": "машиноместо"}
 
     r = client.post(
         localhost + "worker",
@@ -213,9 +213,9 @@ def test_portyanka():
     ###
 
     ### Create worker
-    r = create_worker()
-    r = create_worker()
-    r = create_worker()
+    r = create_worker('Машиноместо 1')
+    r = create_worker('Машиноместо 2')
+    r = create_worker('Машиноместо 3')
 
     r = get_workers()
     assert len(r.json()["workers"]) == 3, r.text
@@ -232,10 +232,10 @@ def test_portyanka():
     ### Services
     r = create_service(
         {
-            "name": "Стрижка",
+            "name": "Шиномонтажные работы 1-2 колеса",
             "price": 13.1,
-            "minutes": 45,
-            "description": "Ножницы, все такое",
+            "minutes": 25,
+            "description": "Шины, все такое",
         }
     )
 
@@ -246,10 +246,10 @@ def test_portyanka():
 
     r = create_service(
         {
-            "name": "Стрижка",
+            "name": "Шиномонтажные работы 1-3 колеса",
             "price": 13.1,
             "minutes": 45,
-            "description": "Ножницы, все такое",
+            "description": "Шины, все такое",
         }
     )
 
@@ -260,15 +260,15 @@ def test_portyanka():
 
     r = update_service(
         {
-            "name": "Стрижка2",
+            "name": "Шиномонтажные работы 1-4 колеса",
             "price": 13.1,
             "minutes": 45,
-            "description": "Ножницы, все такое",
+            "description": "Шиины, все такое",
         },
         SERVICE_ID2,
     )
     r = get_service(SERVICE_ID2)
-    assert r.json()["name"] == "Стрижка2", r.text
+    assert r.json()["name"] == "Шиномонтажные работы 1-4 колеса", r.text
 
     ###
 
