@@ -39,6 +39,18 @@ class OutService(BM):
         orm_mode = True
 
 
+class OutVisitServiceSmall(BM):
+    name: str
+    price: float
+    price_to: Optional[float]
+    minutes: int
+    description: str | None
+    currency: str = "рублей"
+
+    class Config:
+        orm_mode = True
+
+
 class OutServices(BM):
     services: list[OutService]
 

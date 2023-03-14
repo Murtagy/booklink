@@ -160,7 +160,7 @@ class OutVisit(BM):
 
 
 class OutVisitExtended(BM):
-    services: list[services.OutService]
+    services: list[services.OutVisitServiceSmall]
     visit: OutVisit
     worker: workers.OutWorker | None
 
@@ -191,7 +191,7 @@ class InVisit(BM):
 class VisitDay(BM):
     date: datetime.date
     visits_n: int
-    visits: list[OutVisit]
+    visits: list[OutVisitExtended]
 
 
 class VisitsByDays(BM):
@@ -249,9 +249,9 @@ def get_visits_days(
         visits_by_days[visit.from_datetime.date()].append(visit)
     days = []
     for date, visits in visits_by_days.items():
-        days.append(
-            VisitDay(date=date, visits_n=len(visits), visits=[OutVisit.from_orm(v) for v in visits])
-        )
+        # visits_raw = [OutVisit.from_orm(v) for v in visits]
+        visits_extended = [get_OutVisitExtended_from_raw(r) for r in visits]
+        days.append(VisitDay(date=date, visits_n=len(visits), visits=visits_extended))
     return VisitsByDays(days=days)
 
 
@@ -361,3 +361,12 @@ def delete_available_slots(
     current_user: models.User = Depends(users.get_current_user),
 ) -> None:
     crud.delete_available_slots(s, current_user.client_id, worker_id, dates)
+
+
+def get_OutVisitExtended_from_raw(r: models.Slot) -> OutVisitExtended:
+    # SUPER NOT OPTIMAL!
+    return OutVisitExtended(
+        services=r.services,
+        visit=r,
+        worker=r.worker,
+    )

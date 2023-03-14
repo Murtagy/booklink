@@ -66,6 +66,7 @@ def get_skilled_workers(
 ):
     return [OutWorker.from_orm(w) for w in crud.get_skilled_workers(s, client_id, services)]
 
+
 def get_worker_by_id(
     worker_id: int,
     s: Session,
@@ -112,9 +113,7 @@ def get_workers_by_client(
     db_workers = crud.get_workers(s, client_id)
     if services:
         services_ids = list(map(int, services.split(",")))
-        return OutWorkers(
-            workers=get_skilled_workers(s, client_id, services_ids)
-        )
+        return OutWorkers(workers=get_skilled_workers(s, client_id, services_ids))
 
     return OutWorkers(workers=db_workers)
 

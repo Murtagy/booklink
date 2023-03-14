@@ -22,6 +22,9 @@ class Worker(SQLModel, table=True):
 
     worker_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
+    updated_at: datetime.datetime = Field(
+        default=func.now(), sa_column_kwargs={"onupdate": func.now()}
+    )
 
     client_id: int = Field(foreign_key="clients.client_id")
     name: str
@@ -35,17 +38,23 @@ class Worker(SQLModel, table=True):
 
 
 class VisitWorker(SQLModel, table=True):
+    """Copy of a worker for visit lookups"""
+
     __tablename__ = "visit_workers"
 
-    id: int = Field(primary_key=True, index=True, unique=True)
+    id: str = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
 
     name: str
     job_title: str
     client_id: int = Field(foreign_key="clients.client_id")
     # ^ Worker +
-    slot_id: int = Field(foreign_key="slots.slot_id", unique=True)
-    slot: "Slot" = Relationship(back_populates="worker")
+    worker_id: int = Field(foreign_key="workers.worker_id")
+    slots: list["Slot"] = Relationship(back_populates="worker")
+
+    @classmethod
+    def FromWorker(cls, worker: Worker) -> "VisitWorker":
+        return VisitWorker(**worker.dict(), id=f"{worker.worker_id}{worker.updated_at}")
 
 
 class File(SQLModel, table=True):
@@ -73,6 +82,9 @@ class Service(SQLModel, table=True):
 
     service_id: int = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
+    updated_at: datetime.datetime = Field(
+        default=func.now(), sa_column_kwargs={"onupdate": func.now()}
+    )
 
     name: str
     price: float | None
@@ -89,7 +101,7 @@ class Service(SQLModel, table=True):
 class VisitService(SQLModel, table=True):
     __tablename__ = "visit_services"
 
-    id: int = Field(primary_key=True, index=True, unique=True)
+    id: str = Field(primary_key=True, index=True, unique=True)
     created_at: datetime.datetime = Field(default=func.now())
 
     name: str
@@ -100,12 +112,21 @@ class VisitService(SQLModel, table=True):
     client_id: int = Field(foreign_key="clients.client_id")
 
     # ^ Service +
+    service_id: int = Field(foreign_key="services.service_id")
     slot_id: int = Field(foreign_key="slots.slot_id")
     slot: "Slot" = Relationship(back_populates="services")
 
     def assure_id(self, client_id: int) -> None:
         if self.client_id != client_id:
             raise NoPermission
+
+    @classmethod
+    def FromService(cls, service: Service, slot_id: int):
+        return cls(
+            **service.dict(),
+            id=f"{service.service_id}{service.updated_at}",
+            slot_id=slot_id,
+        )
 
 
 class Skill(SQLModel, table=True):
@@ -174,5 +195,7 @@ class Slot(SQLModel, table=True):
     worker_id: int = Field(foreign_key="workers.worker_id")  # owner (e.g. for "my visits today")
     worker_owner: Worker = Relationship(back_populates="slots")
 
+    visit_worker_id: str = Field(foreign_key="visit_workers.id")  # history snapshot
+    worker: "VisitWorker" = Relationship(back_populates="slots")
+
     services: list[VisitService] = Relationship(back_populates="slot")
-    worker: "VisitWorker" = Relationship(back_populates="slot")

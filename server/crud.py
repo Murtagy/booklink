@@ -60,6 +60,13 @@ def create_customer_visit(
     if visit.worker_id:
         target_worker_id = int(visit.worker_id)
     target_worker_id = target_worker_id or worker_id
+    target_visit_worker_id = None
+    if target_worker_id:
+        worker = get_worker(db, target_worker_id)
+        assert worker
+        vw = VisitWorker.FromWorker(worker)
+        target_visit_worker_id = vw.id
+
     db_visit = Slot(
         slot_type=SlotType.VISIT,
         from_datetime=visit.from_dt,
@@ -70,6 +77,7 @@ def create_customer_visit(
         has_notification=visit.remind_me,
         phone=visit.phone,
         status="submitted",
+        visit_worker_id=target_visit_worker_id,
         worker_id=target_worker_id,
     )
 
@@ -78,12 +86,6 @@ def create_customer_visit(
         services = get_services_by_ids(db, service_ids)
         visit_services = [create_visit_service(s, db_visit.slot_id) for s in services]
         db_visit.services = visit_services
-
-    if db_visit.worker_id:
-        worker = get_worker(db, db_visit.worker_id)
-        if worker:
-            visit_worker = create_visit_worker(worker, db_visit)
-            db.add(visit_worker)
 
     db.add(db_visit)
     db.commit()
@@ -172,6 +174,12 @@ def get_worker(db: Session, worker_id: int) -> Optional[Worker]:
     return db.execute(stmt).scalars().one_or_none()
 
 
+def get_worker_must(db: Session, worker_id: int) -> Worker:
+    worker = get_worker(db, worker_id)
+    assert worker
+    return worker
+
+
 def get_workers(db: Session, client_id: int) -> List[Worker]:
     stmt = select(Worker).where(Worker.client_id == client_id)
     return db.execute(stmt).scalars().all()
@@ -185,6 +193,9 @@ def create_worker(db: Session, worker: workers.CreateWorker, client_id: int) -> 
         client_id=client_id,
     )
     db.add(db_worker)
+    db.flush()
+    db_visit_worker = VisitWorker.FromWorker(db_worker)
+    db.add(db_visit_worker)
     db.commit()
     db.refresh(db_worker)
     return db_worker
@@ -198,6 +209,10 @@ def update_worker(db: Session, worker: workers.UpdateWorker, worker_id: int) -> 
         if value is None:
             continue
         setattr(db_worker, field, value)
+
+    db_visit_worker = VisitWorker.FromWorker(db_worker)
+    db.add(db_visit_worker)
+
     db.commit()  # enough??
     return db_worker
 
@@ -218,11 +233,13 @@ def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
 def create_slot(db: Session, slot: slots.CreateSlot, client_id: int) -> Slot:
     d = slot.dict()
 
-    # TODO
-    services = d.pop("services")
-    customer_info = d.pop("customer_info")
+    assert slot.worker_id
+    visit_worker_id = VisitWorker.FromWorker(get_worker_must(db, slot.worker_id)).id
 
-    db_slot = Slot(**d, client_id=client_id)
+    _services = d.pop("services")
+    _customer_info = d.pop("customer_info")
+
+    db_slot = Slot(**d, client_id=client_id, visit_worker_id=visit_worker_id)
     db.add(db_slot)
     db.commit()
     db.refresh(db_slot)
@@ -233,7 +250,9 @@ def create_slots(db: Session, slots: list[slots.CreateSlot], client_id: int) -> 
     db_slots = []
     for slot in slots:
         d = slot.dict()
-        db_slot = Slot(**d, client_id=client_id)
+        assert slot.worker_id
+        visit_worker_id = VisitWorker.FromWorker(get_worker_must(db, slot.worker_id)).id
+        db_slot = Slot(**d, client_id=client_id, visit_worker_id=visit_worker_id)
         db_slots.append(db_slot)
     db.add_all(db_slots)
     db.commit()
@@ -316,6 +335,10 @@ def create_service(
     return db_service
 
 
+def create_visit_service(s: Service, slot_id: int) -> VisitService:
+    return VisitService.FromService(s, slot_id=slot_id)
+
+
 def update_service(
     db: Session,
     service_id: int,
@@ -330,6 +353,7 @@ def update_service(
 
     db.add(db_service)
     db.commit()
+    db.refresh(db_service)
     return db_service
 
 
@@ -399,7 +423,7 @@ def get_skill(db: Session, worker_id: int, service_id: int) -> Skill | None:
 
 
 def get_skilled_workers(db: Session, client_id: int, service_ids: list[int]) -> list[Worker]:
-    ''' returns workers that are capable of all services'''
+    """returns workers that are capable of all services"""
     db_workers_out = []
     db_workers = get_workers(db, client_id)
     if services:
@@ -424,10 +448,10 @@ def _get_worker_skills(db: Session, worker_id: int) -> List[Service]:
     return db.execute(q).scalars().all()
 
 
-def create_visit_service(s: Service, slot_id: int) -> VisitService:
-    d = s.dict()
-    d.pop("service_id", None)
-    return VisitService(**d, slot_id=slot_id)
+def get_visit_worker(db: Session, w: Worker) -> VisitWorker | None:
+    vw = VisitWorker.FromWorker(w)
+    q = select(VisitWorker).where(VisitWorker.id == vw.id)
+    return db.execute(q).scalar_one_or_none()
 
 
 def create_visit_worker(w: Worker, slot: Slot) -> VisitWorker:
