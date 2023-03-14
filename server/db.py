@@ -1,5 +1,5 @@
-# from typing import Generator
-# from sqlalchemy.orm import declarative_base  # 2.0 style
+from typing import AsyncGenerator
+
 from sqlalchemy.orm import Session, sessionmaker
 from sqlmodel import create_engine
 
@@ -11,10 +11,10 @@ engine = create_engine(DB_URL, connect_args={"check_same_thread": False}, future
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def get_session() -> Session:
-    return SessionLocal()
-    # using the generator
-    # try:
-    # yield session
-    # finally:
-    # session.close()
+async def get_session() -> AsyncGenerator[Session, None]:
+    # note: https://github.com/tiangolo/fastapi/issues/1241
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
