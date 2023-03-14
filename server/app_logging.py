@@ -1,4 +1,5 @@
 # from starlette.middleware.exceptions import ExceptionMiddleware as ExceptionMiddleware
+import logging
 import sys
 
 import orjson
@@ -31,3 +32,7 @@ logger = structlog.get_logger()
 async def log_request(request: Request, e: Exception):
     logger.error("Error", exc_info=(type(e), e, e.__traceback__))  # , **request.scope)
     raise e
+
+
+uvicorn = logging.getLogger("uvicorn.error")
+uvicorn.disabled = True
