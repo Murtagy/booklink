@@ -2,10 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { OutVisit } from "./OutVisit";
+import type { OutVisitExtended } from "./OutVisitExtended";
 
 export type VisitDay = {
   date: string;
   visits_n: number;
-  visits: Array<OutVisit>;
+  visits: Array<OutVisitExtended>;
 };

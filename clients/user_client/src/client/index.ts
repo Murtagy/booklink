@@ -24,6 +24,7 @@ export type { OutServices } from "./models/OutServices";
 export type { OutSlot } from "./models/OutSlot";
 export type { OutVisit } from "./models/OutVisit";
 export type { OutVisitExtended } from "./models/OutVisitExtended";
+export type { OutVisitServiceSmall } from "./models/OutVisitServiceSmall";
 export type { OutWorker } from "./models/OutWorker";
 export type { OutWorkers } from "./models/OutWorkers";
 export type { Received } from "./models/Received";

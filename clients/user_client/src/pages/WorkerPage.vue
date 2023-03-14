@@ -18,7 +18,7 @@
     </div>
 
     <form @submit.prevent="updateWorker" class="border_main1">
-      <p class="bold">Название / Имя </p>
+      <p class="bold">Название / Имя</p>
       <input v-model="worker.name" />
       <p class="bold">Тип / Роль</p>
       <input v-model="worker.job_title" />
