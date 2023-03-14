@@ -325,9 +325,14 @@ class AvailabilityPerWorker(BM):
 def _get_client_availability(
     client_id: int,
     service_length: Optional[int],
+    service_ids: list[int],
     s: Session,
 ) -> list[WorkerAvailability]:
-    workers = crud.get_workers(s, client_id)
+    if service_ids:
+        workers = crud.get_skilled_workers(s, client_id, service_ids)
+    else:
+        workers = crud.get_workers(s, client_id)
+
     worker_avs = []
     for worker in workers:
         av = Availability.GetWorkerAV(s, worker.worker_id, visit_length=service_length)
@@ -338,7 +343,17 @@ def _get_client_availability(
 def visit_pick_worker_or_throw(
     s: Session, slot: CreateSlot, client_id: int, *, exc: HTTPException, force: bool = False
 ) -> CreateSlot:
+    # force flag
+    # - if worker is picked - override slot check
+    # - if worker is not picked - raise, use is forced to pick worker
+    # (?) this might not work well if there is only single worker
+
     _worker_id = slot.worker_id
+
+    workers = crud.get_workers(s, client_id)
+    if len(workers) == 1:
+        _worker_id = workers[0].worker_id
+
     if _worker_id:
         worker_id = _worker_id
         av = Availability.GetWorkerAV(s, worker_id)
@@ -346,15 +361,11 @@ def visit_pick_worker_or_throw(
             if not force:
                 raise exc
     else:
-        # TODO: pick skilled only!
-        client_av = _get_client_availability(client_id, None, s)
-        available_workers_av = [av for av in client_av if av.CheckSlot(slot)]
-        if len(available_workers_av) == 0:
-            if not force:
-                raise exc
-        worker_av = random.choice(available_workers_av)
-        if force and not worker_av:
-            random.choice(client_av)
+        all_av = _get_client_availability(client_id, None, [s.service_id for s in slot.services], s)
+        available_av = [av for av in all_av if av.CheckSlot(slot)]
+        if len(available_av) == 0:
+            raise exc
+        worker_av = random.choice(available_av)
         slot.worker_id = worker_av.worker_id
 
     if not slot.worker_id:
@@ -435,12 +446,13 @@ def get_client_availability(
     # current_user: models.User = Depends(users.get_current_user),
 ) -> AvailabilityPerWorker:
     total_service_length = None
+    service_ids = []
     if services:
         service_ids = [int(s) for s in services.split(",")]
         db_services = crud.get_services_by_ids(s, service_ids)
         total_service_length = sum([s.minutes for s in db_services])
 
-    d = _get_client_availability(client_id, total_service_length, s)
+    d = _get_client_availability(client_id, total_service_length, service_ids, s)
     return AvailabilityPerWorker(availability=d)
 
 

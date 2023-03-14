@@ -59,6 +59,13 @@ def get_worker(
     return OutWorker.from_orm(db_worker)
 
 
+def get_skilled_workers(
+    s: Session,
+    client_id: int,
+    services: list[int],
+):
+    return [OutWorker.from_orm(w) for w in crud.get_skilled_workers(s, client_id, services)]
+
 def get_worker_by_id(
     worker_id: int,
     s: Session,
@@ -104,16 +111,10 @@ def get_workers_by_client(
 ) -> OutWorkers:
     db_workers = crud.get_workers(s, client_id)
     if services:
-        # filter for skilled workers only
-        service_ids = {int(s) for s in services.split(",")}
-        db_workers_tmp = db_workers.copy()
-        db_workers = []
-        for worker in db_workers_tmp:
-            worker_services = crud.get_services(s, client_id, worker_id=worker.worker_id)
-            worker_services_ids = {s.service_id for s in worker_services}
-            if not service_ids.issubset(worker_services_ids):
-                continue
-            db_workers.append(worker)
+        services_ids = list(map(int, services.split(",")))
+        return OutWorkers(
+            workers=get_skilled_workers(s, client_id, services_ids)
+        )
 
     return OutWorkers(workers=db_workers)
 

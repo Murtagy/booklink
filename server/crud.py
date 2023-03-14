@@ -398,6 +398,21 @@ def get_skill(db: Session, worker_id: int, service_id: int) -> Skill | None:
     return r[0] if r else None
 
 
+def get_skilled_workers(db: Session, client_id: int, service_ids: list[int]) -> list[Worker]:
+    ''' returns workers that are capable of all services'''
+    db_workers_out = []
+    db_workers = get_workers(db, client_id)
+    if services:
+        service_ids_unq = set(service_ids)
+        for worker in db_workers:
+            worker_services = get_services(db, client_id, worker_id=worker.worker_id)
+            worker_services_ids = {s.service_id for s in worker_services}
+            if not service_ids_unq.issubset(worker_services_ids):
+                continue
+            db_workers_out.append(worker)
+    return db_workers_out
+
+
 def _get_services_for_client(db: Session, client_id: int) -> List[Service]:
     q = select(Service).where(Service.client_id == client_id)
     return db.execute(q).scalars().all()

@@ -161,7 +161,6 @@ class OutVisit(BM):
 
 class OutVisitExtended(BM):
     services: list[services.OutService]
-    slot: OutSlot
     visit: OutVisit
     worker: workers.OutWorker | None
 
@@ -282,10 +281,10 @@ def create_slot_with_check(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> OutSlot:
-    if slot.slot_type == TimeSlotType.VISIT and not force:
+    if slot.slot_type == TimeSlotType.VISIT:
         # in case slot is a visit - check for collision
         slot = availability.visit_pick_worker_or_throw(
-            s, slot, current_user.client_id, exc=app_exceptions.SlotNotAvailable
+            s, slot, current_user.client_id, exc=app_exceptions.SlotNotAvailable, force=force
         )
     # others we let to duplicate
 
@@ -349,7 +348,6 @@ def public_book_visit(
         worker = workers.get_worker_by_id(db_visit.worker_id, s=s)
 
     return OutVisitExtended(
-        slot=slot,
         services=visit_services,
         visit=out_visit,
         worker=worker,
