@@ -1,6 +1,6 @@
 import datetime
 import enum
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, Self
 
 from fastapi import Depends, Query
 from pydantic import BaseModel as BM
@@ -18,7 +18,7 @@ class InServiceToVisit(BM):
     service_id: int
 
 
-class TimeSlotType(str, enum.Enum):
+class TimeSlotType(enum.StrEnum):
     BUSY = "busy"
     AVAILABLE = "available"
     VISIT = "visit"
@@ -85,7 +85,15 @@ class TimeSlot(BM):
 
     dt_from: datetime.datetime
     dt_to: datetime.datetime
-    slot_type: TimeSlotType
+    slot_type: SlotType
+
+    @classmethod
+    def FromSlot(cls, s: models.Slot) -> Self:
+        return cls(
+            dt_from=s.from_datetime,
+            dt_to=s.to_datetime,
+            slot_type=s.slot_type,
+        )
 
     @validator("dt_from", "dt_to")
     def localize(cls, v):
@@ -368,5 +376,5 @@ def get_OutVisitExtended_from_raw(r: models.Slot) -> OutVisitExtended:
     return OutVisitExtended(
         services=r.services,
         visit=r,
-        worker=r.worker,
+        worker=r.worker_owner or r.worker,
     )

@@ -1,7 +1,7 @@
 import datetime
 
-from ..models import Slot
-from .availability import Availability
+from ..models import Slot, Worker
+from .availability import Availability, AllSlots
 
 hour = datetime.timedelta(hours=1)
 minute = datetime.timedelta(minutes=1)
@@ -249,3 +249,18 @@ def test_av_split_():
     assert av.days[0].timeslots[0].dt_from == time
     assert av.days[0].timeslots[0].dt_to == time + (45 * minute)
     assert len(av.days[0].timeslots) == 6
+
+def test_all_slots():
+    time = datetime.datetime(year=2023, month=1, day=1, hour=12)
+    worker1 = Worker(worker_id=1, client_id=1, name='Maks', job_title='Job')
+    availability_8h = Slot(
+        slot_id=1,
+        name="Day",
+        slot_type="available",
+        from_datetime=time,
+        to_datetime=time + (8 * hour),
+        worker_id=1,
+        client_id=1,
+    )
+    all_slots = AllSlots.FromSlots([availability_8h], [worker1])
+    assert len(all_slots.days) == 1

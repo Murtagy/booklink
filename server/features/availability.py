@@ -1,7 +1,8 @@
+from collections import defaultdict
 import datetime
 import math
 import random
-from typing import Any, Optional
+from typing import Any, Optional, Self
 
 from dateutil.relativedelta import relativedelta
 from fastapi import Depends, Path, Query
@@ -13,6 +14,7 @@ from pydantic import validator
 from sqlalchemy.orm import Session  # type: ignore
 
 from .. import app_exceptions, crud, db, models
+from ..models import SlotType
 from . import slots, users, workers
 from .slots import CreateSlot, TimeSlot, TimeSlotType
 
@@ -24,10 +26,36 @@ class Day(BM):
     timeslots: list[TimeSlot]
 
 
+class WorkerDay(BM):
+    date: datetime.date
+    timeslots: list[TimeSlot]
+    worker: workers.OutWorker
+
+
 DAYS = {0: "mo", 1: "tu", 2: "we", 3: "th", 4: "fr", 5: "st", 6: "su"}
 N_DAYS = 99
 DAY_START_TIME = datetime.time(hour=0, minute=0)
 
+
+class AllSlots(BM):
+    days: list[WorkerDay]
+
+    @classmethod
+    def FromSlots(cls, slots: list[models.Slot], workers: list[models.Worker]) -> Self:
+        days = []
+        worker_days: dict[int, dict[datetime.date, list]] = defaultdict(lambda: defaultdict(list))  # worker_id, date, slots
+        for slot in slots:
+            worker_days[slot.worker_id][slot.from_datetime.date()].append(slot)
+        for worker_id, date_and_slots in worker_days.items():
+            worker = [w for w in workers if w.worker_id == worker_id][0]
+            for date, slots in date_and_slots.items():
+                day = WorkerDay(
+                    date=date,
+                    timeslots=[TimeSlot.FromSlot(slot) for slot in slots],
+                    worker=worker,
+                )
+                days.append(day)
+        return cls(days=days)
 
 class Availability(BM):
     # by day to easily map to calendar
@@ -58,7 +86,7 @@ class Availability(BM):
                     TimeSlot(
                         dt_from=dt_from,
                         dt_to=dt_to,
-                        slot_type=TimeSlotType.AVAILABLE,
+                        slot_type=SlotType.AVAILABLE,
                     )
                 )
             day = Day(date=target_day, timeslots=timeslots)
@@ -81,11 +109,7 @@ class Availability(BM):
                 day = Day(date=slot_from_date, timeslots=[])
 
             day.timeslots.append(
-                TimeSlot(
-                    dt_from=slot.from_datetime,
-                    dt_to=slot.to_datetime,
-                    slot_type=TimeSlotType(slot.slot_type),
-                )
+                TimeSlot.FromSlot(slot)
             )
             days[slot_from_date] = day
 
@@ -102,7 +126,7 @@ class Availability(BM):
                     TimeSlot(
                         dt_from=day_start,
                         dt_to=slot.to_datetime,
-                        slot_type=TimeSlotType(slot.slot_type),
+                        slot_type=slot.slot_type,
                     )
                 )
                 days[slot_to_date] = day
@@ -165,7 +189,7 @@ class Availability(BM):
                     # F   T
                     if F <= f and T < t:
                         new_ts.append(
-                            TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE)
+                            TimeSlot(dt_from=T, dt_to=t, slot_type=SlotType.AVAILABLE)
                         )
 
                     # right is bigger, left is in
@@ -173,7 +197,7 @@ class Availability(BM):
                     #    F   T
                     if F > f and T >= t:
                         new_ts.append(
-                            TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE)
+                            TimeSlot(dt_from=f, dt_to=F, slot_type=SlotType.AVAILABLE)
                         )
 
                     # slot is in
@@ -182,10 +206,10 @@ class Availability(BM):
                     if F > f and T < t:
                         # we create 2 slots for that
                         new_ts.append(
-                            TimeSlot(dt_from=f, dt_to=F, slot_type=TimeSlotType.AVAILABLE)
+                            TimeSlot(dt_from=f, dt_to=F, slot_type=SlotType.AVAILABLE)
                         )
                         new_ts.append(
-                            TimeSlot(dt_from=T, dt_to=t, slot_type=TimeSlotType.AVAILABLE)
+                            TimeSlot(dt_from=T, dt_to=t, slot_type=SlotType.AVAILABLE)
                         )
                         # above copies left-right checks, can make it simplier
 
@@ -214,7 +238,7 @@ class Availability(BM):
                     new_slot = TimeSlot(
                         dt_from=new_dt_from,
                         dt_to=new_dt_to,
-                        slot_type=TimeSlotType.AVAILABLE,
+                        slot_type=SlotType.AVAILABLE,
                     )
                     new_timeslots.append(new_slot)
 
