@@ -28,7 +28,8 @@ class Day(BM):
 
 class WorkerDay(BM):
     date: datetime.date
-    timeslots: list[TimeSlot]
+    job_hours: list[TimeSlot]
+    visit_hours: list[slots.OutVisitExtended]
     worker: workers.OutWorker
 
 
@@ -41,17 +42,19 @@ class AllSlots(BM):
     days: list[WorkerDay]
 
     @classmethod
-    def FromSlots(cls, slots: list[models.Slot], workers: list[models.Worker]) -> Self:
+    def FromSlots(cls, all_slots: list[models.Slot], workers: list[models.Worker]) -> 'AllSlots':
         days = []
-        worker_days: dict[int, dict[datetime.date, list]] = defaultdict(lambda: defaultdict(list))  # worker_id, date, slots
-        for slot in slots:
+        worker_days: dict[int, dict[datetime.date, list[models.Slot]]] = defaultdict(lambda: defaultdict(list))  # worker_id, date, slots
+        for slot in all_slots:
             worker_days[slot.worker_id][slot.from_datetime.date()].append(slot)
         for worker_id, date_and_slots in worker_days.items():
             worker = [w for w in workers if w.worker_id == worker_id][0]
-            for date, slots in date_and_slots.items():
+            for date, day_slots in date_and_slots.items():
+                # (?) should split a slot which starts in 1 days and ends in another into 2 slots?
                 day = WorkerDay(
                     date=date,
-                    timeslots=[TimeSlot.FromSlot(slot) for slot in slots],
+                    job_hours=[TimeSlot.FromSlot(s) for s in day_slots if s.slot_type == SlotType.AVAILABLE],
+                    visit_hours=[slots.get_OutVisitExtended_from_raw(s) for s in day_slots if s.slot_type == SlotType.VISIT],
                     worker=worker,
                 )
                 days.append(day)

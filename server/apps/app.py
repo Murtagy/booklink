@@ -35,7 +35,10 @@ def custom_generate_unique_id(route: APIRoute):
 #     # Set traces_sample_rate to 1.0 to capture 100%
 #     # of transactions for performance monitoring.
 #     # We recommend adjusting this value in production.
-#     traces_sample_rate=1.0
+#     traces_sample_rate=1.0,
+#     _experiments={
+#         "profiles_sample_rate": 1.0,
+#     }
 # )
 
 app = FastAPI(generate_unique_id_function=custom_generate_unique_id)

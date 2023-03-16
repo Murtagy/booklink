@@ -43,7 +43,7 @@ def create_worker(name: str):
 
     r = client.post(
         localhost + "worker",
-        headers=headers,
+        headers=headers,  # type: ignore[name-defined]
         json=person,
     )
     return r

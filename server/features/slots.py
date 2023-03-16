@@ -88,7 +88,7 @@ class TimeSlot(BM):
     slot_type: SlotType
 
     @classmethod
-    def FromSlot(cls, s: models.Slot) -> Self:
+    def FromSlot(cls, s: models.Slot) -> 'TimeSlot':
         return cls(
             dt_from=s.from_datetime,
             dt_to=s.to_datetime,
