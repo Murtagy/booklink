@@ -1,15 +1,15 @@
 import datetime
 
 from ..models import Slot, Worker
-from .slots import  AllSlots
-
+from .slots import AllSlots
 
 hour = datetime.timedelta(hours=1)
 minute = datetime.timedelta(minutes=1)
 
+
 def test_all_slots():
     time = datetime.datetime(year=2023, month=1, day=1, hour=12)
-    worker1 = Worker(worker_id=1, client_id=1, name='Maks', job_title='Job')
+    worker1 = Worker(worker_id=1, client_id=1, name="Maks", job_title="Job")
     # 1 worker 1 day
     availability_8h = Slot(
         slot_id=1,

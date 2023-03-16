@@ -3,13 +3,12 @@ import os
 import random
 
 from .db import LITE_DB
+
 os.remove(LITE_DB[10:])
 
 from fastapi.testclient import TestClient
 
 from .apps.app import app
-
-
 
 client = TestClient(app)
 
@@ -188,9 +187,12 @@ def get_visits_days(_from, _to):
     url = localhost + f"visits/by_days"
     return client.post(url, headers=headers, json={"date_from": str(_from), "date_to": str(_to)})
 
+
 def get_all_slots(_from, _to):
     url = localhost + f"workers_calendar"
-    return client.get(url, headers=headers, params={'_from': _from.isoformat(), '_to': _to.isoformat()})
+    return client.get(
+        url, headers=headers, params={"_from": _from.isoformat(), "_to": _to.isoformat()}
+    )
 
 
 def get_me():
@@ -419,7 +421,7 @@ def test_portyanka():
 
     r = get_all_slots(datetime.date.today(), tmrw)
     assert r.status_code == 200, r.text
-    assert len(r.json()['days']) == 1
-    assert r.json()['days'][0]['date'] == str(tmrw)
-    assert len(r.json()['days'][0]['job_hours']) == 1
-    assert len(r.json()['days'][0]['visit_hours']) == 3
+    assert len(r.json()["days"]) == 1
+    assert r.json()["days"][0]["date"] == str(tmrw)
+    assert len(r.json()["days"][0]["job_hours"]) == 1
+    assert len(r.json()["days"][0]["visit_hours"]) == 3

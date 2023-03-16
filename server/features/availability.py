@@ -1,14 +1,12 @@
-from collections import defaultdict
 import datetime
 import math
 import random
-from typing import Any, Optional, Self
+from typing import Any, Optional
 
 from dateutil.relativedelta import relativedelta
 from fastapi import Depends, Path, Query
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel as BM
-from pydantic import validator
 
 # from .slot import CreateSlot
 from sqlalchemy.orm import Session  # type: ignore
@@ -16,7 +14,7 @@ from sqlalchemy.orm import Session  # type: ignore
 from .. import app_exceptions, crud, db, models
 from ..models import SlotType
 from . import slots, users, workers
-from .slots import CreateSlot, TimeSlot, TimeSlotType
+from .slots import CreateSlot, TimeSlot
 
 
 class Day(BM):
@@ -71,7 +69,7 @@ class Availability(BM):
     def CreateFromSlots(cls, slots: list[models.Slot]) -> "Availability":
         days: dict[datetime.date, Day] = {}
         for slot in slots:
-            assert slot.slot_type == TimeSlotType.AVAILABLE
+            assert slot.slot_type == SlotType.AVAILABLE
             assert (
                 slot.to_datetime - slot.from_datetime
             ).total_seconds() <= 60 * 60 * 24, "slot length should be below 24h"
@@ -82,9 +80,7 @@ class Availability(BM):
             else:
                 day = Day(date=slot_from_date, timeslots=[])
 
-            day.timeslots.append(
-                TimeSlot.FromSlot(slot)
-            )
+            day.timeslots.append(TimeSlot.FromSlot(slot))
             days[slot_from_date] = day
 
             slot_to_date = slot.to_datetime.date()
@@ -117,7 +113,7 @@ class Availability(BM):
         # @speed - sorted version
         days = self.days
         for slot in slots:
-            assert slot.slot_type in [TimeSlotType.BUSY, TimeSlotType.VISIT]
+            assert slot.slot_type in [SlotType.BUSY, SlotType.VISIT]
 
             for iday, day in enumerate(days):
                 new_ts = []
@@ -162,29 +158,21 @@ class Availability(BM):
                     #  f   __t
                     # F   T
                     if F <= f and T < t:
-                        new_ts.append(
-                            TimeSlot(dt_from=T, dt_to=t, slot_type=SlotType.AVAILABLE)
-                        )
+                        new_ts.append(TimeSlot(dt_from=T, dt_to=t, slot_type=SlotType.AVAILABLE))
 
                     # right is bigger, left is in
                     # f__   t
                     #    F   T
                     if F > f and T >= t:
-                        new_ts.append(
-                            TimeSlot(dt_from=f, dt_to=F, slot_type=SlotType.AVAILABLE)
-                        )
+                        new_ts.append(TimeSlot(dt_from=f, dt_to=F, slot_type=SlotType.AVAILABLE))
 
                     # slot is in
                     # f_  _t
                     #   FT
                     if F > f and T < t:
                         # we create 2 slots for that
-                        new_ts.append(
-                            TimeSlot(dt_from=f, dt_to=F, slot_type=SlotType.AVAILABLE)
-                        )
-                        new_ts.append(
-                            TimeSlot(dt_from=T, dt_to=t, slot_type=SlotType.AVAILABLE)
-                        )
+                        new_ts.append(TimeSlot(dt_from=f, dt_to=F, slot_type=SlotType.AVAILABLE))
+                        new_ts.append(TimeSlot(dt_from=T, dt_to=t, slot_type=SlotType.AVAILABLE))
                         # above copies left-right checks, can make it simplier
 
                 day.timeslots = new_ts
@@ -267,13 +255,11 @@ class Availability(BM):
         _from = _from or datetime.date.today()
 
         slots = crud.get_worker_slots(
-            s, worker_id=worker_id, slot_types=[TimeSlotType.AVAILABLE], _from=_from
+            s, worker_id=worker_id, slot_types=[SlotType.AVAILABLE], _from=_from
         )
         av = cls.CreateFromSlots(slots)
 
-        busy_slots = crud.get_worker_slots(
-            s, worker_id, slot_types=[TimeSlotType.BUSY, TimeSlotType.VISIT]
-        )
+        busy_slots = crud.get_worker_slots(s, worker_id, slot_types=[SlotType.BUSY, SlotType.VISIT])
         av.ReduceAvailabilityBySlots(busy_slots)
         if visit_length:
             av.SplitByLengthAndTrim(length_minutes=visit_length)

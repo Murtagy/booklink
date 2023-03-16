@@ -249,4 +249,3 @@ def test_av_split_():
     assert av.days[0].timeslots[0].dt_from == time
     assert av.days[0].timeslots[0].dt_to == time + (45 * minute)
     assert len(av.days[0].timeslots) == 6
-

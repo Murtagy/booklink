@@ -1,7 +1,6 @@
-from collections import defaultdict
 import datetime
-import enum
-from typing import Any, Literal, Optional, Self
+from collections import defaultdict
+from typing import Any, Literal, Optional
 
 from fastapi import Depends, Query
 from pydantic import BaseModel as BM
@@ -19,14 +18,8 @@ class InServiceToVisit(BM):
     service_id: int
 
 
-class TimeSlotType(enum.StrEnum):
-    BUSY = "busy"
-    AVAILABLE = "available"
-    VISIT = "visit"
-
-
 class CreateSlot(BM):
-    slot_type: TimeSlotType
+    slot_type: SlotType
     worker_id: int | None
     from_datetime: datetime.datetime
     to_datetime: datetime.datetime
@@ -57,7 +50,7 @@ class CreateSlot(BM):
         to_datetime: datetime.datetime,
     ):
         return cls(
-            slot_type=TimeSlotType.AVAILABLE,
+            slot_type=SlotType.AVAILABLE,
             worker_id=worker_id,
             from_datetime=from_datetime,
             to_datetime=to_datetime,
@@ -89,7 +82,7 @@ class TimeSlot(BM):
     slot_type: SlotType
 
     @classmethod
-    def FromSlot(cls, s: models.Slot) -> 'TimeSlot':
+    def FromSlot(cls, s: models.Slot) -> "TimeSlot":
         return cls(
             dt_from=s.from_datetime,
             dt_to=s.to_datetime,
@@ -112,8 +105,6 @@ class TimeSlot(BM):
     @property
     def minutes(self) -> int:
         return len_minutes(self.dt_from, self.dt_to)
-
-
 
 
 def len_minutes(dt_from: datetime.datetime, dt_to: datetime.datetime) -> int:
@@ -234,9 +225,11 @@ class AllSlots(BM):
     days: list[WorkerDay]
 
     @classmethod
-    def FromSlots(cls, all_slots: list[models.Slot], workers: list[models.Worker]) -> 'AllSlots':
+    def FromSlots(cls, all_slots: list[models.Slot], workers: list[models.Worker]) -> "AllSlots":
         days = []
-        worker_days: dict[int, dict[datetime.date, list[models.Slot]]] = defaultdict(lambda: defaultdict(list))  # worker_id, date, slots
+        worker_days: dict[int, dict[datetime.date, list[models.Slot]]] = defaultdict(
+            lambda: defaultdict(list)
+        )  # worker_id, date, slots
         for slot in all_slots:
             worker_days[slot.worker_id][slot.from_datetime.date()].append(slot)
         for worker_id, date_and_slots in worker_days.items():
@@ -245,8 +238,14 @@ class AllSlots(BM):
                 # (?) should split a slot which starts in 1 days and ends in another into 2 slots?
                 day = WorkerDay(
                     date=date,
-                    job_hours=[TimeSlot.FromSlot(s) for s in day_slots if s.slot_type == SlotType.AVAILABLE],
-                    visit_hours=[get_OutVisitExtended_from_raw(s) for s in day_slots if s.slot_type == SlotType.VISIT],
+                    job_hours=[
+                        TimeSlot.FromSlot(s) for s in day_slots if s.slot_type == SlotType.AVAILABLE
+                    ],
+                    visit_hours=[
+                        get_OutVisitExtended_from_raw(s)
+                        for s in day_slots
+                        if s.slot_type == SlotType.VISIT
+                    ],
                     worker=worker,
                 )
                 days.append(day)
@@ -333,7 +332,7 @@ def create_slot_with_check(
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
 ) -> OutSlot:
-    if slot.slot_type == TimeSlotType.VISIT:
+    if slot.slot_type == SlotType.VISIT:
         # in case slot is a visit - check for collision
         slot = availability.visit_pick_worker_or_throw(
             s, slot, current_user.client_id, exc=app_exceptions.SlotNotAvailable, force=force
@@ -377,7 +376,7 @@ def public_book_visit(
     visit_len_minutes: int = sum([service.minutes for service in visit_services])
 
     potential_slot = CreateSlot(
-        slot_type=TimeSlotType.VISIT,
+        slot_type=SlotType.VISIT,
         worker_id=visit.worker_id,
         from_datetime=visit.from_dt,
         to_datetime=visit.from_dt + datetime.timedelta(minutes=visit_len_minutes),
