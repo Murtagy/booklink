@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AllSlots } from "../models/AllSlots";
 import type { Availability } from "../models/Availability";
 import type { AvailabilityPerWorker } from "../models/AvailabilityPerWorker";
 import type { Body_create_file } from "../models/Body_create_file";
@@ -619,13 +620,13 @@ export class DefaultService {
    * Workers Calendar
    * @param from
    * @param to
-   * @returns any Successful Response
+   * @returns AllSlots Successful Response
    * @throws ApiError
    */
   public static workersCalendar(
     from: string,
     to: string
-  ): CancelablePromise<any> {
+  ): CancelablePromise<AllSlots> {
     return __request(OpenAPI, {
       method: "GET",
       url: "/workers_calendar",

@@ -6,6 +6,7 @@ export { CancelablePromise, CancelError } from "./core/CancelablePromise";
 export { OpenAPI } from "./core/OpenAPI";
 export type { OpenAPIConfig } from "./core/OpenAPI";
 
+export type { AllSlots } from "./models/AllSlots";
 export type { Availability } from "./models/Availability";
 export type { AvailabilityPerWorker } from "./models/AvailabilityPerWorker";
 export type { Body_create_file } from "./models/Body_create_file";
@@ -43,5 +44,6 @@ export type { VisitDay } from "./models/VisitDay";
 export type { VisitsByDays } from "./models/VisitsByDays";
 export type { VisitsByDaysRQ } from "./models/VisitsByDaysRQ";
 export type { WorkerAvailability } from "./models/WorkerAvailability";
+export type { WorkerDay } from "./models/WorkerDay";
 
 export { DefaultService } from "./services/DefaultService";

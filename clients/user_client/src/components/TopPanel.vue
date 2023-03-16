@@ -9,6 +9,10 @@
         <a class="sized">Визиты</a>
       </router-link>
 
+      <router-link to="/calendar">
+        <a class="sized">Календарь</a>
+      </router-link>
+
       <router-link to="/workers">
         <a class="sized">Юниты</a>
       </router-link>
