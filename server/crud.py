@@ -230,6 +230,8 @@ def get_slot(db: Session, slot_id: int) -> Optional[Slot]:
     return db.execute(stmt).scalars().one_or_none()
 
 
+
+
 def create_slot(db: Session, slot: slots.CreateSlot, client_id: int) -> Slot:
     d = slot.dict()
 
@@ -298,11 +300,14 @@ def delete_available_slots(
     return
 
 
-def get_client_slots(db: Session, client_id: int, *, slot_types: Optional[List[str]]) -> List[Slot]:
-    # add filtering
+def get_client_slots(db: Session, client_id: int, *, slot_types: Optional[List[str]] = None, _from: datetime.date, _to: datetime.date) -> List[Slot]:
     q = select(Slot).where(Slot.client_id == client_id)
     if slot_types:
         q = q.where(col(Slot.slot_type).in_(slot_types))
+    if _from:
+        q = q.where(Slot.from_datetime >= _from)
+    if _to:
+        q = q.where(Slot.from_datetime <= (_to + datetime.timedelta(days=2)))
     return db.execute(q).scalars().all()
 
 

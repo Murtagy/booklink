@@ -316,6 +316,17 @@ def get_visit(
     return visit
 
 
+def workers_calendar(
+    _from: datetime.date = Query(),
+    _to: datetime.date = Query(),
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> AllSlots:
+    slots = crud.get_client_slots(s, current_user.client_id, _from=_from, _to=_to)
+    workers = crud.get_workers(s, client_id=current_user.client_id)
+    return AllSlots.FromSlots(slots, workers)
+
+
 def create_slot_with_check(
     slot: CreateSlot,
     force: bool = Query(False),

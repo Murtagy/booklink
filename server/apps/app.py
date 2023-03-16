@@ -109,6 +109,7 @@ app.get("/visit/{visit_id}", response_model=slots.OutVisit)(slots.get_visit)
 app.get("/visits")(slots.get_visits)
 app.put("/visit/{visit_id}")(slots.update_visit)
 app.post("/visits/by_days", response_model=slots.VisitsByDays)(slots.get_visits_days)
+app.get("/workers_calendar")(slots.workers_calendar)
 # tmp:
 app.post("/public/visit", response_model=slots.OutVisitExtended)(slots.public_book_visit)
 
