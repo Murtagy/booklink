@@ -1,3 +1,4 @@
+from collections import defaultdict
 import datetime
 import enum
 from typing import Any, Literal, Optional, Self
@@ -113,6 +114,8 @@ class TimeSlot(BM):
         return len_minutes(self.dt_from, self.dt_to)
 
 
+
+
 def len_minutes(dt_from: datetime.datetime, dt_to: datetime.datetime) -> int:
     assert dt_from > dt_to
     return int((dt_from - dt_to).total_seconds() / 60)
@@ -218,6 +221,36 @@ class VisitsByDaysRQ(BM):
         if delta > datetime.timedelta(days=7):
             raise ValueError("range is too big")
         return v
+
+
+class WorkerDay(BM):
+    date: datetime.date
+    job_hours: list[TimeSlot]
+    visit_hours: list[OutVisitExtended]
+    worker: workers.OutWorker
+
+
+class AllSlots(BM):
+    days: list[WorkerDay]
+
+    @classmethod
+    def FromSlots(cls, all_slots: list[models.Slot], workers: list[models.Worker]) -> 'AllSlots':
+        days = []
+        worker_days: dict[int, dict[datetime.date, list[models.Slot]]] = defaultdict(lambda: defaultdict(list))  # worker_id, date, slots
+        for slot in all_slots:
+            worker_days[slot.worker_id][slot.from_datetime.date()].append(slot)
+        for worker_id, date_and_slots in worker_days.items():
+            worker = [w for w in workers if w.worker_id == worker_id][0]
+            for date, day_slots in date_and_slots.items():
+                # (?) should split a slot which starts in 1 days and ends in another into 2 slots?
+                day = WorkerDay(
+                    date=date,
+                    job_hours=[TimeSlot.FromSlot(s) for s in day_slots if s.slot_type == SlotType.AVAILABLE],
+                    visit_hours=[get_OutVisitExtended_from_raw(s) for s in day_slots if s.slot_type == SlotType.VISIT],
+                    worker=worker,
+                )
+                days.append(day)
+        return cls(days=days)
 
 
 # class VisitStatus(SEnum):

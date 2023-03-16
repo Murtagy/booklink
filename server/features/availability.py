@@ -26,39 +26,10 @@ class Day(BM):
     timeslots: list[TimeSlot]
 
 
-class WorkerDay(BM):
-    date: datetime.date
-    job_hours: list[TimeSlot]
-    visit_hours: list[slots.OutVisitExtended]
-    worker: workers.OutWorker
-
-
 DAYS = {0: "mo", 1: "tu", 2: "we", 3: "th", 4: "fr", 5: "st", 6: "su"}
 N_DAYS = 99
 DAY_START_TIME = datetime.time(hour=0, minute=0)
 
-
-class AllSlots(BM):
-    days: list[WorkerDay]
-
-    @classmethod
-    def FromSlots(cls, all_slots: list[models.Slot], workers: list[models.Worker]) -> 'AllSlots':
-        days = []
-        worker_days: dict[int, dict[datetime.date, list[models.Slot]]] = defaultdict(lambda: defaultdict(list))  # worker_id, date, slots
-        for slot in all_slots:
-            worker_days[slot.worker_id][slot.from_datetime.date()].append(slot)
-        for worker_id, date_and_slots in worker_days.items():
-            worker = [w for w in workers if w.worker_id == worker_id][0]
-            for date, day_slots in date_and_slots.items():
-                # (?) should split a slot which starts in 1 days and ends in another into 2 slots?
-                day = WorkerDay(
-                    date=date,
-                    job_hours=[TimeSlot.FromSlot(s) for s in day_slots if s.slot_type == SlotType.AVAILABLE],
-                    visit_hours=[slots.get_OutVisitExtended_from_raw(s) for s in day_slots if s.slot_type == SlotType.VISIT],
-                    worker=worker,
-                )
-                days.append(day)
-        return cls(days=days)
 
 class Availability(BM):
     # by day to easily map to calendar
