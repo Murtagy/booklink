@@ -89,7 +89,7 @@
 <script lang="ts">
 import {
   DefaultService,
-  TimeSlotType,
+  SlotType,
   type OutService,
   type OutWorker,
 } from "@/client";
@@ -170,7 +170,7 @@ export default {
       try {
         await DefaultService.createSlotWithCheck(
           {
-            slot_type: TimeSlotType.VISIT,
+            slot_type: SlotType.VISIT,
             worker_id: worker_id,
             from_datetime: date_from.toISOString(),
             to_datetime: date_to.toISOString(),

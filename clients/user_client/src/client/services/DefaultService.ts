@@ -616,6 +616,30 @@ export class DefaultService {
   }
 
   /**
+   * Workers Calendar
+   * @param from
+   * @param to
+   * @returns any Successful Response
+   * @throws ApiError
+   */
+  public static workersCalendar(
+    from: string,
+    to: string
+  ): CancelablePromise<any> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/workers_calendar",
+      query: {
+        _from: from,
+        _to: to,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
    * Public Book Visit
    * @param requestBody
    * @returns OutVisitExtended Successful Response

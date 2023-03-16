@@ -4,10 +4,10 @@
 
 import type { CustomerInfoIn } from "./CustomerInfoIn";
 import type { InServiceToVisit } from "./InServiceToVisit";
-import type { TimeSlotType } from "./TimeSlotType";
+import type { SlotType } from "./SlotType";
 
 export type CreateSlot = {
-  slot_type: TimeSlotType;
+  slot_type: SlotType;
   worker_id?: number;
   from_datetime: string;
   to_datetime: string;

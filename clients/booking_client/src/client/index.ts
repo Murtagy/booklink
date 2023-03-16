@@ -14,15 +14,14 @@ export type { InServiceToVisit } from "./models/InServiceToVisit";
 export { InVisit } from "./models/InVisit";
 export type { OutService } from "./models/OutService";
 export type { OutServices } from "./models/OutServices";
-export type { OutSlot } from "./models/OutSlot";
 export type { OutVisit } from "./models/OutVisit";
 export type { OutVisitExtended } from "./models/OutVisitExtended";
 export type { OutWorker } from "./models/OutWorker";
 export type { OutWorkers } from "./models/OutWorkers";
 export type { SkillOut } from "./models/SkillOut";
 export type { SkillsOut } from "./models/SkillsOut";
+export { SlotType } from "./models/SlotType";
 export type { TimeSlot } from "./models/TimeSlot";
-export { TimeSlotType } from "./models/TimeSlotType";
 export type { ValidationError } from "./models/ValidationError";
 export type { WorkerAvailability } from "./models/WorkerAvailability";
 

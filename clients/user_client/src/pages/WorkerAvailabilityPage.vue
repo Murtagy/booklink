@@ -71,12 +71,7 @@
 </style>
 
 <script lang="ts">
-import {
-  DefaultService,
-  TimeSlotType,
-  type Day,
-  type TimeSlot,
-} from "@/client";
+import { DefaultService, SlotType, type Day, type TimeSlot } from "@/client";
 
 const emptyDay = () => {
   return { date: "", timeslots: [] };
@@ -188,7 +183,7 @@ export default {
               date + "T" + this.formatTime(this.potential_slot.dt_from) + ":00",
             dt_to:
               date + "T" + this.formatTime(this.potential_slot.dt_to) + ":00",
-            slot_type: TimeSlotType.AVAILABLE,
+            slot_type: SlotType.AVAILABLE,
           };
           new_slots.push(slot);
         }
@@ -205,7 +200,7 @@ export default {
             const new_slot = {
               dt_from: date + "T" + this.formatTime(slot.dt_from) + ":00",
               dt_to: date + "T" + this.formatTime(slot.dt_to) + ":00",
-              slot_type: TimeSlotType.AVAILABLE,
+              slot_type: SlotType.AVAILABLE,
             };
             new_day_slots.push(new_slot);
           }
@@ -218,7 +213,7 @@ export default {
                 ":00",
               dt_to:
                 date + "T" + this.formatTime(this.potential_slot.dt_to) + ":00",
-              slot_type: TimeSlotType.AVAILABLE,
+              slot_type: SlotType.AVAILABLE,
             };
             new_day_slots.push(slot);
           }
@@ -238,7 +233,7 @@ export default {
       this.slots.push({
         dt_from: this.potential_slot.dt_from,
         dt_to: this.potential_slot.dt_to,
-        slot_type: TimeSlotType.AVAILABLE,
+        slot_type: SlotType.AVAILABLE,
       });
       this.potential_slot = {
         dt_from: "",

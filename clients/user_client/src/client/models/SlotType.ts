@@ -5,8 +5,8 @@
 /**
  * An enumeration.
  */
-export enum TimeSlotType {
-  BUSY = "busy",
+export enum SlotType {
   AVAILABLE = "available",
+  BUSY = "busy",
   VISIT = "visit",
 }
