@@ -9,7 +9,7 @@
         <a class="sized">Визиты</a>
       </router-link>
 
-      <router-link to="/calendar">
+      <router-link to="/vcalendar">
         <a class="sized">Календарь</a>
       </router-link>
 
