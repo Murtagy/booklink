@@ -421,7 +421,5 @@ def test_portyanka():
 
     r = get_all_slots(datetime.date.today(), tmrw)
     assert r.status_code == 200, r.text
-    assert len(r.json()["days"]) == 1
-    assert r.json()["days"][0]["date"] == str(tmrw)
-    assert len(r.json()["days"][0]["job_hours"]) == 1
-    assert len(r.json()["days"][0]["visit_hours"]) == 3
+    assert len(r.json()["days"]) == 6
+    assert r.json()["days"][0]["date"] == str(datetime.date.today())

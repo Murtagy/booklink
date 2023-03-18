@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session  # type: ignore
 from server.models import SlotType
 
 from .. import app_exceptions, crud, db, models
-from ..dates import localize
+from ..dates import date_range, localize
 from . import availability, customers, services, users, workers
 
 
@@ -220,9 +220,25 @@ class WorkerDay(BM):
     visit_hours: list[OutVisitExtended]
     worker: workers.OutWorker
 
+    @classmethod
+    def Empty(cls, date: datetime.date, worker: models.Worker) -> "WorkerDay":
+        return cls(date=date, worker=worker, job_hours=[], visit_hours=[])
+
 
 class AllSlots(BM):
     days: list[WorkerDay]
+
+    def fill_empty(self, dates: list[datetime.date], workers: list[models.Worker]) -> None:
+        empty = []
+        for worker in workers:
+            for date in dates:
+                for day in self.days:
+                    if day.date == date:
+                        break
+                else:
+                    # day not found - fill with empty
+                    empty.append(WorkerDay.Empty(date, worker))
+        self.days.extend(empty)
 
     @classmethod
     def FromSlots(cls, all_slots: list[models.Slot], workers: list[models.Worker]) -> "AllSlots":
@@ -323,7 +339,10 @@ def workers_calendar(
 ) -> AllSlots:
     slots = crud.get_client_slots(s, current_user.client_id, _from=_from, _to=_to)
     workers = crud.get_workers(s, client_id=current_user.client_id)
-    return AllSlots.FromSlots(slots, workers)
+    all_slots = AllSlots.FromSlots(slots, workers)
+    dates = date_range(_from, _to)
+    all_slots.fill_empty(dates, workers)
+    return all_slots
 
 
 def create_slot_with_check(
