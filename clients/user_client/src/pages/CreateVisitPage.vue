@@ -94,6 +94,7 @@ import {
   type OutWorker,
 } from "@/client";
 import dayjs from "dayjs";
+import type { PropType } from "vue";
 
 declare interface Data {
   force: boolean;
@@ -115,6 +116,16 @@ export default {
     const services: OutService[] = [];
     const workers: OutWorker[] = [];
 
+    let time: string | undefined = undefined;
+    if (this.time_in) {
+      time = this.time_in;
+    }
+
+    let selected_worker: OutWorker | undefined = undefined;
+    if (this.worker_in) {
+      selected_worker = this.worker_in;
+    }
+
     return {
       force: false,
       show_force: false,
@@ -124,9 +135,9 @@ export default {
       length_minutes: 30,
       notify: false,
       services: services,
-      selected_worker: undefined,
+      selected_worker: selected_worker,
       selected_services: [],
-      time: undefined,
+      time: time,
       workers: workers,
     };
   },
@@ -213,6 +224,12 @@ export default {
     date: {
       type: String,
       required: true,
+    },
+    time_in: {
+      type: String,
+    },
+    worker_in: {
+      type: Object as PropType<OutWorker>,
     },
   },
 };

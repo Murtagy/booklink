@@ -29,7 +29,11 @@
           @click="closeFormIfClickedOutside($event)"
         >
           <div id="form-content">
-            <CreateVisitPage date="{{day.date}}" />
+            <CreateVisitPage
+              :date="day.date"
+              :time_in="getTime(hour)"
+              :worker_in="day.worker"
+            />
             <div></div>
 
             <div
@@ -124,13 +128,19 @@ export default {
       return false;
     },
     closeFormIfClickedOutside(e: MouseEvent) {
-      if (e.target != null && (e.target as HTMLElement).id == "form-container") {
-        this.hour_form = undefined
-      } 
+      if (
+        e.target != null &&
+        (e.target as HTMLElement).id == "form-container"
+      ) {
+        this.hour_form = undefined;
+      }
     },
     clickHour(e: MouseEvent, h: Hour, day: WorkerDay) {
       // console.log("click", e.target);
-      if (e.target != null && (e.target as HTMLElement).id == "form-container") {
+      if (
+        e.target != null &&
+        (e.target as HTMLElement).id == "form-container"
+      ) {
         return;
       }
       if (!this.hour_form) {
@@ -149,6 +159,10 @@ export default {
         }
       }
       return false;
+    },
+    getTime(h: Hour) {
+      // todo : lookup minutes
+      return String(h.number).padStart(2, "0") + ":00";
     },
     getVisitHours(v: OutVisitExtended): number {
       const length_hours =
