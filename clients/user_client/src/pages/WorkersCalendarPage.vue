@@ -1,6 +1,6 @@
 <template>
   <div>
-    <WorkersCalendar :days=days_selected />
+    <WorkersCalendar :days="days_selected" />
   </div>
 </template>
 
@@ -10,22 +10,20 @@
 import { DefaultService, type WorkerDay } from "@/client";
 import WorkersCalendar from "@/components/WorkersCalendar.vue";
 
-
-
 export default {
   computed: {
     selected_date_str(): string {
-      return this.date_selected.toISOString().split("T")[0]
+      return this.date_selected.toISOString().split("T")[0];
     },
     days_selected(): WorkerDay[] {
-      const days: WorkerDay[] = []
+      const days: WorkerDay[] = [];
       for (const day of this.days) {
         if (day.date == this.selected_date_str) {
-          days.push(day)
+          days.push(day);
         }
       }
-      return days
-    }
+      return days;
+    },
   },
   components: { WorkersCalendar },
   data() {
@@ -37,7 +35,7 @@ export default {
       date_selected: today,
       date_from: today,
       date_to: today_plus_7,
-    }
+    };
   },
   methods: {
     async fetchDays() {
