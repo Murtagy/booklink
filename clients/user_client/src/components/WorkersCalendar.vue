@@ -34,6 +34,7 @@
               :time_in="getTime(hour)"
               :worker_in="day.worker"
             />
+              <!-- @created-visit="hour.events.push($event.slot)" -->
             <div></div>
 
             <div

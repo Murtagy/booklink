@@ -91,6 +91,7 @@ import {
   DefaultService,
   SlotType,
   type OutService,
+  type OutSlot,
   type OutWorker,
 } from "@/client";
 import dayjs from "dayjs";
@@ -179,7 +180,7 @@ export default {
         .add(this.length_hours, "h")
         .add(this.length_minutes, "m");
       try {
-        await DefaultService.createSlotWithCheck(
+        const slot = await DefaultService.createSlotWithCheck(
           {
             slot_type: SlotType.VISIT,
             worker_id: worker_id,
@@ -193,7 +194,10 @@ export default {
           },
           this.force
         );
-        this.$router.back();
+        this.$emit('createdVisit', {slot: slot})
+        if (this.route_back) {
+          this.$router.back();
+        }
       } catch (e: any) {
         if (e.status && e.status == 409) {
           if (worker_id) {
@@ -220,6 +224,11 @@ export default {
       this.length_hours = (i - this.length_minutes) / 60;
     },
   },
+  emits: {
+    createdVisit(payload: { slot: OutSlot}) {
+      return true
+    }
+  },
   props: {
     date: {
       type: String,
@@ -231,6 +240,10 @@ export default {
     worker_in: {
       type: Object as PropType<OutWorker>,
     },
+    route_back: {
+      type: Boolean,
+      default: true,
+    }
   },
 };
 </script>

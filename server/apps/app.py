@@ -21,7 +21,7 @@ ORIGINS = [
     "http://127.0.0.1:5173",  # localhost
     "http://10.0.0.3:5173",  # over wireguard
     # vpn
-    "http://10.20.20.19:5173",
+    "http://10.20.20.37:5173",
     "http://127.0.0.1",
 ]
 
