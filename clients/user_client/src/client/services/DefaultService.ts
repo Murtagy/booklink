@@ -573,6 +573,27 @@ export class DefaultService {
   }
 
   /**
+   * Get Visit Extended
+   * @param visitId
+   * @returns OutVisitExtended Successful Response
+   * @throws ApiError
+   */
+  public static getVisitExtended(
+    visitId: number
+  ): CancelablePromise<OutVisitExtended> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/visit_extended/{visit_id}",
+      path: {
+        visit_id: visitId,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
    * Get Visits
    * @param workerId
    * @returns any Successful Response

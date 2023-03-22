@@ -331,6 +331,17 @@ def get_visit(
     return visit
 
 
+def get_visit_extended(
+    visit_id: int,
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> OutVisitExtended:
+    visit = crud.get_visit(s, visit_id)
+    if not visit:
+        raise app_exceptions.VisitNotFound
+    return get_OutVisitExtended_from_raw(visit)
+
+
 def workers_calendar(
     _from: datetime.date = Query(),
     _to: datetime.date = Query(),

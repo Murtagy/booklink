@@ -52,7 +52,8 @@
         {{ day.date }}
         <br />
         <div v-for="timeslot in day.timeslots" :key="timeslot.from_datetime">
-          {{ formatTime(timeslot.from_datetime) }} - {{ formatTime(timeslot.to_datetime) }}
+          {{ formatTime(timeslot.from_datetime) }} -
+          {{ formatTime(timeslot.to_datetime) }}
         </div>
       </div>
     </div>
@@ -174,15 +175,26 @@ export default {
         // single day save
         const new_slots = [...this.slots];
         for (const slot of new_slots) {
-          slot.from_datetime = date + "T" + this.formatTime(slot.from_datetime) + ":00";
-          slot.to_datetime = date + "T" + this.formatTime(slot.to_datetime) + ":00";
+          slot.from_datetime =
+            date + "T" + this.formatTime(slot.from_datetime) + ":00";
+          slot.to_datetime =
+            date + "T" + this.formatTime(slot.to_datetime) + ":00";
         }
-        if (this.potential_slot.from_datetime && this.potential_slot.to_datetime) {
+        if (
+          this.potential_slot.from_datetime &&
+          this.potential_slot.to_datetime
+        ) {
           const slot = {
             from_datetime:
-              date + "T" + this.formatTime(this.potential_slot.from_datetime) + ":00",
+              date +
+              "T" +
+              this.formatTime(this.potential_slot.from_datetime) +
+              ":00",
             to_datetime:
-              date + "T" + this.formatTime(this.potential_slot.to_datetime) + ":00",
+              date +
+              "T" +
+              this.formatTime(this.potential_slot.to_datetime) +
+              ":00",
             slot_type: SlotType.AVAILABLE,
           };
           new_slots.push(slot);
@@ -198,13 +210,18 @@ export default {
           const new_day_slots: TimeSlot[] = [];
           for (const slot of this.slots) {
             const new_slot = {
-              from_datetime: date + "T" + this.formatTime(slot.from_datetime) + ":00",
-              to_datetime: date + "T" + this.formatTime(slot.to_datetime) + ":00",
+              from_datetime:
+                date + "T" + this.formatTime(slot.from_datetime) + ":00",
+              to_datetime:
+                date + "T" + this.formatTime(slot.to_datetime) + ":00",
               slot_type: SlotType.AVAILABLE,
             };
             new_day_slots.push(new_slot);
           }
-          if (this.potential_slot.from_datetime && this.potential_slot.to_datetime) {
+          if (
+            this.potential_slot.from_datetime &&
+            this.potential_slot.to_datetime
+          ) {
             const slot = {
               from_datetime:
                 date +
@@ -212,7 +229,10 @@ export default {
                 this.formatTime(this.potential_slot.from_datetime) +
                 ":00",
               to_datetime:
-                date + "T" + this.formatTime(this.potential_slot.to_datetime) + ":00",
+                date +
+                "T" +
+                this.formatTime(this.potential_slot.to_datetime) +
+                ":00",
               slot_type: SlotType.AVAILABLE,
             };
             new_day_slots.push(slot);
@@ -227,7 +247,9 @@ export default {
       this.fetchDays();
     },
     async submitPotentialSlot() {
-      if (!(this.potential_slot.from_datetime && this.potential_slot.to_datetime)) {
+      if (
+        !(this.potential_slot.from_datetime && this.potential_slot.to_datetime)
+      ) {
         return;
       }
       this.slots.push({
@@ -256,10 +278,12 @@ export default {
       handler(newSlot, oldSlot) {
         const slot = newSlot;
         if (slot.from_datetime.length > 2 && slot.from_datetime[2] != ":") {
-          slot.from_datetime = slot.from_datetime.slice(0, 2) + ":" + slot.from_datetime.slice(2);
+          slot.from_datetime =
+            slot.from_datetime.slice(0, 2) + ":" + slot.from_datetime.slice(2);
         }
         if (slot.to_datetime.length > 2 && slot.to_datetime[2] != ":") {
-          slot.to_datetime = slot.to_datetime.slice(0, 2) + ":" + slot.to_datetime.slice(2);
+          slot.to_datetime =
+            slot.to_datetime.slice(0, 2) + ":" + slot.to_datetime.slice(2);
         }
       },
       deep: true,

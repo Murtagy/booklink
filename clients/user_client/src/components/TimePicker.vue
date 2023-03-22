@@ -39,8 +39,8 @@
   </div>
 </template>
 
-<script lang="ts">import type { TimeSlot } from '@/client';
-
+<script lang="ts">
+import type { TimeSlot } from "@/client";
 
 export default {
   components: {},

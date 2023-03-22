@@ -19,8 +19,23 @@
             : 'lightsteelblue',
         }"
       >
-        <label style="float: left">{{ hour.number }}</label>
-        <!-- {{ hour.events }} -->
+        <label style="float: left; position: relative; z-index: 1">{{
+          hour.number
+        }}</label>
+        <div
+          v-for="visit of getVisits(hour)"
+          :key="visit.visit.slot_id"
+          style="
+            background-color: red;
+            opacity: 0.2;
+            position: absolute;
+            border: 1px solid;
+          "
+          :style="{
+            height: hour_height * getVisitHours(visit) + 'em',
+            width: hour_width + 'em',
+          }"
+        ></div>
         <div
           v-if="shouldRenderForm(hour, day)"
           id="form-container"
@@ -33,22 +48,12 @@
               :date="day.date"
               :time_in="getTime(hour)"
               :worker_in="day.worker"
-            />
-            <!-- @created-visit="hour.events.push($event.slot)" -->
-            <div></div>
-
-            <div
-              v-for="visit of getVisits(hour)"
-              :key="visit.visit.slot_id"
-              style="
-                width: 100%;
-                background-color: red;
-                opacity: 0.2;
-                position: absolute;
-                border: 1px solid;
+              :route_back="false"
+              @created-visit="
+                handleCreatedVisit($event.slot, day);
+                hour_form = undefined;
               "
-              :style="{ height: hour_height * getVisitHours(visit) + 'em' }"
-            ></div>
+            />
           </div>
         </div>
       </div>
@@ -73,19 +78,21 @@ calendar__hour-grid {
 <script lang="ts">
 // import VisitsDayCaruselDay from "@/components/VisitsDayCaruselDay.vue";
 
-import type {
-  OutVisitExtended,
-  OutWorker,
-  TimeSlot,
-  WorkerDay,
+import {
+DefaultService,
+  type OutSlot,
+  type OutVisitExtended,
+  type OutWorker,
+  type TimeSlot,
+  type WorkerDay,
 } from "@/client";
 import dayjs from "dayjs";
-import type { PropType } from "vue";
+import { type PropType } from "vue";
 import CreateVisitPage from "@/pages/CreateVisitPage.vue";
 
 declare interface Hour {
   number: number;
-  events: (TimeSlot | OutVisitExtended)[];
+  events: (TimeSlot | OutVisitExtended | OutSlot)[];
 }
 
 declare interface HourForm {
@@ -102,9 +109,6 @@ declare interface Data {
 export default {
   components: { CreateVisitPage },
   computed: {
-    // workers() {
-    // for (let job_hour in days.
-    // },
   },
   data(): Data {
     return {
@@ -114,6 +118,10 @@ export default {
     };
   },
   methods: {
+    async handleCreatedVisit(slot: OutSlot, d: WorkerDay) {
+      const extended =  await DefaultService.getVisitExtended(slot.slot_id)
+      d.visit_hours.push(extended)
+    },
     shouldRenderForm(h: Hour, day: WorkerDay) {
       if (this.hour_form == undefined) {
         console.log("not render");
