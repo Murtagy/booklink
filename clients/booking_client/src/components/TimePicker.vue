@@ -16,7 +16,7 @@
         <th>{{ row }}</th>
         <td
           v-for="timeslot in filterRowTimeslots(row)"
-          :key="timeslot.dt_from"
+          :key="timeslot.from_datetime"
           @click="emitTimeSlot(timeslot)"
         >
           <button>{{ formatTimeSlot(timeslot) }}</button>
@@ -40,7 +40,8 @@
 </template>
 
 <script lang="ts">
-import type { TimeSlot } from "@/models/availability/TimeSlot";
+import type { TimeSlot } from '@/client';
+
 
 export default {
   components: {},
@@ -49,13 +50,13 @@ export default {
   },
   methods: {
     formatTimeSlot(ts: TimeSlot) {
-      const x = new Date(ts.dt_from);
+      const x = new Date(ts.from_datetime);
       // hour + padded with leading zero minute
       return x.getHours() + ":" + ("0" + x.getMinutes()).slice(-2);
     },
     getRowsHours() {
       const hours = this.timeslots.map((ts) => {
-        const x = new Date(ts.dt_from);
+        const x = new Date(ts.from_datetime);
         return x.getHours();
       });
       const _hours_no_duplicated = new Set(hours);
@@ -64,9 +65,9 @@ export default {
     filterRowTimeslots(target_hour: number): TimeSlot[] {
       const filtered: TimeSlot[] = [];
       for (const timeslot of this.timeslots) {
-        const dt_from = timeslot.dt_from;
-        const dt_from_date = new Date(dt_from);
-        if (dt_from_date.getHours() != target_hour) {
+        const from_datetime = timeslot.from_datetime;
+        const from_datetime_date = new Date(from_datetime);
+        if (from_datetime_date.getHours() != target_hour) {
           continue;
         }
         filtered.push(timeslot);

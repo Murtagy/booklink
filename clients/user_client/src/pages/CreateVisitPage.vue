@@ -194,7 +194,7 @@ export default {
           },
           this.force
         );
-        this.$emit('createdVisit', {slot: slot})
+        this.$emit("createdVisit", { slot: slot });
         if (this.route_back) {
           this.$router.back();
         }
@@ -225,9 +225,9 @@ export default {
     },
   },
   emits: {
-    createdVisit(payload: { slot: OutSlot}) {
-      return true
-    }
+    createdVisit(payload: { slot: OutSlot }) {
+      return true;
+    },
   },
   props: {
     date: {
@@ -243,7 +243,7 @@ export default {
     route_back: {
       type: Boolean,
       default: true,
-    }
+    },
   },
 };
 </script>

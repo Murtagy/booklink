@@ -77,34 +77,34 @@ class OutSlot(BM):
 class TimeSlot(BM):
     """Both in and Out"""
 
-    dt_from: datetime.datetime
-    dt_to: datetime.datetime
+    from_datetime: datetime.datetime
+    to_datetime: datetime.datetime
     slot_type: SlotType
 
     @classmethod
     def FromSlot(cls, s: models.Slot) -> "TimeSlot":
         return cls(
-            dt_from=s.from_datetime,
-            dt_to=s.to_datetime,
+            from_datetime=s.from_datetime,
+            to_datetime=s.to_datetime,
             slot_type=s.slot_type,
         )
 
-    @validator("dt_from", "dt_to")
+    @validator("from_datetime", "to_datetime")
     def localize(cls, v):
         return localize(v)
 
     def __str__(self) -> str:
-        return str(self.dt_from) + ":::" + str(self.dt_to) + " " + str(self.slot_type)
+        return str(self.from_datetime) + ":::" + str(self.to_datetime) + " " + str(self.slot_type)
 
     def __hash__(self) -> int:
         return hash(str(self))
 
     def __gt__(self, other: "TimeSlot") -> bool:
-        return self.dt_from > other.dt_from
+        return self.from_datetime > other.from_datetime
 
     @property
     def minutes(self) -> int:
-        return len_minutes(self.dt_from, self.dt_to)
+        return len_minutes(self.from_datetime, self.to_datetime)
 
 
 def len_minutes(dt_from: datetime.datetime, dt_to: datetime.datetime) -> int:

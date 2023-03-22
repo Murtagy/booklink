@@ -52,12 +52,12 @@ class Availability(BM):
             for l in list_from_to:
                 time_from = datetime.datetime.strptime(l[0], "%H:%M")
                 time_to = datetime.datetime.strptime(l[1], "%H:%M")
-                dt_from = datetime.datetime.combine(target_day, time_from.time())
-                dt_to = datetime.datetime.combine(target_day, time_to.time())
+                from_datetime = datetime.datetime.combine(target_day, time_from.time())
+                to_datetime = datetime.datetime.combine(target_day, time_to.time())
                 timeslots.append(
                     TimeSlot(
-                        dt_from=dt_from,
-                        dt_to=dt_to,
+                        from_datetime=from_datetime,
+                        to_datetime=to_datetime,
                         slot_type=SlotType.AVAILABLE,
                     )
                 )
@@ -94,8 +94,8 @@ class Availability(BM):
                 day_start = datetime.datetime.combine(slot_to_date, DAY_START_TIME)
                 day.timeslots.append(
                     TimeSlot(
-                        dt_from=day_start,
-                        dt_to=slot.to_datetime,
+                        from_datetime=day_start,
+                        to_datetime=slot.to_datetime,
                         slot_type=slot.slot_type,
                     )
                 )
@@ -123,8 +123,8 @@ class Availability(BM):
                     continue
 
                 for its, ts in enumerate(day.timeslots):
-                    f = ts.dt_from
-                    t = ts.dt_to
+                    f = ts.from_datetime
+                    t = ts.to_datetime
 
                     F = slot.from_datetime
                     T = slot.to_datetime
@@ -144,13 +144,21 @@ class Availability(BM):
 
                     if F > t:
                         new_ts.append(
-                            TimeSlot(dt_from=ts.dt_from, dt_to=ts.dt_to, slot_type=ts.slot_type)
+                            TimeSlot(
+                                from_datetime=ts.from_datetime,
+                                to_datetime=ts.to_datetime,
+                                slot_type=ts.slot_type,
+                            )
                         )
                         continue
 
                     if T < f:
                         new_ts.append(
-                            TimeSlot(dt_from=ts.dt_from, dt_to=ts.dt_to, slot_type=ts.slot_type)
+                            TimeSlot(
+                                from_datetime=ts.from_datetime,
+                                to_datetime=ts.to_datetime,
+                                slot_type=ts.slot_type,
+                            )
                         )
                         continue
 
@@ -158,21 +166,29 @@ class Availability(BM):
                     #  f   __t
                     # F   T
                     if F <= f and T < t:
-                        new_ts.append(TimeSlot(dt_from=T, dt_to=t, slot_type=SlotType.AVAILABLE))
+                        new_ts.append(
+                            TimeSlot(from_datetime=T, to_datetime=t, slot_type=SlotType.AVAILABLE)
+                        )
 
                     # right is bigger, left is in
                     # f__   t
                     #    F   T
                     if F > f and T >= t:
-                        new_ts.append(TimeSlot(dt_from=f, dt_to=F, slot_type=SlotType.AVAILABLE))
+                        new_ts.append(
+                            TimeSlot(from_datetime=f, to_datetime=F, slot_type=SlotType.AVAILABLE)
+                        )
 
                     # slot is in
                     # f_  _t
                     #   FT
                     if F > f and T < t:
                         # we create 2 slots for that
-                        new_ts.append(TimeSlot(dt_from=f, dt_to=F, slot_type=SlotType.AVAILABLE))
-                        new_ts.append(TimeSlot(dt_from=T, dt_to=t, slot_type=SlotType.AVAILABLE))
+                        new_ts.append(
+                            TimeSlot(from_datetime=f, to_datetime=F, slot_type=SlotType.AVAILABLE)
+                        )
+                        new_ts.append(
+                            TimeSlot(from_datetime=T, to_datetime=t, slot_type=SlotType.AVAILABLE)
+                        )
                         # above copies left-right checks, can make it simplier
 
                 day.timeslots = new_ts
@@ -187,19 +203,19 @@ class Availability(BM):
 
             new_timeslots: list[TimeSlot] = []
             for timeslot in timeslots:
-                delta = (timeslot.dt_to - timeslot.dt_from).total_seconds() / 60
+                delta = (timeslot.to_datetime - timeslot.from_datetime).total_seconds() / 60
                 n_by_len = delta / length_minutes
                 n_by_len = math.floor(n_by_len)
                 for n in range(n_by_len):
-                    new_dt_from = timeslot.dt_from + (
+                    new_from_datetime = timeslot.from_datetime + (
                         datetime.timedelta(minutes=length_minutes * n)
                     )
-                    new_dt_to = timeslot.dt_from + (
+                    new_to_datetime = timeslot.from_datetime + (
                         datetime.timedelta(minutes=length_minutes * (n + 1))
                     )
                     new_slot = TimeSlot(
-                        dt_from=new_dt_from,
-                        dt_to=new_dt_to,
+                        from_datetime=new_from_datetime,
+                        to_datetime=new_to_datetime,
                         slot_type=SlotType.AVAILABLE,
                     )
                     new_timeslots.append(new_slot)
@@ -213,11 +229,11 @@ class Availability(BM):
         for day in self.days:
             prev_t: Optional[TimeSlot] = None
             for t in day.timeslots:
-                if prev_t and prev_t.dt_to == t.dt_from:
+                if prev_t and prev_t.to_datetime == t.from_datetime:
                     # extending t, building an availability
-                    t.dt_from = prev_t.dt_from
+                    t.from_datetime = prev_t.from_datetime
 
-                if t.dt_from <= slot.from_datetime and slot.to_datetime <= t.dt_to:
+                if t.from_datetime <= slot.from_datetime and slot.to_datetime <= t.to_datetime:
                     return True
 
                 prev_t = t
@@ -459,8 +475,8 @@ def create_worker_availability(
             new_slots_schemas.append(
                 slots.CreateSlot.Available(
                     worker_id=int(worker_id),
-                    from_datetime=t.dt_from,
-                    to_datetime=t.dt_to,
+                    from_datetime=t.from_datetime,
+                    to_datetime=t.to_datetime,
                 )
             )
     slots.create_slots(current_user.client_id, new_slots_schemas, s)

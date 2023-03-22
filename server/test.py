@@ -123,8 +123,8 @@ def create_worker_weekly_slot(worker_id, schedule):
                     )
                     slots.append(
                         {
-                            "dt_from": _from.isoformat(),
-                            "dt_to": _to.isoformat(),
+                            "from_datetime": _from.isoformat(),
+                            "to_datetime": _to.isoformat(),
                             "slot_type": "available",
                         }
                     )
@@ -333,10 +333,14 @@ def test_portyanka():
     timeslots = day["timeslots"]
 
     parse = datetime.datetime.fromisoformat
-    dt_from0, dt_to0 = parse(timeslots[0]["dt_from"]), parse(timeslots[0]["dt_to"])
-    dt_from1, dt_to1 = parse(timeslots[1]["dt_from"]), parse(timeslots[1]["dt_to"])
-    assert (dt_to0 - dt_from0).total_seconds() / 60 == 45
-    assert (dt_to1 - dt_from1).total_seconds() / 60 == 45
+    from_datetime0, to_datetime0 = parse(timeslots[0]["from_datetime"]), parse(
+        timeslots[0]["to_datetime"]
+    )
+    from_datetime1, to_datetime1 = parse(timeslots[1]["from_datetime"]), parse(
+        timeslots[1]["to_datetime"]
+    )
+    assert (to_datetime0 - from_datetime0).total_seconds() / 60 == 45
+    assert (to_datetime1 - from_datetime1).total_seconds() / 60 == 45
     # availability for 2 services
     r = get_worker_availability(CLIENT_ID, WORKER_ID, [SERVICE_ID, SERVICE_ID2])
     assert r.status_code == 200, r.text
@@ -353,10 +357,14 @@ def test_portyanka():
     timeslots = day["timeslots"]
 
     parse = datetime.datetime.fromisoformat
-    dt_from0, dt_to0 = parse(timeslots[0]["dt_from"]), parse(timeslots[0]["dt_to"])
-    dt_from1, dt_to1 = parse(timeslots[1]["dt_from"]), parse(timeslots[1]["dt_to"])
-    assert (dt_to0 - dt_from0).total_seconds() / 60 == 90
-    assert (dt_to1 - dt_from1).total_seconds() / 60 == 90
+    from_datetime0, to_datetime0 = parse(timeslots[0]["from_datetime"]), parse(
+        timeslots[0]["to_datetime"]
+    )
+    from_datetime1, to_datetime1 = parse(timeslots[1]["from_datetime"]), parse(
+        timeslots[1]["to_datetime"]
+    )
+    assert (to_datetime0 - from_datetime0).total_seconds() / 60 == 90
+    assert (to_datetime1 - from_datetime1).total_seconds() / 60 == 90
 
     ## WORKER_NO_SCHEDULE_ID
     slot = {

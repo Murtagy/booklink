@@ -34,7 +34,7 @@
               :time_in="getTime(hour)"
               :worker_in="day.worker"
             />
-              <!-- @created-visit="hour.events.push($event.slot)" -->
+            <!-- @created-visit="hour.events.push($event.slot)" -->
             <div></div>
 
             <div
@@ -153,8 +153,8 @@ export default {
     },
     isAvailable(h: Hour, d: WorkerDay) {
       for (const jh of d.job_hours) {
-        const from = dayjs(jh.dt_from);
-        const to = dayjs(jh.dt_to);
+        const from = dayjs(jh.from_datetime);
+        const to = dayjs(jh.to_datetime);
         if (h.number >= from.hour() && h.number <= to.hour()) {
           return true;
         }
@@ -186,7 +186,7 @@ export default {
       for (var i = 0; i < 24; i++) {
         const events = [];
         for (const e of day.job_hours) {
-          if (dayjs(e.dt_from).hour() == i) {
+          if (dayjs(e.from_datetime).hour() == i) {
             events.push(e);
           }
         }

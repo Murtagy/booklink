@@ -2,23 +2,23 @@
   <div class="box">
     <p class="bold">Время работы</p>
     <div style="margin-left: 1em">
-      <div v-for="slot in slots" :key="slot.dt_from">
+      <div v-for="slot in slots" :key="slot.from_datetime">
         <input
-          :value="formatTime(slot.dt_from)"
+          :value="formatTime(slot.from_datetime)"
           style="max-width: 4em"
           disabled="true"
         />
         -
         <input
-          :value="formatTime(slot.dt_to)"
+          :value="formatTime(slot.to_datetime)"
           style="max-width: 4em"
           disabled="true"
         />
         <input type="button" value="-" @click="removeSlot(slot)" />
       </div>
       <form id="potential_slot" @submit.prevent="submitPotentialSlot">
-        <input type="time" v-model="potential_slot.dt_from" /> -
-        <input type="time" v-model="potential_slot.dt_to" />
+        <input type="time" v-model="potential_slot.from_datetime" /> -
+        <input type="time" v-model="potential_slot.to_datetime" />
         <input type="submit" value="+" />
       </form>
       <div>
@@ -51,8 +51,8 @@
       >
         {{ day.date }}
         <br />
-        <div v-for="timeslot in day.timeslots" :key="timeslot.dt_from">
-          {{ formatTime(timeslot.dt_from) }} - {{ formatTime(timeslot.dt_to) }}
+        <div v-for="timeslot in day.timeslots" :key="timeslot.from_datetime">
+          {{ formatTime(timeslot.from_datetime) }} - {{ formatTime(timeslot.to_datetime) }}
         </div>
       </div>
     </div>
@@ -119,8 +119,8 @@ export default {
       highlighted: highlighted,
       manyMode: false,
       potential_slot: {
-        dt_from: "",
-        dt_to: "",
+        from_datetime: "",
+        to_datetime: "",
       },
       slots: slots,
     };
@@ -139,7 +139,7 @@ export default {
       } else {
         if (day.timeslots.length) {
           this.slots = day.timeslots;
-          this.potential_slot = { dt_from: "", dt_to: "" };
+          this.potential_slot = { from_datetime: "", to_datetime: "" };
         }
         this.day.date = day.date;
       }
@@ -174,15 +174,15 @@ export default {
         // single day save
         const new_slots = [...this.slots];
         for (const slot of new_slots) {
-          slot.dt_from = date + "T" + this.formatTime(slot.dt_from) + ":00";
-          slot.dt_to = date + "T" + this.formatTime(slot.dt_to) + ":00";
+          slot.from_datetime = date + "T" + this.formatTime(slot.from_datetime) + ":00";
+          slot.to_datetime = date + "T" + this.formatTime(slot.to_datetime) + ":00";
         }
-        if (this.potential_slot.dt_from && this.potential_slot.dt_to) {
+        if (this.potential_slot.from_datetime && this.potential_slot.to_datetime) {
           const slot = {
-            dt_from:
-              date + "T" + this.formatTime(this.potential_slot.dt_from) + ":00",
-            dt_to:
-              date + "T" + this.formatTime(this.potential_slot.dt_to) + ":00",
+            from_datetime:
+              date + "T" + this.formatTime(this.potential_slot.from_datetime) + ":00",
+            to_datetime:
+              date + "T" + this.formatTime(this.potential_slot.to_datetime) + ":00",
             slot_type: SlotType.AVAILABLE,
           };
           new_slots.push(slot);
@@ -198,21 +198,21 @@ export default {
           const new_day_slots: TimeSlot[] = [];
           for (const slot of this.slots) {
             const new_slot = {
-              dt_from: date + "T" + this.formatTime(slot.dt_from) + ":00",
-              dt_to: date + "T" + this.formatTime(slot.dt_to) + ":00",
+              from_datetime: date + "T" + this.formatTime(slot.from_datetime) + ":00",
+              to_datetime: date + "T" + this.formatTime(slot.to_datetime) + ":00",
               slot_type: SlotType.AVAILABLE,
             };
             new_day_slots.push(new_slot);
           }
-          if (this.potential_slot.dt_from && this.potential_slot.dt_to) {
+          if (this.potential_slot.from_datetime && this.potential_slot.to_datetime) {
             const slot = {
-              dt_from:
+              from_datetime:
                 date +
                 "T" +
-                this.formatTime(this.potential_slot.dt_from) +
+                this.formatTime(this.potential_slot.from_datetime) +
                 ":00",
-              dt_to:
-                date + "T" + this.formatTime(this.potential_slot.dt_to) + ":00",
+              to_datetime:
+                date + "T" + this.formatTime(this.potential_slot.to_datetime) + ":00",
               slot_type: SlotType.AVAILABLE,
             };
             new_day_slots.push(slot);
@@ -227,17 +227,17 @@ export default {
       this.fetchDays();
     },
     async submitPotentialSlot() {
-      if (!(this.potential_slot.dt_from && this.potential_slot.dt_to)) {
+      if (!(this.potential_slot.from_datetime && this.potential_slot.to_datetime)) {
         return;
       }
       this.slots.push({
-        dt_from: this.potential_slot.dt_from,
-        dt_to: this.potential_slot.dt_to,
+        from_datetime: this.potential_slot.from_datetime,
+        to_datetime: this.potential_slot.to_datetime,
         slot_type: SlotType.AVAILABLE,
       });
       this.potential_slot = {
-        dt_from: "",
-        dt_to: "",
+        from_datetime: "",
+        to_datetime: "",
       };
     },
 
@@ -255,11 +255,11 @@ export default {
     potential_slot: {
       handler(newSlot, oldSlot) {
         const slot = newSlot;
-        if (slot.dt_from.length > 2 && slot.dt_from[2] != ":") {
-          slot.dt_from = slot.dt_from.slice(0, 2) + ":" + slot.dt_from.slice(2);
+        if (slot.from_datetime.length > 2 && slot.from_datetime[2] != ":") {
+          slot.from_datetime = slot.from_datetime.slice(0, 2) + ":" + slot.from_datetime.slice(2);
         }
-        if (slot.dt_to.length > 2 && slot.dt_to[2] != ":") {
-          slot.dt_to = slot.dt_to.slice(0, 2) + ":" + slot.dt_to.slice(2);
+        if (slot.to_datetime.length > 2 && slot.to_datetime[2] != ":") {
+          slot.to_datetime = slot.to_datetime.slice(0, 2) + ":" + slot.to_datetime.slice(2);
         }
       },
       deep: true,
