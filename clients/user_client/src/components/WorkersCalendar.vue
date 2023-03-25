@@ -13,6 +13,7 @@
         v-for="hour in getHours(day)"
         :key="hour.number"
         @click="clickHour($event, hour, day)"
+        hour="true"
         :style="{
           'background-color': isAvailable(hour, day)
             ? 'white'
@@ -25,17 +26,23 @@
         <div
           v-for="visit of getVisits(hour)"
           :key="visit.visit.slot_id"
+          class="tmp"
           style="
-            background-color: red;
-            opacity: 0.2;
+            background-color: rgba(255, 0, 0, 0.2);
             position: absolute;
-            border: 1px solid;
+            border-bottom: 1px solid gray;
+            border-top: 1px solid gray;
           "
           :style="{
             height: hour_height * getVisitHours(visit) + 'em',
             width: hour_width + 'em',
+            marginTop: (dayjs(visit.visit.from_datetime).minute() / 64) * hour_height + 'em'
+            // 64 is used insteaf of 60 to avoid border thickness between 2 visits
           }"
-        ></div>
+          @click="clickVisit($event, visit)"
+        > 
+          <!-- {{ visit.services }} -->
+        </div>
         <div
           v-if="shouldRenderForm(hour, day)"
           id="form-container"
@@ -46,7 +53,7 @@
           <div id="form-content">
             <CreateVisitPage
               :date="day.date"
-              :time_in="getTime(hour)"
+              :time_in="getPossibleVisitTime(hour, day)"
               :worker_in="day.worker"
               :route_back="false"
               @created-visit="
@@ -118,40 +125,40 @@ export default {
     };
   },
   methods: {
+    clickVisit(e: Event, visit: OutVisitExtended){ 
+      console.log('open visit')
+    },
     async handleCreatedVisit(slot: OutSlot, d: WorkerDay) {
       const extended =  await DefaultService.getVisitExtended(slot.slot_id)
       d.visit_hours.push(extended)
     },
-    shouldRenderForm(h: Hour, day: WorkerDay) {
+    shouldRenderForm(h: Hour, day: WorkerDay): boolean {
       if (this.hour_form == undefined) {
-        console.log("not render");
         return false;
       }
       if (
         this.hour_form.hour.number == h.number &&
         this.hour_form.worker.worker_id == day.worker.worker_id
       ) {
-        console.log("render", this.hour_form);
         return true;
       }
       return false;
     },
-    closeFormIfClickedOutside(e: MouseEvent) {
+    closeFormIfClickedOutside(e: Event) {
       if (
         e.target != null &&
         (e.target as HTMLElement).id == "form-container"
       ) {
+        console.log('close form')
         this.hour_form = undefined;
       }
     },
-    clickHour(e: MouseEvent, h: Hour, day: WorkerDay) {
-      // console.log("click", e.target);
-      if (
-        e.target != null &&
-        (e.target as HTMLElement).id == "form-container"
-      ) {
-        return;
+    clickHour(e: Event, h: Hour, day: WorkerDay) {
+      const clicked = e.target
+      if (!( clicked instanceof Element && clicked.classList.contains('calendar__hour'))) {
+        return
       }
+      console.log('clicked hour')
       if (!this.hour_form) {
         this.hour_form = {
           hour: h,
@@ -169,16 +176,15 @@ export default {
       }
       return false;
     },
-    getTime(h: Hour) {
-      // todo : lookup minutes
-      return String(h.number).padStart(2, "0") + ":00";
-    },
+    dayjs(s: string) { return dayjs(s)},
     getVisitHours(v: OutVisitExtended): number {
-      const length_hours =
-        dayjs(v.visit.to_datetime).hour() -
-        dayjs(v.visit.from_datetime).hour() +
-        1;
-      return length_hours;
+      return this.getVisitMinutes(v) / 60;
+    },
+    getVisitMinutes(v: OutVisitExtended): number {
+      const length_minutes =
+        ((dayjs(v.visit.to_datetime).hour() * 60) + dayjs(v.visit.to_datetime).minute()) -
+        ((dayjs(v.visit.from_datetime).hour() * 60) + (dayjs(v.visit.from_datetime).minute()))
+      return length_minutes;
     },
     getVisits(h: Hour): OutVisitExtended[] {
       const out: OutVisitExtended[] = [];
@@ -188,6 +194,22 @@ export default {
         }
       }
       return out;
+    },
+    getPossibleVisitTime(h: Hour, day: WorkerDay) {
+      // todo : lookup minutes
+      let minutes = 0
+      console.debug('debug')
+      for (const visit of day.visit_hours) {
+        const start = dayjs(visit.visit.from_datetime)
+        const end = dayjs(visit.visit.to_datetime)
+        if (start.hour() <= h.number &&
+            end.hour() >= h.number
+        ) {
+          minutes = end.minute()
+        }
+      }
+      console.assert(minutes < 60, 'Minutes may not go above 60')
+      return String(h.number).padStart(2, "0") + ":" +  String(minutes).padStart(2, "0");
     },
     getHours(day: WorkerDay): Hour[] {
       const hours: Hour[] = [];
