@@ -66,6 +66,17 @@
       </div>
     </div>
   </div>
+  <div v-if="visit_info" class="visit_card" :style="{top: visit_info.clientY + 'px', left: visit_info.clientX +'px'}">
+    <p @click="visit_info = undefined" style="float: right; margin-right: 3px; border: 1px solid; border-radius: 1em; width: 1em"><center>x</center></p>
+    <p class="bold"> Время </p>
+    <p> {{ dayjs(visit_info.visit.visit.from_datetime).format('hh:mm') }} 
+      - 
+        {{ dayjs(visit_info.visit.visit.to_datetime).format('hh:mm') }} 
+     </p>
+    <h3>Услуги</h3>
+    <p> {{ visit_info.visit.services }} </p>
+
+  </div>
   <!-- </div> -->
 </template>
 
@@ -79,6 +90,14 @@ calendar__hour-grid {
   border: 1px groove;
   height: v-bind(hour_height + "em");
   width: v-bind(hour_width + "em");
+}
+
+.visit_card {
+  padding: 1em;
+  position: absolute;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
 }
 </style>
 
@@ -107,11 +126,22 @@ declare interface HourForm {
   worker: OutWorker;
 }
 
+
+declare interface VisitInfo {
+  clientX: number,
+  clientY: number,
+  visit: OutVisitExtended,
+}
+
+
 declare interface Data {
   hour_height: number;
   hour_width: number;
   hour_form?: HourForm;
+  visit_info?: VisitInfo;
 }
+
+
 
 export default {
   components: { CreateVisitPage },
@@ -122,11 +152,13 @@ export default {
       hour_height: 2,
       hour_width: 7,
       hour_form: undefined,
+      visit_info: undefined,
     };
   },
   methods: {
-    clickVisit(e: Event, visit: OutVisitExtended){ 
-      console.log('open visit')
+    clickVisit(e: MouseEvent, visit: OutVisitExtended) {
+      console.log('open visit', e.clientX, e.clientY)
+      this.visit_info = {clientX: e.clientX, clientY: e.clientY, visit: visit}
     },
     async handleCreatedVisit(slot: OutSlot, d: WorkerDay) {
       const extended =  await DefaultService.getVisitExtended(slot.slot_id)
