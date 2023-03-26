@@ -13,6 +13,8 @@
         v-for="hour in getHours(day)"
         :key="hour.number"
         @click="clickHour($event, hour, day)"
+        @dragover.prevent
+        @drop="dropVisitAtHour($event, hour, day)"
         hour="true"
         :style="{
           'background-color': isAvailable(hour, day)
@@ -26,7 +28,10 @@
         <div
           v-for="visit of getVisits(hour)"
           :key="visit.visit.slot_id"
-          class="tmp"
+          class="visit"
+          draggable="true"
+          @dragstart="startDragVisit($event, visit, day)"
+          @dragend="endDragVisit($event, visit)"
           style="
             background-color: rgba(255, 0, 0, 0.2);
             position: absolute;
@@ -99,6 +104,10 @@ calendar__hour-grid {
   border-radius: 10px;
   box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
 }
+
+.dragging {
+  border: 5px solid black;
+}
 </style>
 
 <script lang="ts">
@@ -127,7 +136,12 @@ declare interface HourForm {
 }
 
 
-declare interface VisitInfo {
+declare interface VisitDragInfo {
+  visit: OutVisitExtended,
+  day: WorkerDay,
+}
+
+declare interface VisitClickInfo {
   clientX: number,
   clientY: number,
   visit: OutVisitExtended,
@@ -138,7 +152,8 @@ declare interface Data {
   hour_height: number;
   hour_width: number;
   hour_form?: HourForm;
-  visit_info?: VisitInfo;
+  visit_info?: VisitClickInfo;
+  dragged_visit?: VisitDragInfo;
 }
 
 
@@ -153,9 +168,34 @@ export default {
       hour_width: 7,
       hour_form: undefined,
       visit_info: undefined,
+      dragged_visit: undefined
     };
   },
   methods: {
+    startDragVisit(e: DragEvent, visit: OutVisitExtended, day: WorkerDay) {
+      (e.target as HTMLElement).classList.add("dragging")
+      this.dragged_visit = {visit: visit, day: day}
+    },
+    endDragVisit(e: DragEvent, visit: OutVisitExtended) {
+      (e.target as HTMLElement).classList.remove("dragging");
+      this.dragged_visit = undefined
+    },
+    dropVisitAtHour(e: Event, h: Hour, d: WorkerDay) {
+      if (this.dragged_visit != undefined) {
+        const new_visit = this.dragged_visit.visit;
+        const old_visit = {...new_visit}
+        const length = dayjs(old_visit.visit.to_datetime).diff(old_visit.visit.from_datetime)
+        new_visit.visit.from_datetime = dayjs(old_visit.visit.from_datetime).set('hour', h.number).toISOString()
+        new_visit.visit.to_datetime = dayjs(new_visit.visit.from_datetime).add(length).toISOString()
+        d.visit_hours.push(new_visit)
+
+        // TODO: remove old
+        // TODO: update at server
+      }
+    },
+    consoleLog(e: any) {
+      console.log(e)
+    },
     clickVisit(e: MouseEvent, visit: OutVisitExtended) {
       console.log('open visit', e.clientX, e.clientY)
       this.visit_info = {clientX: e.clientX, clientY: e.clientY, visit: visit}
