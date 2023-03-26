@@ -41,11 +41,13 @@
           :style="{
             height: hour_height * getVisitHours(visit) + 'em',
             width: hour_width + 'em',
-            marginTop: (dayjs(visit.visit.from_datetime).minute() / 64) * hour_height + 'em'
+            marginTop:
+              (dayjs(visit.visit.from_datetime).minute() / 64) * hour_height +
+              'em',
             // 64 is used insteaf of 60 to avoid border thickness between 2 visits
           }"
           @click="clickVisit($event, visit)"
-        > 
+        >
           <!-- {{ visit.services }} -->
         </div>
         <div
@@ -71,16 +73,31 @@
       </div>
     </div>
   </div>
-  <div v-if="visit_info" class="visit_card" :style="{top: visit_info.clientY + 'px', left: visit_info.clientX +'px'}">
-    <p @click="visit_info = undefined" style="float: right; margin-right: 3px; border: 1px solid; border-radius: 1em; width: 1em"><center>x</center></p>
-    <p class="bold"> Время </p>
-    <p> {{ dayjs(visit_info.visit.visit.from_datetime).format('hh:mm') }} 
-      - 
-        {{ dayjs(visit_info.visit.visit.to_datetime).format('hh:mm') }} 
-     </p>
+  <div
+    v-if="visit_info"
+    class="visit_card"
+    :style="{ top: visit_info.clientY + 'px', left: visit_info.clientX + 'px' }"
+  >
+    <p
+      @click="visit_info = undefined"
+      style="
+        float: right;
+        margin-right: 3px;
+        border: 1px solid;
+        border-radius: 1em;
+        width: 1em;
+      "
+    >
+      <center>x</center>
+    </p>
+    <p class="bold">Время</p>
+    <p>
+      {{ dayjs(visit_info.visit.visit.from_datetime).format("hh:mm") }}
+      -
+      {{ dayjs(visit_info.visit.visit.to_datetime).format("hh:mm") }}
+    </p>
     <h3>Услуги</h3>
-    <p> {{ visit_info.visit.services }} </p>
-
+    <p>{{ visit_info.visit.services }}</p>
   </div>
   <!-- </div> -->
 </template>
@@ -102,7 +119,8 @@ calendar__hour-grid {
   position: absolute;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+  z-index: 1;
 }
 
 .dragging {
@@ -114,7 +132,7 @@ calendar__hour-grid {
 // import VisitsDayCaruselDay from "@/components/VisitsDayCaruselDay.vue";
 
 import {
-DefaultService,
+  DefaultService,
   type OutSlot,
   type OutVisitExtended,
   type OutWorker,
@@ -122,7 +140,7 @@ DefaultService,
   type WorkerDay,
 } from "@/client";
 import dayjs from "dayjs";
-import { type PropType } from "vue";
+import type { PropType } from "vue";
 import CreateVisitPage from "@/pages/CreateVisitPage.vue";
 
 declare interface Hour {
@@ -135,18 +153,16 @@ declare interface HourForm {
   worker: OutWorker;
 }
 
-
 declare interface VisitDragInfo {
-  visit: OutVisitExtended,
-  day: WorkerDay,
+  visit: OutVisitExtended;
+  day: WorkerDay;
 }
 
 declare interface VisitClickInfo {
-  clientX: number,
-  clientY: number,
-  visit: OutVisitExtended,
+  clientX: number;
+  clientY: number;
+  visit: OutVisitExtended;
 }
-
 
 declare interface Data {
   hour_height: number;
@@ -156,53 +172,60 @@ declare interface Data {
   dragged_visit?: VisitDragInfo;
 }
 
-
-
 export default {
   components: { CreateVisitPage },
-  computed: {
-  },
+  computed: {},
   data(): Data {
     return {
       hour_height: 2,
       hour_width: 7,
       hour_form: undefined,
       visit_info: undefined,
-      dragged_visit: undefined
+      dragged_visit: undefined,
     };
   },
   methods: {
     startDragVisit(e: DragEvent, visit: OutVisitExtended, day: WorkerDay) {
-      (e.target as HTMLElement).classList.add("dragging")
-      this.dragged_visit = {visit: visit, day: day}
+      (e.target as HTMLElement).classList.add("dragging");
+      this.dragged_visit = { visit: visit, day: day };
     },
     endDragVisit(e: DragEvent, visit: OutVisitExtended) {
       (e.target as HTMLElement).classList.remove("dragging");
-      this.dragged_visit = undefined
+      this.dragged_visit = undefined;
     },
     dropVisitAtHour(e: Event, h: Hour, d: WorkerDay) {
       if (this.dragged_visit != undefined) {
-        const new_visit = this.dragged_visit.visit;
-        const old_visit = {...new_visit}
-        const length = dayjs(old_visit.visit.to_datetime).diff(old_visit.visit.from_datetime)
-        new_visit.visit.from_datetime = dayjs(old_visit.visit.from_datetime).set('hour', h.number).toISOString()
-        new_visit.visit.to_datetime = dayjs(new_visit.visit.from_datetime).add(length).toISOString()
-        d.visit_hours.push(new_visit)
+        const visit: OutVisitExtended = this.dragged_visit.visit;
+        this.dragged_visit.day.visit_hours =
+          this.dragged_visit.day.visit_hours.filter((x) => x != visit);
+        const length = dayjs(visit.visit.to_datetime).diff(
+          visit.visit.from_datetime
+        );
+        visit.visit.from_datetime = dayjs(visit.visit.from_datetime)
+          .set("hour", h.number)
+          .toISOString();
+        visit.visit.to_datetime = dayjs(visit.visit.from_datetime)
+          .add(length)
+          .toISOString();
+        d.visit_hours.push(visit);
 
-        // TODO: remove old
-        // TODO: update at server
+        // TODO: server sync
       }
     },
     consoleLog(e: any) {
-      console.log(e)
+      console.log(e);
     },
     clickVisit(e: MouseEvent, visit: OutVisitExtended) {
-      console.log('open visit', e.clientX, e.clientY)
-      this.visit_info = {clientX: e.clientX, clientY: e.clientY, visit: visit}
+      console.log("open visit", e.clientX, e.clientY);
+      this.visit_info = {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        visit: visit,
+      };
     },
     async handleCreatedVisit(slot: OutSlot, d: WorkerDay) {
-      const extended =  await DefaultService.getVisitExtended(slot.slot_id)
-      d.visit_hours.push(extended)
+      const extended = await DefaultService.getVisitExtended(slot.slot_id);
+      d.visit_hours.push(extended);
     },
     shouldRenderForm(h: Hour, day: WorkerDay): boolean {
       if (this.hour_form == undefined) {
@@ -221,16 +244,21 @@ export default {
         e.target != null &&
         (e.target as HTMLElement).id == "form-container"
       ) {
-        console.log('close form')
+        console.log("close form");
         this.hour_form = undefined;
       }
     },
     clickHour(e: Event, h: Hour, day: WorkerDay) {
-      const clicked = e.target
-      if (!( clicked instanceof Element && clicked.classList.contains('calendar__hour'))) {
-        return
+      const clicked = e.target;
+      if (
+        !(
+          clicked instanceof Element &&
+          clicked.classList.contains("calendar__hour")
+        )
+      ) {
+        return;
       }
-      console.log('clicked hour')
+      console.log("clicked hour");
       if (!this.hour_form) {
         this.hour_form = {
           hour: h,
@@ -248,14 +276,18 @@ export default {
       }
       return false;
     },
-    dayjs(s: string) { return dayjs(s)},
+    dayjs(s: string) {
+      return dayjs(s);
+    },
     getVisitHours(v: OutVisitExtended): number {
       return this.getVisitMinutes(v) / 60;
     },
     getVisitMinutes(v: OutVisitExtended): number {
       const length_minutes =
-        ((dayjs(v.visit.to_datetime).hour() * 60) + dayjs(v.visit.to_datetime).minute()) -
-        ((dayjs(v.visit.from_datetime).hour() * 60) + (dayjs(v.visit.from_datetime).minute()))
+        dayjs(v.visit.to_datetime).hour() * 60 +
+        dayjs(v.visit.to_datetime).minute() -
+        (dayjs(v.visit.from_datetime).hour() * 60 +
+          dayjs(v.visit.from_datetime).minute());
       return length_minutes;
     },
     getVisits(h: Hour): OutVisitExtended[] {
@@ -269,19 +301,21 @@ export default {
     },
     getPossibleVisitTime(h: Hour, day: WorkerDay) {
       // todo : lookup minutes
-      let minutes = 0
-      console.debug('debug')
+      let minutes = 0;
+      console.debug("debug");
       for (const visit of day.visit_hours) {
-        const start = dayjs(visit.visit.from_datetime)
-        const end = dayjs(visit.visit.to_datetime)
-        if (start.hour() <= h.number &&
-            end.hour() >= h.number
-        ) {
-          minutes = end.minute()
+        const start = dayjs(visit.visit.from_datetime);
+        const end = dayjs(visit.visit.to_datetime);
+        if (start.hour() <= h.number && end.hour() >= h.number) {
+          minutes = end.minute();
         }
       }
-      console.assert(minutes < 60, 'Minutes may not go above 60')
-      return String(h.number).padStart(2, "0") + ":" +  String(minutes).padStart(2, "0");
+      console.assert(minutes < 60, "Minutes may not go above 60");
+      return (
+        String(h.number).padStart(2, "0") +
+        ":" +
+        String(minutes).padStart(2, "0")
+      );
     },
     getHours(day: WorkerDay): Hour[] {
       const hours: Hour[] = [];
