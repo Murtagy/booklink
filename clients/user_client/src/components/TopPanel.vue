@@ -21,10 +21,12 @@
         <a class="sized">Услуги</a>
       </router-link>
     </div>
-    <img
-      src="@/assets/worker-icon.png"
-      style="float: right; height: 35px; margin-top: 5px"
-    />
+    <router-link to="/my_user">
+      <img
+        src="@/assets/worker-icon.png"
+        style="float: right; height: 35px; margin-top: 5px"
+      />
+    </router-link>
   </div>
 </template>
 
