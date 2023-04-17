@@ -16,10 +16,10 @@ if sys.stderr.isatty():
 else:
     processors = shared_processors + [
         structlog.processors.add_log_level,
-        structlog.processors.TimeStamper(fmt="iso", utc=True),
+        structlog.processors.TimeStamper("iso", True),  # utc = True
         structlog.processors.format_exc_info,
         structlog.contextvars.merge_contextvars,
-        structlog.processors.JSONRenderer(serializer=orjson.dumps),
+        structlog.processors.JSONRenderer(orjson.dumps),
     ]
 structlog.configure(
     cache_logger_on_first_use=True,

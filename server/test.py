@@ -116,10 +116,18 @@ def create_worker_weekly_slot(worker_id, schedule):
                     _from_h, _from_m = map(int, t[0].split(":"))
                     _to_h, _to_m = map(int, t[1].split(":"))
                     _from = datetime.datetime(
-                        year=date.year, month=date.month, day=date.day, hour=_from_h, minute=_from_m
+                        year=date.year,
+                        month=date.month,
+                        day=date.day,
+                        hour=_from_h,
+                        minute=_from_m,
                     )
                     _to = datetime.datetime(
-                        year=date.year, month=date.month, day=date.day, hour=_to_h, minute=_to_m
+                        year=date.year,
+                        month=date.month,
+                        day=date.day,
+                        hour=_to_h,
+                        minute=_to_m,
                     )
                     slots.append(
                         {
@@ -191,7 +199,9 @@ def get_visits_days(_from, _to):
 def get_all_slots(_from, _to):
     url = localhost + f"workers_calendar"
     return client.get(
-        url, headers=headers, params={"_from": _from.isoformat(), "_to": _to.isoformat()}
+        url,
+        headers=headers,
+        params={"_from": _from.isoformat(), "_to": _to.isoformat()},
     )
 
 

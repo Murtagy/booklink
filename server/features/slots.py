@@ -180,10 +180,13 @@ class InVisit(BM):
     worker_id: str | None
 
     # change to customer info?
+    # < change to customer info
     phone: str
     email: str
     first_name: str
     last_name: str
+    # >
+    customer_info: customers.CustomerAtVisit | None = None
 
     @validator("from_dt")
     def localize(cls, v):
@@ -312,7 +315,7 @@ def get_visits_days(
 
 
 def update_visit(
-    visit_id: str,
+    visit_id: int,
     visit: InVisit,
     s: Session = Depends(db.get_session),
     current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
@@ -365,7 +368,11 @@ def create_slot_with_check(
     if slot.slot_type == SlotType.VISIT:
         # in case slot is a visit - check for collision
         slot = availability.visit_pick_worker_or_throw(
-            s, slot, current_user.client_id, exc=app_exceptions.SlotNotAvailable, force=force
+            s,
+            slot,
+            current_user.client_id,
+            exc=app_exceptions.SlotNotAvailable,
+            force=force,
         )
     # others we let to duplicate
 

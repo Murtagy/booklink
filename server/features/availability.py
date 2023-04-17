@@ -167,7 +167,11 @@ class Availability(BM):
                     # F   T
                     if F <= f and T < t:
                         new_ts.append(
-                            TimeSlot(from_datetime=T, to_datetime=t, slot_type=SlotType.AVAILABLE)
+                            TimeSlot(
+                                from_datetime=T,
+                                to_datetime=t,
+                                slot_type=SlotType.AVAILABLE,
+                            )
                         )
 
                     # right is bigger, left is in
@@ -175,7 +179,11 @@ class Availability(BM):
                     #    F   T
                     if F > f and T >= t:
                         new_ts.append(
-                            TimeSlot(from_datetime=f, to_datetime=F, slot_type=SlotType.AVAILABLE)
+                            TimeSlot(
+                                from_datetime=f,
+                                to_datetime=F,
+                                slot_type=SlotType.AVAILABLE,
+                            )
                         )
 
                     # slot is in
@@ -184,10 +192,18 @@ class Availability(BM):
                     if F > f and T < t:
                         # we create 2 slots for that
                         new_ts.append(
-                            TimeSlot(from_datetime=f, to_datetime=F, slot_type=SlotType.AVAILABLE)
+                            TimeSlot(
+                                from_datetime=f,
+                                to_datetime=F,
+                                slot_type=SlotType.AVAILABLE,
+                            )
                         )
                         new_ts.append(
-                            TimeSlot(from_datetime=T, to_datetime=t, slot_type=SlotType.AVAILABLE)
+                            TimeSlot(
+                                from_datetime=T,
+                                to_datetime=t,
+                                slot_type=SlotType.AVAILABLE,
+                            )
                         )
                         # above copies left-right checks, can make it simplier
 
