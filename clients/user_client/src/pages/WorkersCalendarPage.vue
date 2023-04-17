@@ -1,14 +1,13 @@
 <template>
-   
-    <div class="chosen_date">
+  <div class="chosen_date">
     <button @click="dateLeft">
       <img class="left px15" src="../assets/arrow2.png" />
     </button>
-     {{ selected_date_str }}
+    {{ selected_date_str }}
     <button @click="dateRight">
       <img class="right px15" src="../assets/arrow2.png" />
     </button>
-    </div>
+  </div>
 
   <div>
     <WorkersCalendar :days="days_selected" />
@@ -28,7 +27,6 @@ img.px15 {
   height: 15px;
   width: 15px;
 }
-
 </style>
 
 <script lang="ts">
@@ -69,10 +67,14 @@ export default {
       this.days = await (await DefaultService.workersCalendar(from, to)).days;
     },
     dateLeft() {
-      this.date_selected = new Date(this.date_selected.getTime() - 1000 * 60 * 60 * 24)
+      this.date_selected = new Date(
+        this.date_selected.getTime() - 1000 * 60 * 60 * 24
+      );
     },
     dateRight() {
-      this.date_selected = new Date(this.date_selected.getTime() + 1000 * 60 * 60 * 24)
+      this.date_selected = new Date(
+        this.date_selected.getTime() + 1000 * 60 * 60 * 24
+      );
     },
   },
   mounted() {
@@ -83,15 +85,22 @@ export default {
       // after 14 days we increase a windows by 7 days
       // @optimisation - not refetch already fetched
       if (this.date_selected < this.date_from) {
-        this.date_from = new Date(this.date_from.getTime() - 1000 * 60 * 60 * 24 * 7)
+        this.date_from = new Date(
+          this.date_from.getTime() - 1000 * 60 * 60 * 24 * 7
+        );
       }
       if (this.date_selected > this.date_to) {
-        this.date_to = new Date(this.date_to.getTime() + 1000 * 60 * 60 * 24 * 7)
+        this.date_to = new Date(
+          this.date_to.getTime() + 1000 * 60 * 60 * 24 * 7
+        );
       }
     },
-    date_to() {this.fetchDays()},
-    date_from() {this.fetchDays()},
+    date_to() {
+      this.fetchDays();
+    },
+    date_from() {
+      this.fetchDays();
+    },
   },
-
 };
 </script>

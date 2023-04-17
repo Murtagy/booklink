@@ -32,13 +32,23 @@
             border-top: 1px solid gray;
           "
           :style="{
-            height: hour_height * (Math.min(working_slot.to_datetime.diff(working_slot.from_datetime, 'minute') / 60), 1) + 'em',
+            height:
+              hour_height *
+                (Math.min(
+                  working_slot.to_datetime.diff(
+                    working_slot.from_datetime,
+                    'minute'
+                  ) / 60
+                ),
+                1) +
+              'em',
             width: hour_width + 'em',
-            marginTop: (working_slot.from_datetime.minute() / 64) * hour_height + 'em',
+            marginTop:
+              (working_slot.from_datetime.minute() / 64) * hour_height + 'em',
             // 64 is used insteaf of 60 to avoid border thickness between 2 visits
           }"
-        > 
-            <!-- {{working_slot}} -->
+        >
+          <!-- {{working_slot}} -->
         </div>
         <label style="float: left; position: relative; z-index: 1">{{
           hour.number
@@ -165,7 +175,7 @@ type Hour = {
   number: number;
   minute: number;
   events: (TimeSlot | OutVisitExtended | OutSlot)[];
-}
+};
 
 type AvailableTimeSlot = {
   from_datetime: dayjs.Dayjs;
@@ -301,11 +311,11 @@ export default {
       }
       console.log("clicked slot");
       if (!this.hour_form) {
-        h.minute = s.from_datetime.minute(), 
-        this.hour_form = {
-          hour: h,
-          worker: day.worker,
-        };
+        (h.minute = s.from_datetime.minute()),
+          (this.hour_form = {
+            hour: h,
+            worker: day.worker,
+          });
       }
     },
     isAvailable(h: Hour, d: WorkerDay) {
@@ -319,48 +329,40 @@ export default {
       return false;
     },
     availableSlots(h: Hour, d: WorkerDay) {
-        const out: AvailableTimeSlot[] = []
-        
-        for (const jh of d.job_hours) {
-            const from = dayjs(jh.from_datetime);
-            const to = dayjs(jh.to_datetime);
-            // if both are lower or higher - the hour does not fit in
-            if (h.number > from.hour() && h.number > to.hour()) {
-                continue
-            }
-            if (h.number < from.hour() && h.number < to.hour()) {
-                continue
-            }
-            // 1) inside hour
-            if (h.number == from.hour() && h.number == to.hour()) {
-                out.push(
-                    {from_datetime: from, to_datetime: to}
-                )
-            }
-            // 2) bigger than hour
-            if (h.number > from.hour() && h.number < to.hour()) {
-                const hour_start = from.set('hour', h.number).set('minute', 0)
-                const hour_end = hour_start.set('hour', h.number + 1)
-                out.push(
-                    {from_datetime: hour_start, to_datetime: hour_end}
-                )
-            }
-            // 3) starts within hour
-            if (h.number == from.hour() && h.number < to.hour()) {
-                const hour_end = from.set('hour', h.number + 1).set('minute', 0)
-                out.push(
-                    {from_datetime: from, to_datetime: hour_end}
-                )
-            }
-            // 4) ends within hour
-            if (h.number > from.hour() && h.number == to.hour()) {
-                const hour_start = from.set('hour', h.number).set('minute', 0)
-                out.push(
-                    {from_datetime: hour_start, to_datetime: to}
-                )
-            }
+      const out: AvailableTimeSlot[] = [];
+
+      for (const jh of d.job_hours) {
+        const from = dayjs(jh.from_datetime);
+        const to = dayjs(jh.to_datetime);
+        // if both are lower or higher - the hour does not fit in
+        if (h.number > from.hour() && h.number > to.hour()) {
+          continue;
         }
-        return out
+        if (h.number < from.hour() && h.number < to.hour()) {
+          continue;
+        }
+        // 1) inside hour
+        if (h.number == from.hour() && h.number == to.hour()) {
+          out.push({ from_datetime: from, to_datetime: to });
+        }
+        // 2) bigger than hour
+        if (h.number > from.hour() && h.number < to.hour()) {
+          const hour_start = from.set("hour", h.number).set("minute", 0);
+          const hour_end = hour_start.set("hour", h.number + 1);
+          out.push({ from_datetime: hour_start, to_datetime: hour_end });
+        }
+        // 3) starts within hour
+        if (h.number == from.hour() && h.number < to.hour()) {
+          const hour_end = from.set("hour", h.number + 1).set("minute", 0);
+          out.push({ from_datetime: from, to_datetime: hour_end });
+        }
+        // 4) ends within hour
+        if (h.number > from.hour() && h.number == to.hour()) {
+          const hour_start = from.set("hour", h.number).set("minute", 0);
+          out.push({ from_datetime: hour_start, to_datetime: to });
+        }
+      }
+      return out;
     },
     dayjs(s: string) {
       return dayjs(s);
@@ -386,13 +388,13 @@ export default {
       return out;
     },
     getPossibleVisitTime(h: Hour, day: WorkerDay) {
-      let minutes = this.hour_form?.hour.minute || 0
+      let minutes = this.hour_form?.hour.minute || 0;
       for (const visit of day.visit_hours) {
         const start = dayjs(visit.visit.from_datetime);
         const end = dayjs(visit.visit.to_datetime);
         if (start.hour() <= h.number && end.hour() >= h.number) {
           if (start.minute() <= minutes && end.minute() > minutes) {
-              minutes = end.minute()
+            minutes = end.minute();
           }
         }
       }
