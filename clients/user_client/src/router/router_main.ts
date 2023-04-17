@@ -82,6 +82,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/visit/:visit_id",
+      name: "visit.edit",
+      component: () => import("../pages/EditVisit.vue"),
+      props: true,
+    },
+    {
       path: "/visit",
       name: "Visit",
       component: () => import("../pages/VisitPage.vue"),

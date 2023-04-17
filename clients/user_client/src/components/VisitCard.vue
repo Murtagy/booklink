@@ -3,6 +3,11 @@
     Время {{ visit.from_datetime.split("T")[1] }} -
     {{ visit.to_datetime.split("T")[1] }} Телефон {{ visit.phone }}
     {{ worker.name }}
+    <img 
+      src="@/assets/edit.svg"
+      @click="$router.push({name: 'visit.edit', params: {visit_id: visit.slot_id}})"
+      style="float: right"
+    >
   </div>
   <div>...</div>
 </template>
