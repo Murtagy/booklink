@@ -555,7 +555,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public static updateVisit(
-    visitId: string,
+    visitId: number,
     requestBody: InVisit
   ): CancelablePromise<any> {
     return __request(OpenAPI, {

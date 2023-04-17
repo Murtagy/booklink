@@ -15,6 +15,7 @@ export type { CreateService } from "./models/CreateService";
 export type { CreateServiceWithClientId } from "./models/CreateServiceWithClientId";
 export type { CreateSlot } from "./models/CreateSlot";
 export type { CreateWorker } from "./models/CreateWorker";
+export type { CustomerAtVisit } from "./models/CustomerAtVisit";
 export type { CustomerInfoIn } from "./models/CustomerInfoIn";
 export type { Day } from "./models/Day";
 export type { HTTPValidationError } from "./models/HTTPValidationError";

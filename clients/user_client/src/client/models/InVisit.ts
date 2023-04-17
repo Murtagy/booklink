@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CustomerAtVisit } from "./CustomerAtVisit";
 import type { InServiceToVisit } from "./InServiceToVisit";
 
 export type InVisit = {
@@ -15,6 +16,7 @@ export type InVisit = {
   email: string;
   first_name: string;
   last_name: string;
+  customer_info?: CustomerAtVisit;
 };
 
 export namespace InVisit {
