@@ -1,5 +1,5 @@
 <template>
-  <div class="border_main1" style="">
+  <div class="border_main1" style="margin: 1px">
     {{ day.date }}
     <br />
     Визитов {{ day.visits_n }}
