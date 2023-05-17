@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session  # type: ignore
 from server.models import SlotType
 
 from .. import app_exceptions, crud, db, models
-from ..dates import date_range, localize
+from ..dates import date_range, localize, LocalisedDatetime
 from . import availability, customers, services, users, workers
 
 
@@ -21,8 +21,8 @@ class InServiceToVisit(BM):
 class CreateSlot(BM):
     slot_type: SlotType
     worker_id: int | None
-    from_datetime: datetime.datetime
-    to_datetime: datetime.datetime
+    from_datetime: LocalisedDatetime
+    to_datetime: LocalisedDatetime
     has_notification = False
     status = "submitted"
     customer_info: customers.CustomerInfoIn | None = None
@@ -59,15 +59,15 @@ class CreateSlot(BM):
 
 class UpdateSlot(BM):
     # slot_id: int
-    from_datetime: datetime.datetime
-    to_datetime: datetime.datetime | None
+    from_datetime: LocalisedDatetime
+    to_datetime: LocalisedDatetime | None
     worker_id: int | None
 
 
 class OutSlot(BM):
     slot_id: int
-    from_datetime: datetime.datetime
-    to_datetime: datetime.datetime
+    from_datetime: LocalisedDatetime
+    to_datetime: LocalisedDatetime
     slot_type: str  # busy/visit/available
     worker_id: int | None
 
@@ -78,8 +78,8 @@ class OutSlot(BM):
 class TimeSlot(BM):
     """Both in and Out"""
 
-    from_datetime: datetime.datetime
-    to_datetime: datetime.datetime
+    from_datetime: LocalisedDatetime
+    to_datetime: LocalisedDatetime
     slot_type: SlotType
 
     @classmethod
@@ -115,13 +115,13 @@ def len_minutes(dt_from: datetime.datetime, dt_to: datetime.datetime) -> int:
 
 class WeeklySlot(BM):
     slot_id: int
-    mo: list[list[datetime.time]] | None
-    tu: list[list[datetime.time]] | None
-    we: list[list[datetime.time]] | None
-    th: list[list[datetime.time]] | None
-    fr: list[list[datetime.time]] | None
-    st: list[list[datetime.time]] | None
-    su: list[list[datetime.time]] | None
+    mo: list[list[LocalisedDatetime]] | None
+    tu: list[list[LocalisedDatetime]] | None
+    we: list[list[LocalisedDatetime]] | None
+    th: list[list[LocalisedDatetime]] | None
+    fr: list[list[LocalisedDatetime]] | None
+    st: list[list[LocalisedDatetime]] | None
+    su: list[list[LocalisedDatetime]] | None
 
 
 class CreateWeeklySlot(BM):
@@ -154,9 +154,9 @@ class OutVisit(BM):
     status: str
     slot_id: int
     worker_id: int
-    created_at: datetime.datetime
-    from_datetime: datetime.datetime
-    to_datetime: datetime.datetime
+    created_at: LocalisedDatetime
+    from_datetime: LocalisedDatetime
+    to_datetime: LocalisedDatetime
 
     class Config:
         orm_mode = True
@@ -174,7 +174,7 @@ class Received(BM):
 
 class InVisit(BM):
     client_id: int
-    from_dt: datetime.datetime
+    from_dt: LocalisedDatetime
     services: list[InServiceToVisit]
     remind_me: bool
     version: Literal[1] = 1

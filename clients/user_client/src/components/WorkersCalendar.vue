@@ -106,6 +106,8 @@
     class="visit_card"
     :style="{ top: visit_info.clientY + 'px', left: visit_info.clientX + 'px' }"
   >
+    <!-- TODO: replace with component? -->
+
     <p
       @click="visit_info = undefined"
       style="
@@ -118,6 +120,16 @@
     >
       <center>x</center>
     </p>
+    <img
+      src="@/assets/edit.svg"
+      @click="
+        $router.push({
+          name: 'visit.edit',
+          params: { visit_id: visit_info.visit.visit.slot_id },
+        })
+      "
+      style="float: right; height: 1em; margin-top: 1em;"
+    />
     <p class="bold">Время</p>
     <p>
       {{ dayjs(visit_info.visit.visit.from_datetime).format("hh:mm") }}
@@ -202,7 +214,7 @@ declare interface Data {
   hour_width: number;
   hour_form?: HourForm;
   visit_info?: VisitClickInfo;
-  dragged_visit?: VisitDragInfo;
+  dragged_visit_info?: VisitDragInfo;
 }
 
 export default {
@@ -214,35 +226,48 @@ export default {
       hour_width: 7,
       hour_form: undefined,
       visit_info: undefined,
-      dragged_visit: undefined,
+      dragged_visit_info: undefined,
     };
   },
   methods: {
     startDragVisit(e: DragEvent, visit: OutVisitExtended, day: WorkerDay) {
       (e.target as HTMLElement).classList.add("dragging");
-      this.dragged_visit = { visit: visit, day: day };
+      this.dragged_visit_info = { visit: visit, day: day };
     },
     endDragVisit(e: DragEvent, visit: OutVisitExtended) {
       (e.target as HTMLElement).classList.remove("dragging");
-      this.dragged_visit = undefined;
+      this.dragged_visit_info = undefined;
     },
-    dropVisitAtHour(e: Event, h: Hour, d: WorkerDay) {
-      if (this.dragged_visit != undefined) {
-        const visit: OutVisitExtended = this.dragged_visit.visit;
-        this.dragged_visit.day.visit_hours =
-          this.dragged_visit.day.visit_hours.filter((x) => x != visit);
-        const length = dayjs(visit.visit.to_datetime).diff(
-          visit.visit.from_datetime
-        );
-        visit.visit.from_datetime = dayjs(visit.visit.from_datetime)
-          .set("hour", h.number)
-          .toISOString();
-        visit.visit.to_datetime = dayjs(visit.visit.from_datetime)
-          .add(length)
-          .toISOString();
-        d.visit_hours.push(visit);
+    async dropVisitAtHour(e: Event, h: Hour, d: WorkerDay) {
+      // dragged data has short TTL, so it is ok to modify it
+      const dragged_visit_info = this.dragged_visit_info
+      if (dragged_visit_info != undefined) {
 
-        // TODO: server sync
+        const day_ref = dragged_visit_info.day
+        const visit = dragged_visit_info.visit;  
+        // remove visit from old place (for case when we re-render)
+        day_ref.visit_hours = day_ref.visit_hours.filter((x) => x != visit);  
+
+        const length = dayjs(dragged_visit_info.visit.visit.to_datetime).diff(
+          dragged_visit_info.visit.visit.from_datetime
+        );
+        const new_start = dayjs(dragged_visit_info.visit.visit.to_datetime).set("hour", h.number)
+        const new_end = new_start.add(length)
+        console.log(new_start)
+
+        // server sync
+        try {
+          await DefaultService.updateSlot(dragged_visit_info.visit.visit.slot_id, {from_datetime: new_start.toISOString(), to_datetime: new_end.toISOString(), worker_id: parseInt(d.worker.worker_id)})
+        } catch (error) {
+          return
+        }
+
+        // BUG: need to remove from old day? (for case when we re-render - would come back if toggle days forward and back)
+
+        // modify visit to reflect new time and put into the day
+        visit.visit.from_datetime = new_start.toISOString();
+        visit.visit.to_datetime = new_end.toISOString();
+        d.visit_hours.push(visit);
       }
     },
     consoleLog(e: any) {

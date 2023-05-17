@@ -8,12 +8,10 @@ DB_URL = LITE_DB
 
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False}, future=True)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 
 async def get_session() -> AsyncGenerator[Session, None]:
     # note: https://github.com/tiangolo/fastapi/issues/1241
-    session = SessionLocal()
+    session = sessionmaker(autocommit=False, autoflush=False, bind=engine)()
     try:
         yield session
     finally:
