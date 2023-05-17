@@ -1,7 +1,7 @@
 <template>
   <div class="topnav">
     <input type="checkbox" id="menu" />
-    <label id="menu_label" class="menu; sized" for="menu"
+    <label id="menu_label" class="menu; sized" for="menu" style="float: left"
       ><img src="@/assets/menu.svg" style="height: 10px"
     /></label>
     <div class="menu-content">
@@ -20,13 +20,14 @@
       <router-link to="/services">
         <a class="sized">Услуги</a>
       </router-link>
+
+      <router-link to="/my_user" style="position: absolute; right: 0">
+        <img
+          src="@/assets/worker-icon.png"
+          style="height: 35px; width: 35px; margin-top: 5px"
+        />
+      </router-link>
     </div>
-    <router-link to="/my_user">
-      <img
-        src="@/assets/worker-icon.png"
-        style="float: right; height: 35px; margin-top: 5px"
-      />
-    </router-link>
   </div>
 </template>
 
@@ -35,6 +36,8 @@
   overflow: hidden;
   background-color: var(--color3);
   position: relative;
+  display: flex;
+  flex-direction: row;
 }
 
 .topnav .sized {
@@ -69,12 +72,14 @@
   display: none;
 }
 
-/* Toggle Effect */
 .menu-content {
   float: left;
   max-height: 0;
   overflow: hidden;
+  /* width: calc(100% - 35px)   */
+  /* 35 px - icon size */
 }
+/* Toggle Effect */
 input:checked ~ .menu-content {
   max-height: 1000px;
   transition: all ease 1s;
