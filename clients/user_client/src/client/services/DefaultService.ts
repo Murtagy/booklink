@@ -24,6 +24,7 @@ import type { SkillsIn } from "../models/SkillsIn";
 import type { SkillsOut } from "../models/SkillsOut";
 import type { TokenOut } from "../models/TokenOut";
 import type { UpdateService } from "../models/UpdateService";
+import type { UpdateSlot } from "../models/UpdateSlot";
 import type { UpdateWorker } from "../models/UpdateWorker";
 import type { UserCreate } from "../models/UserCreate";
 import type { UserOut } from "../models/UserOut";
@@ -510,6 +511,31 @@ export class DefaultService {
   }
 
   /**
+   * Update Slot
+   * @param slotId
+   * @param requestBody
+   * @returns any Successful Response
+   * @throws ApiError
+   */
+  public static updateSlot(
+    slotId: number,
+    requestBody: UpdateSlot
+  ): CancelablePromise<any> {
+    return __request(OpenAPI, {
+      method: "PUT",
+      url: "/slot/{slot_id}",
+      path: {
+        slot_id: slotId,
+      },
+      body: requestBody,
+      mediaType: "application/json",
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
    * Delete Client Slot
    * @param slotId
    * @returns OutSlot Successful Response
@@ -541,31 +567,6 @@ export class DefaultService {
       path: {
         visit_id: visitId,
       },
-      errors: {
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  /**
-   * Update Visit
-   * @param visitId
-   * @param requestBody
-   * @returns any Successful Response
-   * @throws ApiError
-   */
-  public static updateVisit(
-    visitId: number,
-    requestBody: InVisit
-  ): CancelablePromise<any> {
-    return __request(OpenAPI, {
-      method: "PUT",
-      url: "/visit/{visit_id}",
-      path: {
-        visit_id: visitId,
-      },
-      body: requestBody,
-      mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },

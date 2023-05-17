@@ -37,6 +37,7 @@ export { SlotType } from "./models/SlotType";
 export type { TimeSlot } from "./models/TimeSlot";
 export type { TokenOut } from "./models/TokenOut";
 export type { UpdateService } from "./models/UpdateService";
+export type { UpdateSlot } from "./models/UpdateSlot";
 export type { UpdateWorker } from "./models/UpdateWorker";
 export type { UserCreate } from "./models/UserCreate";
 export type { UserOut } from "./models/UserOut";

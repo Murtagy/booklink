@@ -1,6 +1,6 @@
 <template>
   <div v-if="visit">
-     <button
+    <button
       v-if="!show_cancel"
       @click="show_cancel = !show_cancel"
       style="margin-top: 1em; margin-bottom: 1em; float: right"
@@ -8,7 +8,7 @@
     >
       Удалить
     </button>
-    <div v-if="show_cancel"> 
+    <div v-if="show_cancel">
       <p class="bold">Вы уверены?</p>
       <input type="button" :value="cancelYes" @click="cancelVisit" />
       <input
@@ -18,28 +18,27 @@
       />
     </div>
     <form @submit.prevent="updateVisit" class="border_main1">
-      <p>
+      <div>
         Услуги:
-        <span v-for="service of visit.services">
+        <span v-for="service of visit.services" :key="service.service_id">
           {{ service.name }}
         </span>
-      </p>
-      <br>
-      <p> 
-        <p class="bold"> Данные о клиентe </p>
+      </div>
+      <br />
+      <div>
+        <section class="bold">Данные о клиентe</section>
         <div id="client_data">
-          Телефон - {{visit.visit.phone}}
-          <br>
-          Email - {{visit.visit.email}}
+          <section>Телефон - {{ visit.visit.phone }}</section>
+          <section>Email - {{ visit.visit.email }}</section>
         </div>
-      </p>
-      <br>
+      </div>
+      <br />
       <label for="visit_from_time">Время начала визита </label>
       <input id="visit_from_time" type="time" v-model="from_time" required />
-      <br>
+      <br />
       <label for="visit_to_time">Время конца визита </label>
       <input id="visit_to_time" type="time" v-model="to_time" required />
-     <button class="save" type="submit">Сохранить</button>
+      <button class="save" type="submit">Сохранить</button>
     </form>
   </div>
 </template>
@@ -51,8 +50,8 @@ import dayjs from "dayjs";
 
 declare interface Data {
   show_cancel: boolean;
-  from_time: string,
-  to_time: string,
+  from_time: string;
+  to_time: string;
   visit?: OutVisitExtended;
 }
 
@@ -63,7 +62,7 @@ export default {
       if (!this.visit) {
         return "";
       }
-      const visit_repr = extended_visit_repr(this.visit)
+      const visit_repr = extended_visit_repr(this.visit);
       return `Да, отменить визит, ${visit_repr}`;
     },
   },
@@ -71,8 +70,8 @@ export default {
     return {
       show_cancel: false,
       visit: undefined,
-      from_time: '',
-      to_time: '',
+      from_time: "",
+      to_time: "",
     };
   },
   methods: {
@@ -81,8 +80,8 @@ export default {
     },
     async fetchVisit() {
       this.visit = await DefaultService.getVisitExtended(this.visit_id);
-      this.from_time = dayjs(this.visit.visit.from_datetime).format('HH:mm')
-      this.to_time = dayjs(this.visit.visit.to_datetime).format('HH:mm')
+      this.from_time = dayjs(this.visit.visit.from_datetime).format("HH:mm");
+      this.to_time = dayjs(this.visit.visit.to_datetime).format("HH:mm");
     },
     // async deleteVisit() {
     //   if (!this.visit) {

@@ -173,7 +173,6 @@ import CreateVisitPage from "@/pages/CreateVisitPage.vue";
 
 type Hour = {
   number: number;
-  minute: number;
   events: (TimeSlot | OutVisitExtended | OutSlot)[];
 };
 
@@ -183,6 +182,7 @@ type AvailableTimeSlot = {
 };
 declare interface HourForm {
   hour: Hour;
+  minute: number;
   worker: OutWorker;
 }
 
@@ -295,6 +295,7 @@ export default {
       if (!this.hour_form) {
         this.hour_form = {
           hour: h,
+          minute: this.getPossibleVisitMinute(h, day),
           worker: day.worker,
         };
       }
@@ -311,11 +312,11 @@ export default {
       }
       console.log("clicked slot");
       if (!this.hour_form) {
-        (h.minute = s.from_datetime.minute()),
-          (this.hour_form = {
-            hour: h,
-            worker: day.worker,
-          });
+        this.hour_form = {
+          hour: h,
+          minute: s.from_datetime.minute(),
+          worker: day.worker,
+        };
       }
     },
     isAvailable(h: Hour, d: WorkerDay) {
@@ -388,7 +389,15 @@ export default {
       return out;
     },
     getPossibleVisitTime(h: Hour, day: WorkerDay) {
-      let minutes = this.hour_form?.hour.minute || 0;
+      const minutes = this.getPossibleVisitMinute(h, day);
+      return (
+        String(h.number).padStart(2, "0") +
+        ":" +
+        String(minutes).padStart(2, "0")
+      );
+    },
+    getPossibleVisitMinute(h: Hour, day: WorkerDay): number {
+      let minutes = this.hour_form?.minute || 0;
       for (const visit of day.visit_hours) {
         const start = dayjs(visit.visit.from_datetime);
         const end = dayjs(visit.visit.to_datetime);
@@ -399,11 +408,7 @@ export default {
         }
       }
       console.assert(minutes < 60, "Minutes may not go above 60");
-      return (
-        String(h.number).padStart(2, "0") +
-        ":" +
-        String(minutes).padStart(2, "0")
-      );
+      return minutes;
     },
     getHours(day: WorkerDay): Hour[] {
       const hours: Hour[] = [];
