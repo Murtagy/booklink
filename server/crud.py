@@ -259,15 +259,27 @@ def create_slots(db: Session, slots: list[slots.CreateSlot], client_id: int) -> 
     return
 
 
-def update_slot(db: Session, slot: slots.UpdateSlot, slot_id: int) -> Slot:
+def update_slot(db: Session, update: slots.UpdateSlot, slot_id: int) -> Slot:
     db_slot = get_slot(db, slot_id)
     assert db_slot is not None
-    update = slot.dict()
-    for field, value in update.items():
-        if value is None:
-            continue
-        setattr(db_slot, field, value)
-    db.commit()  # enough??
+
+    with db.begin():
+        from_datetime = update.from_datetime
+        to_datetime = update.to_datetime
+        worker_id = db_slot.worker_id or update.worker_id
+        del update
+
+        # check permissions (move to endpoint?)
+        worker = get_worker(db, worker_id)
+        worker.assure_id(db_slot.client_id)
+
+        if to_datetime is None:
+            length = db_slot.from_datetime - db_slot.to_datetime 
+            to_datetime = from_datetime + length
+
+        db_slot.from_datetime = from_datetime
+        db_slot.to_datetime = to_datetime
+    db.refresh(db_slot)
     return db_slot
 
 

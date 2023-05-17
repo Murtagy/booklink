@@ -59,8 +59,9 @@ class CreateSlot(BM):
 
 class UpdateSlot(BM):
     # slot_id: int
-    from_datetime: datetime.datetime | None
+    from_datetime: datetime.datetime
     to_datetime: datetime.datetime | None
+    worker_id: int | None
 
 
 class OutSlot(BM):
@@ -314,13 +315,19 @@ def get_visits_days(
     return VisitsByDays(days=days)
 
 
-def update_visit(
-    visit_id: int,
-    visit: InVisit,
+def update_slot(
+    slot_id: int,
+    update: UpdateSlot,
     s: Session = Depends(db.get_session),
-    current_user: Optional[models.User] = Depends(users.get_current_user_or_none),
+    current_user: models.User = Depends(users.get_current_user),
 ) -> None:
-    return None
+    slot = crud.get_slot(s, slot_id)
+    if slot is None:
+        raise app_exceptions.SlotNotFound
+    current_user.assure_id(slot.client_id)
+
+    db_slot = crud.update_slot(s, update, slot_id)
+    return OutSlot.from_orm(db_slot)
 
 
 def get_visit(

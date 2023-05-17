@@ -107,13 +107,13 @@ app.get("/skills", response_model=skills.SkillsOut)(workers.get_skills)
 # SLOTS
 app.post("/slot", response_model=slots.OutSlot)(slots.create_slot_with_check)
 app.delete("/slot/{slot_id}", response_model=slots.OutSlot)(slots.delete_client_slot)
+app.put("/slot/{slot_id}")(slots.update_slot)
 # SLOTS (visits)
 app.get("/visit/{visit_id}", response_model=slots.OutVisit)(slots.get_visit)
 app.get("/visit_extended/{visit_id}", response_model=slots.OutVisitExtended)(
     slots.get_visit_extended
 )
 app.get("/visits")(slots.get_visits)
-app.put("/visit/{visit_id}")(slots.update_visit)
 app.post("/visits/by_days", response_model=slots.VisitsByDays)(slots.get_visits_days)
 app.get("/workers_calendar", response_model=slots.AllSlots)(slots.workers_calendar)
 # tmp:
