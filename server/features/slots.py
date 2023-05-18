@@ -66,8 +66,8 @@ class UpdateSlot(BM):
 
 
 class UpdateSlotCustomer(BM):
-    phone: str
-    email: str
+    phone: str | None = None
+    email: str | None = None
     notify: bool = False
 
 

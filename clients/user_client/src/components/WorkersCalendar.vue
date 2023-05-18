@@ -125,7 +125,7 @@
       @click="
         $router.push({
           name: 'visit.edit',
-          params: { visit_id: visit_info.visit.visit.slot_id },  // ts is weird - visit_info is guaranteed
+          params: { visit_id: visit_info.visit.visit.slot_id }, // ts is weird - visit_info is guaranteed
         })
       "
       style="float: right; height: 1em; margin-top: 1em"
