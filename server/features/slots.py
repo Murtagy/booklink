@@ -65,6 +65,12 @@ class UpdateSlot(BM):
     notify: bool = False
 
 
+class UpdateSlotCustomer(BM):
+    phone: str
+    email: str
+    notify: bool = False
+
+
 class OutSlot(BM):
     slot_id: int
     from_datetime: LocalisedDatetime
@@ -335,6 +341,25 @@ def update_slot(
 
     return OutSlot.from_orm(db_slot)
 
+
+def update_slot_customer_info(
+    slot_id: int,
+    update: UpdateSlotCustomer,
+    s: Session = Depends(db.get_session),
+    current_user: models.User = Depends(users.get_current_user),
+) -> None:
+    slot = crud.get_slot(s, slot_id)
+    if slot is None:
+        raise app_exceptions.SlotNotFound
+    current_user.assure_id(slot.client_id)
+
+    db_slot = crud.update_slot(s, update, slot_id)
+
+    if update.notify:
+        # TODO
+        pass 
+
+    return OutSlot.from_orm(db_slot)
 
 def get_visit(
     visit_id: int,

@@ -25,6 +25,7 @@ import type { SkillsOut } from "../models/SkillsOut";
 import type { TokenOut } from "../models/TokenOut";
 import type { UpdateService } from "../models/UpdateService";
 import type { UpdateSlot } from "../models/UpdateSlot";
+import type { UpdateSlotCustomer } from "../models/UpdateSlotCustomer";
 import type { UpdateWorker } from "../models/UpdateWorker";
 import type { UserCreate } from "../models/UserCreate";
 import type { UserOut } from "../models/UserOut";
@@ -548,6 +549,31 @@ export class DefaultService {
       path: {
         slot_id: slotId,
       },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   * Update Slot Customer Info
+   * @param slotId
+   * @param requestBody
+   * @returns any Successful Response
+   * @throws ApiError
+   */
+  public static updateSlotCustomerInfo(
+    slotId: number,
+    requestBody: UpdateSlotCustomer
+  ): CancelablePromise<any> {
+    return __request(OpenAPI, {
+      method: "PUT",
+      url: "/slot/{slot_id}/customer",
+      path: {
+        slot_id: slotId,
+      },
+      body: requestBody,
+      mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },
