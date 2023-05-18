@@ -128,7 +128,7 @@
           params: { visit_id: visit_info.visit.visit.slot_id },
         })
       "
-      style="float: right; height: 1em; margin-top: 1em;"
+      style="float: right; height: 1em; margin-top: 1em"
     />
     <p class="bold">Время</p>
     <p>
@@ -240,26 +240,35 @@ export default {
     },
     async dropVisitAtHour(e: Event, h: Hour, d: WorkerDay) {
       // dragged data has short TTL, so it is ok to modify it
-      const dragged_visit_info = this.dragged_visit_info
+      const dragged_visit_info = this.dragged_visit_info;
       if (dragged_visit_info != undefined) {
-
-        const day_ref = dragged_visit_info.day
-        const visit = dragged_visit_info.visit;  
+        const day_ref = dragged_visit_info.day;
+        const visit = dragged_visit_info.visit;
         // remove visit from old place (for case when we re-render)
-        day_ref.visit_hours = day_ref.visit_hours.filter((x) => x != visit);  
+        day_ref.visit_hours = day_ref.visit_hours.filter((x) => x != visit);
 
         const length = dayjs(dragged_visit_info.visit.visit.to_datetime).diff(
           dragged_visit_info.visit.visit.from_datetime
         );
-        const new_start = dayjs(dragged_visit_info.visit.visit.to_datetime).set("hour", h.number)
-        const new_end = new_start.add(length)
-        console.log(new_start)
+        const new_start = dayjs(dragged_visit_info.visit.visit.to_datetime).set(
+          "hour",
+          h.number
+        );
+        const new_end = new_start.add(length);
+        console.log(new_start);
 
         // server sync
         try {
-          await DefaultService.updateSlot(dragged_visit_info.visit.visit.slot_id, {from_datetime: new_start.toISOString(), to_datetime: new_end.toISOString(), worker_id: parseInt(d.worker.worker_id)})
+          await DefaultService.updateSlot(
+            dragged_visit_info.visit.visit.slot_id,
+            {
+              from_datetime: new_start.toISOString(),
+              to_datetime: new_end.toISOString(),
+              worker_id: parseInt(d.worker.worker_id),
+            }
+          );
         } catch (error) {
-          return
+          return;
         }
 
         // BUG: need to remove from old day? (for case when we re-render - would come back if toggle days forward and back)
