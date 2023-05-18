@@ -85,12 +85,13 @@ button.save {
   border-radius: 1em;
   font-size: 1em;
   height: 2.5em;
-  margin-bottom: 0.5em;
   float: right;
   background-color: var(--color2);
   color: white;
   border: 5px double white;
   color: white;
+  /* add below  */
+  /* <div style="clear: both;"></div> */
 }
 
 input.sticky_button:hover {
