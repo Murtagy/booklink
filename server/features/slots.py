@@ -62,6 +62,7 @@ class UpdateSlot(BM):
     from_datetime: LocalisedDatetime
     to_datetime: LocalisedDatetime | None
     worker_id: int | None
+    notify: bool = False
 
 
 class OutSlot(BM):
@@ -327,6 +328,11 @@ def update_slot(
     current_user.assure_id(slot.client_id)
 
     db_slot = crud.update_slot(s, update, slot_id)
+
+    if update.notify:
+        # TODO
+        pass 
+
     return OutSlot.from_orm(db_slot)
 
 
