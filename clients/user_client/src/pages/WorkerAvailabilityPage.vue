@@ -46,14 +46,16 @@
         :key="day.date"
         @click="dayClicked(day)"
         class="border_main1"
-        style="width: 10em"
-        :class="{ highlighted: highlighted.indexOf(day) != -1 }"
+        style="font-size: medium; margin: 1px; width: 7em;"
+        :class="{ highlighted: highlighted.indexOf(day) != -1}"
       >
         {{ day.date }}
         <br />
         <div v-for="timeslot in day.timeslots" :key="timeslot.from_datetime">
+          <div style="font-size: small; margin-top: 2px">
           {{ formatTime(timeslot.from_datetime) }} -
           {{ formatTime(timeslot.to_datetime) }}
+          </div>
         </div>
       </div>
     </div>
