@@ -2,8 +2,9 @@ from typing import AsyncGenerator
 
 from sqlalchemy.orm import Session, sessionmaker
 from sqlmodel import create_engine
+import os
 
-LITE_DB = "sqlite:////Users/murtagy/Dev/booklink/sql_app.db"
+LITE_DB = f"sqlite:///{os.environ['DB_FILE']}"
 DB_URL = LITE_DB
 
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False}, future=True)
