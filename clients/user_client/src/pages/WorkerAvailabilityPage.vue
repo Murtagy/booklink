@@ -36,6 +36,8 @@
   </div>
   <div class="box">
     <!-- todo: solve :key -->
+
+    <small><p><em>(оптимизировано под широкий экран)</em></p></small>
     <div
       v-for="week in days_by_week"
       :key="String(week)"
@@ -47,9 +49,10 @@
         @click="dayClicked(day)"
         class="border_main1"
         style="font-size: medium; margin: 1px; width: 7em"
-        :class="{ highlighted: highlighted.indexOf(day) != -1 }"
+        :class="{ highlighted: highlighted.indexOf(day) != -1, today: day.date == today }"
       >
-        {{ day.date }}
+        <div style="font-size: small">{{getDayDayOfWeek(day)}}</div>
+        <div style="font-size: small">{{ day.date }}</div>
         <br />
         <div v-for="timeslot in day.timeslots" :key="timeslot.from_datetime">
           <div style="font-size: small; margin-top: 2px">
@@ -67,6 +70,10 @@
   background: dimgray;
 }
 
+.today {
+  background: rgba(157, 0, 255, 0.143);
+}
+
 .activeButton {
   background: var(--color4);
   border: solid;
@@ -75,12 +82,19 @@
 
 <script lang="ts">
 import { DefaultService, SlotType, type Day, type TimeSlot } from "@/client";
+import dayjs from "dayjs";
 
 const emptyDay = () => {
   return { date: "", timeslots: [] };
 };
+
+
 export default {
+  dayjs: dayjs,
   computed: {
+    today(): string {
+      return dayjs().format('YYYY-MM-DD')
+    },
     days_by_week() {
       let i = 0;
       const weeks: Day[][] = [];
@@ -164,7 +178,13 @@ export default {
       }
       return time.slice(11, 16);
     },
-
+    getDayDayOfWeek(d: Day) {
+      const daysOfWeek = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+      const date = dayjs(d.date);
+      const dayOfWeek = date.day();
+      const dayOfWeekString = daysOfWeek[dayOfWeek];
+      return dayOfWeekString;
+    },
     async save() {
       if (!this.day.date && !this.highlighted.length) {
         return;
