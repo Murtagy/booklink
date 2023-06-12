@@ -1,4 +1,13 @@
 <template>
+  <todo>
+    <div> Описание и редактирование клиента, </div>
+    <div> 
+      Редактирование юзера,
+    </div>
+    <div> 
+      Редактирование онлайн записи
+    </div>
+ </todo>
   <div v-if="user">My user: {{ user }}</div>
   <div v-if="user">My user: {{ user2 }}</div>
 </template>

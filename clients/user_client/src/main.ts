@@ -4,6 +4,7 @@ import axios from "axios";
 import { createPinia } from "pinia";
 
 import App from "./App.vue";
+import TODO from "./TODO.vue";
 import router from "./router/router_main";
 import authStore from "./auth_store";
 import { OpenAPI } from "./client/core/OpenAPI";
@@ -64,5 +65,7 @@ declare module "vue" {
     //     };
   }
 }
+
+app.component('todo', TODO);
 
 app.mount("#app");

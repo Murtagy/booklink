@@ -6,20 +6,14 @@
     >
       <i class="fas fa-tasks"></i>
     </span>
-    <ul v-if="show" class="todo-list">
-        {{ todos }}
-    </ul>
+    <div  v-if="show" style="color: orange">
+      <slot> </slot>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 export default {
-  props: {
-    todos: {
-      type: String,
-      required: true
-    }
-  },
   data() {
     return {
       show: false,
@@ -32,7 +26,7 @@ export default {
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
 
 .todo-icon {
-  position: absolute;
+  position: sticky;
   top: 10px;
   right: 10px;
   color: orange;
