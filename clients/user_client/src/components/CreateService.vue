@@ -58,7 +58,7 @@ declare interface ComponentData {
   name: string;
   minutes: number;
   price?: number;
-  price_to?: number | undefined;
+  price_to?: number;
   description?: string;
 }
 
@@ -67,7 +67,7 @@ export default {
     return {
       name: "",
       minutes: 30,
-      price: 0.0,
+      price: undefined,
       price_to: undefined,
     };
   },
