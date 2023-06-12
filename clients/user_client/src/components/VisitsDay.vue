@@ -1,8 +1,7 @@
 <template>
-  <div class="border_main1" style="" v-if="day">
-    {{ day.date }}
-    Визитов {{ day.visits_n }}
+  <div style="" v-if="day">
     <div style="float: right" @click="redirectToCreateDay">+ Визит</div>
+    <p> Дата {{ day.date }} Визитов {{ day.visits_n }} </p>
     <VisitCard
       v-for="visit in day.visits"
       :visit="visit.visit"

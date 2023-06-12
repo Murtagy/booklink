@@ -1,4 +1,5 @@
 <template>
+  <h2> Ближайшие визиты </h2>
   <div>
     <VisitsCarusel :date_from="date_from" :date_to="date_to" />
   </div>

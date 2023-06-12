@@ -1,20 +1,29 @@
 <template>
-  <div class="border_main1" style="">
-    Время {{ visit.from_datetime.split("T")[1] }} -
-    {{ visit.to_datetime.split("T")[1] }} Телефон {{ visit.phone }}
-    {{ worker.name }}
+  <div
+    class="border_main1"
+    style=""
+    @click="
+      $router.push({
+        name: 'visit.edit',
+        params: { visit_id: visit.slot_id },
+      })
+    "
+    >
     <img
       src="@/assets/edit.svg"
-      @click="
-        $router.push({
-          name: 'visit.edit',
-          params: { visit_id: visit.slot_id },
-        })
-      "
+
       style="float: right"
     />
+    <p>
+    Время: {{ visit.from_datetime.split("T")[1] }} -
+    {{ visit.to_datetime.split("T")[1] }}
+    </p>
+    <p> Телефон: {{ visit.phone }} </p>
+    <p> Юнит: {{ worker.name }} </p>
+    <ul>
+      <li v-for="service in services" :key="service.service_id" > {{ service.name }} </li>
+    </ul>
   </div>
-  <div>...</div>
 </template>
 
 <script lang="ts">
