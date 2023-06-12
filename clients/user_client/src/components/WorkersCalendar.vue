@@ -125,7 +125,9 @@
       @click="
         $router.push({
           name: 'visit.edit',
-          params: { visit_id: visit_info.visit.visit.slot_id }, // ts is weird - visit_info is guaranteed
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          params: { visit_id: visit_info.visit.visit.slot_id },  //ts is weird - visit_info is guaranteed
         })
       "
       style="float: right; height: 1em; margin-top: 1em"

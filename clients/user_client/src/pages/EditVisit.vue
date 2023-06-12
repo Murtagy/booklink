@@ -162,9 +162,8 @@ export default {
           notify: this.notify,
         });
 
-      await this.fetchVisit()
-      await this.$router.back()
-
+        await this.fetchVisit();
+        await this.$router.back();
       }
     },
     async updateVisit() {
@@ -198,8 +197,8 @@ export default {
         phone: user_phone,
         email: user_email,
       });
-      await this.fetchVisit()
-      await this.$router.back()
+      await this.fetchVisit();
+      await this.$router.back();
     },
   },
   mounted() {
