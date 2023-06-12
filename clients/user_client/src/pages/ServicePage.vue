@@ -50,7 +50,6 @@
         v-model="service.price"
         type="number"
         step="0.01"
-        required
       />
       <p class="bold">
         <label for="price_to"

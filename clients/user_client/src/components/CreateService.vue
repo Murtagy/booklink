@@ -28,7 +28,7 @@
       <br />
       <input id="minutes" v-model="minutes" type="number" required />
       <p class="bold"><label for="price">Стоимость</label></p>
-      <input id="price" v-model="price" type="number" step="0.01" required />
+      <input id="price" v-model="price" type="number" step="0.01"/>
       <p class="bold">
         <label for="price_to"
           >Верхняя стоимость (если услуга оценивается диапазоном от-до)</label
@@ -56,8 +56,8 @@ import { DefaultService, type OutService } from "@/client";
 
 declare interface ComponentData {
   name: string;
-  price: number;
   minutes: number;
+  price?: number;
   price_to?: number | undefined;
   description?: string;
 }
