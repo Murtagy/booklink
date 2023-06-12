@@ -6,8 +6,10 @@
       class="calendar__hour-grid"
       v-for="day in days"
       :key="day.worker.worker_id"
+      style="margin-top: 1em"
     >
-      {{ day.worker.name }}
+      Юнит: {{ day.worker.name }}
+      <span style="margin: 1em" @click="redirectToCreateDay(day.worker, day.date)"> + </span>
       <div
         class="calendar__hour"
         v-for="hour in getHours(day)"
@@ -50,9 +52,9 @@
         >
           <!-- {{working_slot}} -->
         </div>
-        <label style="float: left; position: relative; z-index: 1">{{
-          hour.number
-        }}</label>
+        <label style="float: left; position: relative; z-index: 1; margin-left: 1em">
+          {{formatHour(hour)}}
+        </label>
         <div
           v-for="visit of getVisits(hour)"
           :key="visit.visit.slot_id"
@@ -463,6 +465,19 @@ export default {
         hours.push({ number: i, events: events });
       }
       return hours;
+    },
+    formatHour(h: Hour): string {
+      return String(h.number).padStart(2, "0"); 
+    },
+    redirectToCreateDay(worker: OutWorker, date: string) {
+        this.$router.push({
+          name: 'visit.create',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          params: { date: date , worker_in: worker},  //ts is weird - visit_info is guaranteed
+          // NOTE: worker_in is not reactive object
+        })
+
     },
   },
   props: {
