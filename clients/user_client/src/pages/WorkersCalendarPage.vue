@@ -1,13 +1,15 @@
 <template>
-  <div class="chosen_date">
-    <button @click="dateLeft">
-      <img class="left px15" src="../assets/arrow2.png" />
-    </button>
-    {{ selected_date_str }}
-    <button @click="dateRight">
-      <img class="right px15" src="../assets/arrow2.png" />
-    </button>
-  </div>
+  <center>
+    <div class="chosen_date">
+      <button @click="dateLeft">
+        <img class="left px15" src="../assets/arrow2.png" />
+      </button>
+      {{ selected_date_str }}
+      <button @click="dateRight">
+        <img class="right px15" src="../assets/arrow2.png" />
+      </button>
+    </div>
+  </center>
 
   <div>
     <WorkersCalendar :days="days_selected" />
