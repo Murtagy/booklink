@@ -67,7 +67,7 @@
 
 <style scoped>
 .highlighted {
-  background: dimgray;
+  background: rgba(51, 0, 82, 0.334);
 }
 
 .today {
