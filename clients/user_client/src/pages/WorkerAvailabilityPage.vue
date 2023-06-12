@@ -37,6 +37,7 @@
   <div class="box">
     <!-- todo: solve :key -->
 
+    TODO: смена месяца
     <small><p><em>(оптимизировано под широкий экран)</em></p></small>
     <div
       v-for="week in days_by_week"
