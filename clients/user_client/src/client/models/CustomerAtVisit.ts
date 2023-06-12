@@ -2,9 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { CustomerInfoIn } from "./CustomerInfoIn";
+import type { CustomerInfoIn } from './CustomerInfoIn';
 
 export type CustomerAtVisit = {
-  customer_id?: number;
-  info?: CustomerInfoIn;
+    customer_id?: number;
+    info?: CustomerInfoIn;
 };
+

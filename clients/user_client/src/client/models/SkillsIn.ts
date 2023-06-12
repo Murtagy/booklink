@@ -2,8 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { SkillIn } from "./SkillIn";
+import type { SkillIn } from './SkillIn';
 
 export type SkillsIn = {
-  skills: Array<SkillIn>;
+    skills: Array<SkillIn>;
 };
+

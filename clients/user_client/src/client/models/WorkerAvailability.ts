@@ -2,9 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { Day } from "./Day";
+import type { Day } from './Day';
 
 export type WorkerAvailability = {
-  days: Array<Day>;
-  worker_id: number;
+    days: Array<Day>;
+    worker_id: number;
 };
+

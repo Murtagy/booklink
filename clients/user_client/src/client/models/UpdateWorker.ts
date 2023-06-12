@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type UpdateWorker = {
-  name?: string;
-  job_title?: string;
+    name?: string;
+    job_title?: string;
 };
+

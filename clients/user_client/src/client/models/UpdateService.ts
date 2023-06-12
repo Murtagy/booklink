@@ -3,9 +3,10 @@
 /* eslint-disable */
 
 export type UpdateService = {
-  name: string;
-  price: number;
-  price_to?: number;
-  minutes: number;
-  description?: string;
+    name: string;
+    price?: number;
+    price_to?: number;
+    minutes: number;
+    description?: string;
 };
+

@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type CreateWorker = {
-  name: string;
-  job_title: string;
+    name: string;
+    job_title: string;
 };
+
