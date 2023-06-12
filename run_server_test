@@ -1,0 +1,2 @@
+source env/bin/activate
+DB_FILE=tmp.db python -m server.apps.app

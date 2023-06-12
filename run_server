@@ -1,2 +1,2 @@
 source env/bin/activate
-python -m server.apps.app
+DB_FILE=prod.db python -m server.apps.app
