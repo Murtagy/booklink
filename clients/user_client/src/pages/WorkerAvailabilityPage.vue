@@ -1,5 +1,20 @@
 <template>
   <div class="box">
+    <i 
+      class="fa-solid fa-question"
+      @click="showHelp = !showHelp"
+      style="float: right; overflow: auto"
+    >
+      <div v-show="showHelp" 
+        class="border_main1"
+        style="margin-botton: 1em"
+      > 
+      <p>Для выбора времени работы нажмите на требуемый день, затем введите время работы и нажмите на кнопку сохранить. </p>
+      <p>Чтобы сохранить сразу несколько дней времени работы, введите время работы, затем нажмите на кнопку "Применить ко дням". Нажмите на нужные дни и нажмите на кнопку сохранить.</p>
+      <p>Нажмите на вопросительный знак еще раз чтобы закрыть обучение</p>
+
+    </div>
+    </i>
     <p class="bold">Время работы</p>
     <div style="margin-left: 1em">
       <div v-for="slot in slots" :key="slot.from_datetime">
@@ -141,6 +156,7 @@ export default {
         to_datetime: "",
       },
       slots: slots,
+      showHelp: false,
     };
   },
   mounted() {

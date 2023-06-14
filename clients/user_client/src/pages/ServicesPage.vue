@@ -18,7 +18,7 @@
       <p>Нажмите создать услугу</p>
     </center>
   </div>
-  <div>
+  <div v-if="!show_createService">
     <ServiceCardMin
       v-for="service in services"
       :service="service"

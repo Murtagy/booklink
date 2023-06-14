@@ -2,7 +2,9 @@
   <div class="box; border_main1">
     <div v-if="skills.length == 0 && loaded_skills">
       <p class="bold">Нет услуг для выбора</p>
-      <p> Создайте услуги </p>
+        <router-link to="/services">
+          <a> Перейти к услугам </a>
+        </router-link>
     </div>
     <div v-else v-if="skills" style="overflow: hidden">
       <p class="bold">Реализуемые услуги</p>
@@ -18,14 +20,6 @@
         }}</label>
       </li>
       <button style="float: right" @click="updateSkills">Сохранить</button>
-    </div>
-    <div v-if="!skills">
-      <p class="bold">Нет услуг для выбора</p>
-      <p class="bold">
-        <router-link to="services">
-          <a> Перейти к услугам </a>
-        </router-link>
-      </p>
     </div>
   </div>
 </template>
