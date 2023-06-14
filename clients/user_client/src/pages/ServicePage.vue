@@ -2,14 +2,7 @@
 
 <template>
   <div v-if="service">
-    <button
-      v-if="!show_delete"
-      @click="show_delete = !show_delete"
-      style="margin-top: 1em; margin-bottom: 1em; float: right"
-      type="submit"
-    >
-      Удалить
-    </button>
+
     <div v-if="show_delete">
       <p class="bold">Вы уверены?</p>
       <input type="button" :value="deleteYes" @click="deleteService" />
@@ -19,7 +12,14 @@
         @click="show_delete = !show_delete"
       />
     </div>
-    <form @submit.prevent="updateService" class="border_main1">
+    <form @submit.prevent="updateService" class="border_main1" style="overflow: auto">
+      <button
+        v-if="!show_delete"
+        @click="show_delete = !show_delete"
+        style="margin-top: 1em; margin-bottom: 1em; float: right"
+      >
+        Удалить
+      </button>
       <p class="bold"><label for="name">Название</label></p>
       <input
         id="name"

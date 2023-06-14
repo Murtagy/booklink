@@ -9,9 +9,10 @@
   <input
     type="button"
     value="Создать услугу"
+    v-if="!show_createService"
     @click="show_createService = true"
   />
-  <div v-if="user_has_no_services_created && loaded_services">
+  <div v-if="user_has_no_services_created && loaded_services && !show_createService">
     <center>
       <h2>У вас нет созданных услуг</h2>
       <p>Нажмите создать услугу</p>

@@ -5,10 +5,12 @@
       show_createWorker = false;
       fetchWorkers();
     "
+    @close="show_createWorker = false"
   />
   <input
     type="button"
-    :value="show_createWorker ? 'Закрыть' : 'Создать юнит'"
+    v-show="!show_createWorker"
+    :value="'Создать юнит'"
     @click="show_createWorker = !show_createWorker"
   />
   <div v-if="user_has_no_workers_created && !show_createWorker">
@@ -17,7 +19,7 @@
       <p>Нажмите создать юнит</p>
     </center>
   </div>
-  <div>
+  <div v-if="!show_createWorker">
     <WorkersCardMin
       v-for="worker in workers"
       :worker="worker"

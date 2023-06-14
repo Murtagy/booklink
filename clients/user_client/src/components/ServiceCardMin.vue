@@ -3,7 +3,11 @@
     <div class="border_main1" style="padding: 1em">
       <label :for="String(service.service_id)">{{ service.name }}</label>
       <span> , </span>
-      <span class="price"> {{ service.price }} {{ service.currency }}</span>
+      <span v-if="service.price != null" class="price">
+        {{ service.price }} 
+        <span v-if="service.price_to != null"> - {{ service.price_to }} </span>
+        {{ service.currency }}
+      </span>
     </div>
   </div>
 </template>

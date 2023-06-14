@@ -1,6 +1,10 @@
 <template>
   <div class="box; border_main1">
-    <div v-if="skills" style="overflow: hidden">
+    <div v-if="skills.length == 0 && loaded_skills">
+      <p class="bold">Нет услуг для выбора</p>
+      <p> Создайте услуги </p>
+    </div>
+    <div v-else v-if="skills" style="overflow: hidden">
       <p class="bold">Реализуемые услуги</p>
       <li v-for="skill in skills" :key="skill.service.service_id">
         <input
@@ -31,6 +35,7 @@ import { DefaultService, type SkillIn, type SkillOut } from "@/client";
 
 declare interface Data {
   skills: SkillOut[];
+  loaded_skills: boolean;
 }
 
 export default {
@@ -50,6 +55,7 @@ export default {
   data(): Data {
     return {
       skills: [],
+      loaded_skills: false,
     };
   },
   methods: {
@@ -57,6 +63,7 @@ export default {
       this.skills = (
         await DefaultService.getSkills(undefined, parseInt(this.worker_id))
       ).skills;
+      this.loaded_skills = true;
     },
     async updateSkills() {
       await DefaultService.addSkills({ skills: this.updatedSkills });
