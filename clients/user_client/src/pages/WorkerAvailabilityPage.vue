@@ -52,7 +52,10 @@
   <div class="box">
     <!-- todo: solve :key -->
 
-    <todo> смена месяца </todo>
+    <todo> 
+      <p> смена месяца </p>
+      <p> продлевать расписание по месяцам (копируя предыдущий) </p>
+    </todo>
     <small><p><em>(оптимизировано под широкий экран)</em></p></small>
     <div
       v-for="week in days_by_week"

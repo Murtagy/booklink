@@ -1,4 +1,8 @@
 <template>
+  <todo>
+      <p> Выбор телефона </p>
+      <p> Поиск клиента  </p>
+  </todo>
   <form @submit.prevent="submitForm">
     <label for="name">Клиент </label>
     <input id="name" />
