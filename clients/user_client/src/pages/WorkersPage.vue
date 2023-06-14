@@ -8,9 +8,15 @@
   />
   <input
     type="button"
-    :value="show_createWorker ? 'Закрыть' : 'Создать сотрудника'"
+    :value="show_createWorker ? 'Закрыть' : 'Создать юнит'"
     @click="show_createWorker = !show_createWorker"
   />
+  <div v-if="user_has_no_workers_created && !show_createWorker">
+    <center>
+      <h2>У вас нет созданных юнитов</h2>
+      <p>Нажмите создать юнит</p>
+    </center>
+  </div>
   <div>
     <WorkersCardMin
       v-for="worker in workers"
@@ -38,15 +44,26 @@ import WorkersCardMin from "@/components/WorkersCardMin.vue";
 import CreateWorker from "@/components/CreateWorker.vue";
 
 declare interface ComponentData {
-  workers: OutWorker[];
+  loaded_workers: boolean;
   show_createWorker: boolean;
+  workers: OutWorker[];
 }
 
 export default {
   components: { WorkersCardMin, CreateWorker },
+  computed: {
+    user_has_no_workers_created(): boolean {
+      if (this.loaded_workers && this.workers.length == 0) {
+        return true
+      }
+      return false
+    }
+  },
+
   data(): ComponentData {
     return {
       workers: [],
+      loaded_workers: false,
       show_createWorker: false,
     };
   },
@@ -56,6 +73,7 @@ export default {
   methods: {
     async fetchWorkers() {
       this.workers = (await DefaultService.getWorkers()).workers;
+      this.loaded_workers = true
     },
   },
 };

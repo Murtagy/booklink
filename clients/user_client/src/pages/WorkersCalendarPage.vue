@@ -1,18 +1,26 @@
 <template>
-  <center>
-    <div class="chosen_date">
-      <button @click="dateLeft">
-        <img class="left px15" src="../assets/arrow2.png" />
-      </button>
-      {{ selected_date_str }}
-      <button @click="dateRight">
-        <img class="right px15" src="../assets/arrow2.png" />
-      </button>
-    </div>
-  </center>
+  <div v-if="user_has_no_availability_created">
+    <center>
+      <h2>У вас нет назначенных рабочих дней</h2>
+      <p>Создайте юнит и назначьте ему расписание рабочих дней</p>
+    </center>
+  </div>
+  <div v-else>
+    <center>
+      <div class="chosen_date">
+        <button @click="dateLeft">
+          <img class="left px15" src="../assets/arrow2.png" />
+        </button>
+        {{ selected_date_str }}
+        <button @click="dateRight">
+          <img class="right px15" src="../assets/arrow2.png" />
+        </button>
+      </div>
+    </center>
 
-  <div>
-    <WorkersCalendar :days="days_selected" />
+    <div>
+      <WorkersCalendar :days="days_selected" />
+    </div>
   </div>
 </template>
 
@@ -37,6 +45,12 @@ import WorkersCalendar from "@/components/WorkersCalendar.vue";
 
 export default {
   computed: {
+    user_has_no_availability_created(): boolean {
+      if (this.days.length == 0 && this.loaded_days) {
+          return true
+      }
+      return false
+    },
     selected_date_str(): string {
       return this.date_selected.toISOString().split("T")[0];
     },
@@ -60,6 +74,7 @@ export default {
       date_selected: today,
       date_from: today,
       date_to: today_plus_14,
+      loaded_days: false,
     };
   },
   methods: {
@@ -67,6 +82,7 @@ export default {
       const from = this.date_from.toISOString().split("T")[0];
       const to = this.date_to.toISOString().split("T")[0];
       this.days = await (await DefaultService.workersCalendar(from, to)).days;
+      this.loaded_days = true;
     },
     dateLeft() {
       this.date_selected = new Date(

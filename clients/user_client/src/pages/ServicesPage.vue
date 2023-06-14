@@ -11,6 +11,12 @@
     value="Создать услугу"
     @click="show_createService = true"
   />
+  <div v-if="user_has_no_services_created && loaded_services">
+    <center>
+      <h2>У вас нет созданных услуг</h2>
+      <p>Нажмите создать услугу</p>
+    </center>
+  </div>
   <div>
     <ServiceCardMin
       v-for="service in services"
@@ -29,15 +35,25 @@ import ServiceCardMin from "@/components/ServiceCardMin.vue";
 import CreateService from "@/components/CreateService.vue";
 
 declare interface ComponentData {
+  loaded_services: boolean;
   services: OutService[];
   show_createService: boolean;
 }
 
 export default {
   components: { ServiceCardMin, CreateService },
+  computed: {
+    user_has_no_services_created(): boolean {
+      if (this.loaded_services && this.services.length == 0) {
+        return true;
+      }
+      return false;
+    }
+  },
   data(): ComponentData {
     return {
       services: [],
+      loaded_services: false,
       show_createService: false,
     };
   },
@@ -47,6 +63,7 @@ export default {
   methods: {
     async fetchServices() {
       this.services = (await DefaultService.getServicesByUser()).services;
+      this.loaded_services = true
     },
   },
 };
