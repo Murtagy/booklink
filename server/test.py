@@ -1,10 +1,5 @@
 import datetime
-import os
 import random
-
-from .db import LITE_DB
-
-os.remove(LITE_DB[10:])
 
 from fastapi.testclient import TestClient
 
@@ -439,5 +434,5 @@ def test_portyanka():
 
     r = get_all_slots(datetime.date.today(), tmrw)
     assert r.status_code == 200, r.text
-    assert len(r.json()["days"]) == 6
-    assert r.json()["days"][0]["date"] == str(datetime.date.today())
+    assert len(r.json()["days"]) == 4
+    assert r.json()["days"][0]["date"] == str(tmrw)

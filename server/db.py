@@ -1,8 +1,8 @@
+import os
 from typing import AsyncGenerator
 
 from sqlalchemy.orm import Session, sessionmaker
 from sqlmodel import create_engine
-import os
 
 LITE_DB = f"sqlite:///{os.environ['DB_FILE']}"
 DB_URL = LITE_DB

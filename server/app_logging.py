@@ -15,11 +15,11 @@ if sys.stderr.isatty():
     ]
 else:
     processors = shared_processors + [
-        structlog.processors.add_log_level,
-        structlog.processors.TimeStamper("iso", True),  # utc = True
+        structlog.processors.add_log_level,  # type: ignore[attr-defined]
+        structlog.processors.TimeStamper(fmt="iso", utc=True),  # type: ignore[call-arg]
         structlog.processors.format_exc_info,
-        structlog.contextvars.merge_contextvars,
-        structlog.processors.JSONRenderer(orjson.dumps),
+        structlog.contextvars.merge_contextvars,  # type: ignore[attr-defined]
+        structlog.processors.JSONRenderer(orjson.dumps),  # type: ignore[call-arg]
     ]
 structlog.configure(
     cache_logger_on_first_use=True,

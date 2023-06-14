@@ -259,27 +259,33 @@ def create_slots(db: Session, slots: list[slots.CreateSlot], client_id: int) -> 
     return
 
 
-def update_slot(db: Session, update: slots.UpdateSlot | slots.UpdateSlotCustomer, slot_id: int) -> Slot:
+def update_slot(
+    db: Session, update: slots.UpdateSlot | slots.UpdateSlotCustomer, slot_id: int
+) -> Slot:
     db_slot = get_slot(db, slot_id)
     assert db_slot is not None
     db.add(db_slot)
 
+    to_datetime: datetime.datetime | None
     if isinstance(update, slots.UpdateSlot):
         from_datetime = update.from_datetime
         to_datetime = update.to_datetime
         worker_id = db_slot.worker_id or update.worker_id
         del update
+        if worker_id is None:
+            raise ValueError("worker_id is required")
 
         # check permissions (move to endpoint?)
-        worker = get_worker(db, worker_id)
+        worker = get_worker_must(db, worker_id)
         worker.assure_id(db_slot.client_id)
 
         # TODO - update VisitWorker?
 
         if to_datetime is None:
-            length = db_slot.to_datetime - db_slot.from_datetime 
+            length = db_slot.to_datetime - db_slot.from_datetime
             to_datetime = db_slot.to_datetime + length
 
+        assert to_datetime is not None
         db_slot.from_datetime = from_datetime
         db_slot.to_datetime = to_datetime
     elif isinstance(update, slots.UpdateSlotCustomer):

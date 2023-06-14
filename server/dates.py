@@ -1,8 +1,8 @@
 import datetime
 from typing import Any
-from pydantic.datetime_parse import parse_datetime
 
 import pytz
+from pydantic.datetime_parse import parse_datetime
 
 timezone = pytz.FixedOffset(60 * 3)  # GTM +3
 
@@ -37,7 +37,7 @@ class LocalisedDatetime(datetime.datetime):
             d = parse_datetime(v)
             return localize(d)
         except Exception as e:
-            raise ValueError(f'Invalid datetime {v}') from e
+            raise ValueError(f"Invalid datetime {v}") from e
 
 
 # class LocalisedDatetimeBase(BaseModel):

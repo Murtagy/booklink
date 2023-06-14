@@ -1,7 +1,8 @@
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import Depends, Query
-from pydantic import BaseModel as BM, validator
+from pydantic import BaseModel as BM
+from pydantic import validator
 from sqlalchemy.orm import Session  # type: ignore
 
 from .. import crud, db, models
@@ -17,9 +18,9 @@ class CreateService(BM):
     description: Optional[str]
 
     @validator("price", "price_to", pre=True)
-    def empty_str_to_none(cls, value) -> str:
+    def empty_str_to_none(cls, value: Any) -> str | None:
         # for easier client update/create code
-        if value == '':
+        if value == "":
             return None
         return value
 

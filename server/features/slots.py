@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session  # type: ignore
 from server.models import SlotType
 
 from .. import app_exceptions, crud, db, models
-from ..dates import date_range, localize, LocalisedDatetime
+from ..dates import LocalisedDatetime, date_range, localize
 from . import availability, customers, services, users, workers
 
 
@@ -327,7 +327,7 @@ def update_slot(
     update: UpdateSlot,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
-) -> None:
+) -> OutSlot:
     slot = crud.get_slot(s, slot_id)
     if slot is None:
         raise app_exceptions.SlotNotFound
@@ -337,7 +337,7 @@ def update_slot(
 
     if update.notify:
         # TODO
-        pass 
+        pass
 
     return OutSlot.from_orm(db_slot)
 
@@ -347,7 +347,7 @@ def update_slot_customer_info(
     update: UpdateSlotCustomer,
     s: Session = Depends(db.get_session),
     current_user: models.User = Depends(users.get_current_user),
-) -> None:
+) -> OutSlot:
     slot = crud.get_slot(s, slot_id)
     if slot is None:
         raise app_exceptions.SlotNotFound
@@ -357,9 +357,10 @@ def update_slot_customer_info(
 
     if update.notify:
         # TODO
-        pass 
+        pass
 
     return OutSlot.from_orm(db_slot)
+
 
 def get_visit(
     visit_id: int,
