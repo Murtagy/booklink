@@ -113,6 +113,11 @@ const router = createRouter({
       component: () => import("../components/CalendarPicker.vue"),
     },
     {
+      path: "/calendar_base",
+      name: "CalendarBase",
+      component: () => import("../components/BaseCalendar.vue"),
+    },
+    {
       path: "/time",
       name: "Time",
       component: () => import("../components/TimePicker.vue"),

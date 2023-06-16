@@ -23,7 +23,6 @@ button {
 }
 
 button.left {
-  margin-top: 150px;
   margin-left: 16%;
 }
 
@@ -31,16 +30,15 @@ button.right {
   margin-right: 16%;
 }
 
-div.month {
-  margin-top: 0;
-  margin-left: 25%;
-  margin-right: 25%;
+span.month {
+  margin: auto;
   text-align: center;
   padding: 10px;
   font-size: 25px;
   font-weight: bolder;
   display: inline-block;
   border-bottom: 3px solid var(--color1);
+  width: 5em;
 }
 
 div.dates {
