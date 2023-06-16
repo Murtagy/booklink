@@ -3,6 +3,11 @@
       <p> Выбор телефона </p>
       <p> Поиск клиента  </p>
   </todo>
+  <h3 
+    style="display: block; margin: 0 auto; text-align: center; margin-bottom: 1em;"
+  > 
+    {{ date_dayjs.format('YYYY-MM-DD') }} 
+  </h3>
   <form @submit.prevent="submitForm">
     <label for="name">Клиент </label>
     <input id="name" />
@@ -117,6 +122,11 @@ declare interface Data {
 }
 
 export default {
+  computed: {
+    date_dayjs(): dayjs.Dayjs {
+      return dayjs(this.date)
+    }
+  },
   data(): Data {
     const services: OutService[] = [];
     const workers: OutWorker[] = [];
