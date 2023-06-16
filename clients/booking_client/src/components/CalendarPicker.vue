@@ -3,25 +3,30 @@ part // todo - copy to components
 
 <template>
   <div>
-    <button class="left" @click="moveToPrevMonth">
-      <img class="left" src="../assets/arrow2.png" />
-    </button>
-    <div class="month">
-      {{ months_rus[calendar_start_date.getMonth()] }}
-      {{ calendar_start_date.getFullYear() }}
-    </div>
-    <button class="right" @click="moveToNextMonth">
-      <img class="right" src="../assets/arrow2.png" />
-    </button>
+    <header style="display: flex">
+        <button class="left" @click="moveToPrevMonth">
+            <img class="left" src="../assets/arrow2.png" />
+        </button>
+        <span class="month">
+            {{ months_rus[calendar_start_date.getMonth()] }}
+            {{ calendar_start_date.getFullYear() }}
+        </span>
+        <button class="right" @click="moveToNextMonth">
+            <img class="right" src="../assets/arrow2.png" />
+        </button>
+    </header>
     <div v-if="availability == null && availability_mode">Loading ...</div>
     <div
       v-if="!availability_mode || (availability != null && availability_mode)"
-      class="dates"
+      class="calendar"
     >
-      <span class="day">Пн</span><span class="day">Вт</span
-      ><span class="day">Ср</span><span class="day">Чт</span
-      ><span class="day">Пт</span><span class="day">Сб</span
-      ><span class="day">Вс</span>
+      <span class="weekday">Пн</span>
+      <span class="weekday">Вт</span>
+      <span class="weekday">Ср</span>
+      <span class="weekday">Чт</span>
+      <span class="weekday">Пт</span>
+      <span class="weekday">Сб</span>
+      <span class="weekday">Вс</span>
       <span
         v-for="day in calendar_dates"
         :key="day.getTime()"
@@ -29,7 +34,7 @@ part // todo - copy to components
           clickable: isClickable(day),
           empty: isNotSelectedMonth(day),
         }"
-        class="dates"
+        class="cell"
         @click="emitDateIfClickable(day)"
         >{{ isNotSelectedMonth(day) ? "" : day.getUTCDate() }}
       </span>

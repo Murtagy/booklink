@@ -23,7 +23,6 @@ button {
 }
 
 button.left {
-  margin-top: 150px;
   margin-left: 16%;
 }
 
@@ -31,19 +30,17 @@ button.right {
   margin-right: 16%;
 }
 
-div.month {
-  margin-top: 0;
-  margin-left: 25%;
-  margin-right: 25%;
+span.month {
+  margin: auto;
   text-align: center;
-  padding: 10px;
-  font-size: 25px;
+  font-size: larger;
   font-weight: bolder;
   display: inline-block;
   border-bottom: 3px solid var(--color1);
+  width: 5em;
 }
 
-div.dates {
+div.calendar {
   color: gray;
   display: grid;
   font-size: 18px;
@@ -52,12 +49,12 @@ div.dates {
   grid-template-columns: repeat(7, 1fr);
   margin-left: 6%;
   margin-right: 6%;
-  padding: 20px;
+  /* padding: 20px; */
   text-align: center;
   width: auto;
 }
 
-span.day {
+span.weekday {
   color: black;
   font-size: 20px;
   font-weight: bold;
@@ -65,8 +62,14 @@ span.day {
   margin-top: 25px;
 }
 
-span.dates {
-  padding: 20px;
+span.cell {
+/* 
+  padding
+    определяет размер клетки; 
+    нужно чтобы режиме modal (открытой посередине экрана форме)
+    клетки также выглядели соразмерно
+ */
+  padding: 5%;  
   border: 2px solid var(--color3);
 }
 

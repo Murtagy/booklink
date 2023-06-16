@@ -13,19 +13,22 @@
         </button>
     </header>
     <div
-      class="dates"
+      class="calendar"
     >
-      <span class="day">Пн</span><span class="day">Вт</span
-      ><span class="day">Ср</span><span class="day">Чт</span
-      ><span class="day">Пт</span><span class="day">Сб</span
-      ><span class="day">Вс</span>
+      <span class="weekday">Пн</span>
+      <span class="weekday">Вт</span>
+      <span class="weekday">Ср</span>
+      <span class="weekday">Чт</span>
+      <span class="weekday">Пт</span>
+      <span class="weekday">Сб</span>
+      <span class="weekday">Вс</span>
       <span
         v-for="day in calendar_dates"
         :key="day.getTime()"
         v-bind:class="{
             clickable: !IsLessThenToday(day)
         }"
-        class="dates"
+        class="cell"
         @click="$emit('dateClick', day)"
         >
             {{ day.getUTCDate() }}
